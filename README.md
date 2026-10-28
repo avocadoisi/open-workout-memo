@@ -74,6 +74,33 @@ export JSON の形:
 | PWA / Service Worker | 2版目（初版はオンライン前提） |
 | ライセンス | MIT |
 
+## 画面
+
+下タブで切り替える。1画面1目的で、情報を詰め込まない。
+
+| 画面 | 置くもの |
+|---|---|
+| 記録（`#/record`） | セット入力、当日の記録一覧、1RM、画像保存 |
+| 履歴（`#/history`） | 月カレンダー、日別の記録、種目フィルタ、ボリューム |
+| グラフ（`#/chart`） | 1RM 推移、ボリューム推移、指標（体重など）の推移 |
+| データ（`#/data`） | 種目管理、指標管理、エクスポート / インポート |
+
+## ファイル構成
+
+```
+index.html       # 骨組み（header / main / nav、html2canvas の CDN 読み込み）
+app.js           # ナビ生成とハッシュルーティング（#/record など）
+ui.js            # 共通（byId / el / setStatus / estimate1RM / bestSet …）
+db.js            # IndexedDB（getAll / put / remove / exportAll / replaceAll）
+views/record.js  # 記録
+views/history.js # 履歴
+views/chart.js   # グラフ（canvas 手書き、ライブラリなし）
+views/data.js    # データ
+styles.css       # 共通スタイル（画面固有の CSS は各 view 内の <style> に閉じる）
+```
+
+各 view は `export const view = { id, label, mount(container) }` を出す。
+
 ## 開発
 
 変更は issue → ブランチ → PR → マージの順で行う（`.pi/skills/issue-pr-flow/SKILL.md`）。
