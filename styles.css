@@ -544,3 +544,15 @@ button.plain {
   background: transparent;
   border-color: var(--border);
 }
+
+/* 幅が狭いところは縦4枚だと一覧できないので、田の字に並べる */
+@media (max-width: 480px) {
+  .tiles {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .tile-frame {
+    height: 150px;
+  }
+}
