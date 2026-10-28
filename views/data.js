@@ -58,6 +58,15 @@ async function reloadExercises() {
     if (exercise.archived) {
       item.classList.add('archived');
       label.textContent += ' アーカイブ済み';
+      item.append(el('button', {
+        type: 'button',
+        text: '復活',
+        onclick: async () => {
+          await put('exercise', { ...exercise, archived: false });
+          await reloadExercises();
+          setStatus('種目を復活しました');
+        },
+      }));
       return item;
     }
 
