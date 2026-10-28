@@ -55,6 +55,11 @@ description: このリポジトリで変更を依頼されたときの作業手�
 ## 守ること
 
 - `main` へ直接 push しない。
+- remote は SSH を使う（`git@github.com:avocadoisi/open-workout-memo.git`）。https のままだとシェルからの push が認証で失敗する。
+  ```sh
+  git remote set-url origin git@github.com:avocadoisi/open-workout-memo.git
+  ssh -T git@github.com   # 確認
+  ```
 - 依頼にない変更を混ぜない。気づいた点は issue だけ立てて報告する。
 - マージ後に issue が閉じたか `gh issue view <番号>` で確認する。
 - デプロイは指示待ち。無断でデプロイしない。
