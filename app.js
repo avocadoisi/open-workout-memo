@@ -1,14 +1,17 @@
 import { seedIfEmpty } from './db.js';
 import { byId, el, setStatus } from './dom.js';
 import { icon } from './icons.js';
-import { THEMES, applyTheme, currentTheme } from './themes.js';
+import { applyTheme, applyTitle, currentTheme, currentTitle } from './prefs.js';
 import { view as recordView } from './views/record.js';
 import { view as historyView } from './views/history.js';
 import { view as chartView } from './views/chart.js';
 import { view as dataView } from './views/data.js';
 import { view as aboutView } from './views/about.js';
+import { view as settingsView } from './views/settings.js';
 
-const views = [recordView, historyView, chartView, dataView, aboutView];
+const views = [recordView, historyView, chartView, dataView, aboutView, settingsView];
+// 設定はタイルに並べない（ヘッダーの歯車から開く）
+const tileViews = views.filter((view) => view.tile !== false);
 const HOME = '#/';
 
 // プレビューは実画面を縮小して描く。この幅を基準に zoom を決める
@@ -26,7 +29,7 @@ async function mountHome(host) {
   const tiles = [];
   const grid = el('div', { class: 'tiles' });
   host.append(grid);
-  for (const view of views) {
+  for (const view of tileViews) {
     const screen = el('div', { class: 'tile-screen', inert: '' });
     const frame = el('div', { class: 'tile-frame' }, screen);
     tiles.push({ view, screen, frame });
@@ -80,25 +83,22 @@ async function init() {
     minimize.replaceChildren(icon('minimize'));
     minimize.addEventListener('click', () => { location.hash = HOME; });
 
-    const themes = byId('themes');
-    const current = currentTheme();
-    for (const theme of THEMES) {
-      const dot = el('button', {
-        type: 'button',
-        class: 'theme-dot',
-        'aria-label': theme.label,
-        title: theme.label,
-        'aria-pressed': theme.id === current ? 'true' : 'false',
-        onclick: async () => {
-          applyTheme(theme.id);
-          for (const other of themes.children) other.setAttribute('aria-pressed', String(other === dot));
-          await render(); // グラフの線の色は描画時に読むので、描き直す
-        },
-      });
-      dot.style.background = theme.swatch;
-      themes.append(dot);
-    }
-    applyTheme(current);
+    const about = byId('about');
+    about.classList.add('icon-btn');
+    about.setAttribute('aria-label', 'コンセプト');
+    about.title = 'コンセプト';
+    about.replaceChildren(icon('help'));
+    about.addEventListener('click', () => { location.hash = '#/about'; });
+
+    const settings = byId('settings');
+    settings.classList.add('icon-btn');
+    settings.setAttribute('aria-label', '設定');
+    settings.title = '設定';
+    settings.replaceChildren(icon('settings'));
+    settings.addEventListener('click', () => { location.hash = '#/settings'; });
+
+    applyTheme(currentTheme());
+    applyTitle(currentTitle());
     window.addEventListener('hashchange', render);
     await render();
   } catch (error) {

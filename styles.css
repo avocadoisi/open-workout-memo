@@ -124,23 +124,11 @@ header {
   font-size: 0.8rem;
 }
 
-header .themes {
+header .header-brand {
   display: flex;
+  align-items: center;
   gap: 0.35rem;
-}
-
-header .theme-dot {
-  width: 1.15rem;
-  height: 1.15rem;
-  padding: 0;
-  border: 2px solid transparent;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 18%);
-}
-
-header .theme-dot[aria-pressed='true'] {
-  border-color: var(--fg);
-  transform: scale(1.15);
+  min-width: 0;
 }
 
 header .header-actions {
@@ -219,6 +207,10 @@ header .header-actions {
 
 h1 {
   margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   /* 極太の見出し用フォント。読み込み失敗時は W9 で代替 */
   font-family: "Dela Gothic One", "Hiragino Sans W9", "Hiragino Sans", system-ui, sans-serif;
   font-weight: 900;

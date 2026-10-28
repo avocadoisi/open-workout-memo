@@ -18,9 +18,12 @@
 </head>
 <body>
 <header>
-  <h1><a class="brand" href="#/"><img src="icon.svg" alt="" width="28" height="28">挙上log</a></h1>
+  <div class="header-brand">
+    <h1><a class="brand" href="#/"><img src="icon.svg" alt="" width="28" height="28"><span id="brand-title">挙上log</span></a></h1>
+    <button type="button" id="about">?</button>
+  </div>
   <div class="header-actions">
-    <div id="themes" class="themes" role="group" aria-label="配色"></div>
+    <button type="button" id="settings">設定</button>
     <button type="button" id="minimize" hidden>最小化</button>
   </div>
 </header>
