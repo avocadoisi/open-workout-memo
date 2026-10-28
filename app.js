@@ -6,8 +6,9 @@ import { view as recordView } from './views/record.js';
 import { view as historyView } from './views/history.js';
 import { view as chartView } from './views/chart.js';
 import { view as dataView } from './views/data.js';
+import { view as aboutView } from './views/about.js';
 
-const views = [recordView, historyView, chartView, dataView];
+const views = [recordView, historyView, chartView, dataView, aboutView];
 const HOME = '#/';
 
 // プレビューは実画面を縮小して描く。この幅を基準に zoom を決める
