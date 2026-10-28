@@ -18,7 +18,17 @@ function buildForm() {
     el('form', { id: 'set-form' },
       el('label', {}, '日付', el('input', { type: 'date', id: 'set-date', required: '' })),
       el('label', {}, '部位', el('select', { id: 'set-part' })),
-      el('label', {}, '種目', el('select', { id: 'set-exercise', required: '' })),
+      el('label', {}, '種目',
+        el('div', { class: 'with-action' },
+          el('select', { id: 'set-exercise', required: '' }),
+          el('button', {
+            type: 'button',
+            id: 'exercise-history',
+            class: 'icon-btn',
+            'aria-label': 'この種目の履歴',
+            title: 'この種目の履歴',
+          }, icon('chart')),
+        )),
       el('label', {}, '重量 (kg)',
         el('input', { type: 'number', id: 'set-weight', min: '0', step: '0.5', inputmode: 'decimal', required: '' })),
       el('label', {}, '回数',
@@ -220,6 +230,11 @@ function wireEvents() {
   byId('set-date').addEventListener('change', renderSets);
   byId('set-part').addEventListener('change', () => fillExerciseOptions());
 
+  byId('exercise-history').addEventListener('click', () => {
+    const exerciseId = byId('set-exercise').value;
+    if (exerciseId) location.hash = `#/history?exercise=${exerciseId}`;
+  });
+
   byId('image-btn').addEventListener('click', async () => {
     const date = byId('set-date').value;
     if (!date) {
@@ -239,7 +254,7 @@ function wireEvents() {
     const card = buildExportCard(date, groupSets(sets, exercises));
     document.body.append(card);
     try {
-      const canvas = await window.html2canvas(card, { backgroundColor: '#fbf1c7', scale: 2 });
+      const canvas = await window.html2canvas(card, { backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(), scale: 2 });
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
       const url = URL.createObjectURL(blob);
       const link = el('a', { href: url, download: `open-workout-memo-${date}.png` });

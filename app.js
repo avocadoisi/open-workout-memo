@@ -1,6 +1,7 @@
 import { seedIfEmpty } from './db.js';
-import { byId, el, setStatus } from './ui.js';
+import { byId, el, option, setStatus } from './ui.js';
 import { icon } from './icons.js';
+import { THEMES, applyTheme, currentTheme } from './themes.js';
 import { view as recordView } from './views/record.js';
 import { view as historyView } from './views/history.js';
 import { view as chartView } from './views/chart.js';
@@ -14,10 +15,10 @@ const PREVIEW_WIDTH = 720;
 
 let renderToken = 0;
 
-// null ならホーム（タイル一覧）
-function routeId() {
-  const id = location.hash.replace(/^#\/?/, '');
-  return views.some((view) => view.id === id) ? id : null;
+// null ならホーム（タイル一覧）。#/history?exercise=xxx のようなクエリも通す
+function route() {
+  const [id, query] = location.hash.replace(/^#\/?/, '').split('?');
+  return views.some((view) => view.id === id) ? { id, query: query ?? '' } : null;
 }
 
 async function mountHome(host) {
@@ -49,8 +50,9 @@ async function mountHome(host) {
 }
 
 async function render() {
-  const id = routeId();
-  const hash = id ? `#/${id}` : HOME;
+  const current = route();
+  const id = current?.id ?? null;
+  const hash = id ? `#/${id}${current.query ? `?${current.query}` : ''}` : HOME;
   if (location.hash !== hash) history.replaceState(null, '', hash);
   byId('minimize').hidden = !id;
 
@@ -76,6 +78,15 @@ async function init() {
     minimize.title = '最小化';
     minimize.replaceChildren(icon('minimize'));
     minimize.addEventListener('click', () => { location.hash = HOME; });
+
+    const themeSelect = byId('theme');
+    themeSelect.replaceChildren(...THEMES.map((theme) => option(theme.id, theme.label)));
+    themeSelect.value = currentTheme();
+    applyTheme(themeSelect.value);
+    themeSelect.addEventListener('change', async () => {
+      applyTheme(themeSelect.value);
+      await render(); // グラフの線の色は描画時に読むので、描き直す
+    });
     window.addEventListener('hashchange', render);
     await render();
   } catch (error) {

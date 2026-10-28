@@ -34,6 +34,58 @@
   --danger: var(--gb-red);
 }
 
+/* catppuccin latte */
+:root[data-theme='catppuccin'] {
+  --gb-bg0-hard: #e6e9ef;
+  --gb-bg0: #eff1f5;
+  --gb-bg0-soft: #e6e9ef;
+  --gb-bg1: #e6e9ef;
+  --gb-bg2: #ccd0da;
+  --gb-bg3: #bcc0cc;
+  --gb-bg4: #9ca0b0;
+  --gb-gray: #8c8fa1;
+  --gb-fg0: #4c4f69;
+  --gb-fg1: #4c4f69;
+  --gb-fg2: #5c5f77;
+  --gb-fg3: #6c6f85;
+  --gb-fg4: #7c7f93;
+  --gb-red: #d20f39;
+  --gb-orange: #fe640b;
+  --gb-yellow: #df8e1d;
+  --gb-green: #40a02b;
+  --gb-aqua: #179299;
+  --gb-blue: #1e66f5;
+  --gb-purple: #8839ef;
+
+  --accent: var(--gb-blue);
+}
+
+/* kanagawa lotus */
+:root[data-theme='kanagawa'] {
+  --gb-bg0-hard: #e7dba0;
+  --gb-bg0: #f2ecbc;
+  --gb-bg0-soft: #e7dba0;
+  --gb-bg1: #e5ddb0;
+  --gb-bg2: #dcd7ba;
+  --gb-bg3: #c9c3a5;
+  --gb-bg4: #a09c84;
+  --gb-gray: #8a8980;
+  --gb-fg0: #1f1f28;
+  --gb-fg1: #545464;
+  --gb-fg2: #43436c;
+  --gb-fg3: #6b6b7a;
+  --gb-fg4: #8a8980;
+  --gb-red: #c84053;
+  --gb-orange: #cc6d00;
+  --gb-yellow: #77713f;
+  --gb-green: #6f894e;
+  --gb-aqua: #597b75;
+  --gb-blue: #4d699b;
+  --gb-purple: #624c83;
+
+  --accent: var(--gb-red);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -63,6 +115,20 @@ header {
 #minimize {
   padding: 0.3rem 0.6rem;
   font-size: 0.8rem;
+}
+
+header .theme-select {
+  width: auto;
+  max-width: 9rem;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.8rem;
+  color: var(--fg-soft);
+}
+
+header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 /* ホーム: 画面のプレビューが付いたタイル */
@@ -283,6 +349,16 @@ button {
 .set-rm {
   font-size: 0.8rem;
   opacity: 0.7;
+}
+
+.with-action {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.with-action select {
+  flex: 1;
 }
 
 .icon-btn {
