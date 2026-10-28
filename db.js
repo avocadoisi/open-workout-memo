@@ -94,12 +94,33 @@ export async function exportAll() {
   return data;
 }
 
+const isText = (value) => typeof value === 'string' && value.trim() !== '';
+const isNumber = (value) => typeof value === 'number' && Number.isFinite(value);
+const isOptionalText = (value) => value === undefined || typeof value === 'string';
+
+// 壊れた行を書き込むと画面が読めなくなるので、必須項目と型だけは必ず見る
+const ROW_CHECKS = {
+  exercise: (row) => isText(row.name) && isOptionalText(row.bodyPart) && (row.archived === undefined || typeof row.archived === 'boolean'),
+  workoutSet: (row) => isText(row.date) && isText(row.exerciseId) && isNumber(row.weight) && isNumber(row.reps) && isOptionalText(row.memo),
+  metricDef: (row) => isText(row.name) && (row.unit === 'weight' || row.unit === 'length'),
+  metricLog: (row) => isText(row.date) && isText(row.metricDefId) && isNumber(row.value),
+};
+
 // 空のトランザクションを作らないよう、検証を先に済ませる
 function exportRows(data) {
   const rows = {};
   for (const storeName of STORES) {
-    const list = data[EXPORT_KEYS[storeName]];
-    if (!Array.isArray(list)) throw new Error(`${EXPORT_KEYS[storeName]} が配列ではありません`);
+    const key = EXPORT_KEYS[storeName];
+    const list = data[key];
+    if (!Array.isArray(list)) throw new Error(`${key} が配列ではありません`);
+    list.forEach((row, index) => {
+      if (!row || typeof row !== 'object' || !isText(row.id)) {
+        throw new Error(`${key}[${index}] に id がありません`);
+      }
+      if (!ROW_CHECKS[storeName](row)) {
+        throw new Error(`${key}[${index}] の内容が正しくありません`);
+      }
+    });
     rows[storeName] = list;
   }
   return rows;

@@ -73,6 +73,14 @@ function buildDataSection() {
   );
 }
 
+// 表記ゆれ（前後の空白・全角半角・大文字小文字）を同じ名前として扱う
+const normalizeName = (name) => name.normalize('NFKC').trim().toLowerCase();
+
+function hasSameName(list, name) {
+  const target = normalizeName(name);
+  return list.some((item) => normalizeName(item.name) === target);
+}
+
 async function reloadExercises() {
   exercises = await getAll('exercise');
   exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
@@ -144,6 +152,10 @@ function wireEvents() {
       setStatus('名前と部位を入力してください', true);
       return;
     }
+    if (hasSameName(exercises, name)) {
+      setStatus(`「${name}」はもう登録されています`, true);
+      return;
+    }
     await put('exercise', { id: crypto.randomUUID(), name, bodyPart, archived: false });
     byId('exercise-name').value = '';
     byId('exercise-part').value = '';
@@ -157,6 +169,10 @@ function wireEvents() {
     const unit = byId('metric-unit').value;
     if (!name) {
       setStatus('指標名を入力してください', true);
+      return;
+    }
+    if (hasSameName(metricDefs, name)) {
+      setStatus(`「${name}」はもう登録されています`, true);
       return;
     }
     await put('metricDef', { id: crypto.randomUUID(), name, unit });
@@ -175,10 +191,16 @@ function wireEvents() {
       setStatus('指標・日付・値を入力してください', true);
       return;
     }
-    await put('metricLog', { id: crypto.randomUUID(), date, metricDefId, value });
+    if (value <= 0) {
+      setStatus('0 より大きい値を入力してください', true);
+      return;
+    }
+    // 同じ日の同じ指標は二重に作らず上書きする
+    const sameDay = (await getAll('metricLog')).find((log) => log.date === date && log.metricDefId === metricDefId);
+    await put('metricLog', { id: sameDay?.id ?? crypto.randomUUID(), date, metricDefId, value });
     byId('metric-value').value = '';
     await renderMetricLogs();
-    setStatus('指標を記録しました');
+    setStatus(sameDay ? '同じ日の記録を上書きしました' : '指標を記録しました');
   });
 
   byId('metric-date').addEventListener('change', renderMetricLogs);
@@ -216,7 +238,12 @@ function wireEvents() {
 
   byId('import-merge').addEventListener('click', async () => {
     if (!pending) return;
-    await mergeAll(pending);
+    try {
+      await mergeAll(pending);
+    } catch (error) {
+      setStatus(`インポートに失敗しました: ${error.message}`, true);
+      return;
+    }
     finishImport();
     setStatus('マージしました');
   });
@@ -224,7 +251,12 @@ function wireEvents() {
   byId('import-replace').addEventListener('click', async () => {
     if (!pending) return;
     if (!window.confirm(`いまのデータをすべて消して、${pending.workoutSets.length} セットで置き換えます。元に戻せません。よろしいですか？`)) return;
-    await replaceAll(pending);
+    try {
+      await replaceAll(pending);
+    } catch (error) {
+      setStatus(`インポートに失敗しました: ${error.message}`, true);
+      return;
+    }
     finishImport();
     setStatus('全置換しました');
   });
