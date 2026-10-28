@@ -12,6 +12,7 @@ const PATHS = {
   left: ['M14 6l-6 6 6 6'],
   right: ['M10 6l6 6-6 6'],
   calendar: ['M4 6h16v14H4z', 'M8 3v4', 'M16 3v4', 'M4 11h16'],
+  chart: ['M4 19h16', 'M5 15l4-5 3 3 5-7'],
 };
 
 export function icon(name) {

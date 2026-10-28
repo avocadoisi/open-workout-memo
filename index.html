@@ -7,6 +7,8 @@
 <title>挙上log</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-180.png">
+<!-- 配色はチラつかないよう、CSS を読む前に決める -->
+<script>document.documentElement.dataset.theme = localStorage.getItem('owa-theme') || 'gruvbox';</script>
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- 見出し用フォントは「挙上log」の6文字だけに絞って読む -->
@@ -17,7 +19,10 @@
 <body>
 <header>
   <h1><img src="icon.svg" alt="" width="28" height="28">挙上log</h1>
-  <button type="button" id="minimize" hidden>最小化</button>
+  <div class="header-actions">
+    <select id="theme" class="theme-select" aria-label="配色"></select>
+    <button type="button" id="minimize" hidden>最小化</button>
+  </div>
 </header>
 <main id="app"></main>
 <p id="status" role="status"></p>

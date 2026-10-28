@@ -1,5 +1,5 @@
 import { getAll } from '../db.js';
-import { el, groupSets, groupTitle, iconButton, option, rmValue, todayString, volumeOf } from '../ui.js';
+import { bestSet, el, groupSets, groupTitle, iconButton, option, rmText, rmValue, todayString, volumeOf } from '../ui.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -10,6 +10,7 @@ const state = {
   month: 0,
   selected: '',
   exerciseId: '',
+  mode: 'calendar',
   sets: [],
   exercises: [],
 };
@@ -20,6 +21,8 @@ const CSS = `
 .hist-month { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.25rem; font-weight: 700; }
 .hist-year { width: auto; padding: 0.2rem 0.3rem; font-size: 0.875rem; font-weight: 700; }
 .hist-filter { margin-bottom: 0.75rem; }
+.hist-mode { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+.hist-mode-label { font-size: 0.875rem; }
 .hist-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
 .hist-wd { padding: 0.25rem 0; text-align: center; font-size: 0.75rem; opacity: 0.7; }
 .hist-blank { aspect-ratio: 1; }
@@ -44,6 +47,9 @@ let monthLabel;
 let yearSelect;
 let grid;
 let filter;
+let filterLabel;
+let navRow;
+let modeSelect;
 let detailSection;
 
 async function load() {
@@ -118,21 +124,60 @@ function buildDetail() {
   for (const group of groupSets(sets, state.exercises)) {
     section.append(el('div', { class: 'group' },
       el('h3', { text: groupTitle(group) }),
-      el('div', { class: 'set-head' },
-        el('span', { text: '重量' }),
-        el('span', {}),
-        el('span', { text: '回数' }),
-        el('span', { text: '1RM' }),
+      setTable(group.sets),
+    ));
+  }
+  return section;
+}
+
+function setTable(sets) {
+  return el('div', {},
+    el('div', { class: 'set-head' },
+      el('span', { text: '重量' }),
+      el('span', {}),
+      el('span', { text: '回数' }),
+      el('span', { text: '1RM' }),
+    ),
+    ...sets.map((set) => el('div', { class: 'set-row' },
+      el('div', { class: 'set-main' },
+        el('span', { class: 'set-num', text: String(set.weight) }),
+        el('span', { class: 'set-times', text: '×' }),
+        el('span', { class: 'set-num', text: String(set.reps) }),
+        el('span', { class: 'set-rm', text: rmValue(set) }),
       ),
-      ...group.sets.map((set) => el('div', { class: 'set-row' },
-        el('div', { class: 'set-main' },
-          el('span', { class: 'set-num', text: String(set.weight) }),
-          el('span', { class: 'set-times', text: '×' }),
-          el('span', { class: 'set-num', text: String(set.reps) }),
-          el('span', { class: 'set-rm', text: rmValue(set) }),
-        ),
-        ...(set.memo ? [el('small', { text: set.memo })] : []),
-      )),
+      ...(set.memo ? [el('small', { text: set.memo })] : []),
+    )),
+  );
+}
+
+// 選んだ種目のセットを日付の新しい順にまとめる
+function buildExerciseHistory() {
+  const name = state.exercises.find((exercise) => exercise.id === state.exerciseId)?.name ?? '種目';
+  const sets = state.sets
+    .filter((set) => set.exerciseId === state.exerciseId)
+    .sort((a, b) => b.date.localeCompare(a.date) || a.weight - b.weight || a.reps - b.reps);
+
+  const section = el('section', { class: 'hist-detail' }, el('h2', { text: `${name} の履歴` }));
+  if (sets.length === 0) {
+    section.append(el('p', { class: 'hist-empty', text: '記録なし' }));
+    return section;
+  }
+
+  const byDate = new Map();
+  for (const set of sets) {
+    if (!byDate.has(set.date)) byDate.set(set.date, []);
+    byDate.get(set.date).push(set);
+  }
+
+  section.append(el('p', { class: 'hist-summary' },
+    el('span', { text: `記録 ${byDate.size} 日・合計 ${sets.length} セット` }),
+    el('span', { text: `ベスト ${rmText(bestSet(sets))}` }),
+  ));
+
+  for (const [date, list] of byDate) {
+    section.append(el('div', { class: 'group' },
+      el('h3', { text: `${formatDate(date)} ベスト ${rmText(bestSet(list))}・ボリューム ${volumeOf(list)} kg` }),
+      setTable(list),
     ));
   }
   return section;
@@ -148,9 +193,16 @@ function render() {
   for (let year = earliest; year <= Math.max(currentYear, state.year); year += 1) years.push(year);
   yearSelect.replaceChildren(...years.map((year) => option(String(year), `${year}年`)));
   yearSelect.value = String(state.year);
+  if (state.mode === 'exercise' && !state.exerciseId) {
+    state.exerciseId = state.exercises.find((exercise) => !exercise.archived)?.id ?? '';
+  }
   filter.value = state.exerciseId;
+  modeSelect.value = state.mode;
+  navRow.hidden = state.mode !== 'calendar';
+  grid.hidden = state.mode !== 'calendar';
+  filterLabel.hidden = state.mode === 'calendar' && state.exercises.length === 0;
   buildCalendar();
-  const next = buildDetail();
+  const next = state.mode === 'exercise' ? buildExerciseHistory() : buildDetail();
   detailSection.replaceWith(next);
   detailSection = next;
 }
@@ -185,11 +237,13 @@ function goToday() {
 async function mount(container) {
   const today = todayString();
   const [year, month] = today.split('-').map(Number);
+  const params = new URLSearchParams(location.hash.split('?')[1] ?? '');
   Object.assign(state, {
     year,
     month: month - 1,
     selected: today,
-    exerciseId: '',
+    exerciseId: params.get('exercise') ?? '',
+    mode: params.has('exercise') ? 'exercise' : 'calendar',
     sets: [],
     exercises: [],
   });
@@ -209,6 +263,13 @@ async function mount(container) {
   monthLabel = el('span', {});
   navLabel.append(yearSelect, monthLabel);
   grid = el('div', { class: 'hist-cal' });
+  modeSelect = el('select', {
+    'aria-label': '表示',
+    onchange: (event) => {
+      state.mode = event.target.value;
+      render();
+    },
+  }, option('calendar', 'カレンダー'), option('exercise', '種目ごと'));
   filter = el('select', {
     onchange: (event) => {
       state.exerciseId = event.target.value;
@@ -218,15 +279,22 @@ async function mount(container) {
     .filter((exercise) => !exercise.archived)
     .map((exercise) => option(exercise.id, exercise.name)));
 
+  navRow = el('div', { class: 'hist-nav' },
+    iconButton('left', '前月', () => changeMonth(-1)),
+    navLabel,
+    iconButton('right', '翌月', () => changeMonth(1)),
+    iconButton('calendar', '今日', goToday),
+  );
+  filterLabel = el('label', { class: 'hist-filter' }, '種目', filter);
+
   container.append(
     el('section', {},
-      el('div', { class: 'hist-nav' },
-        iconButton('left', '前月', () => changeMonth(-1)),
-        navLabel,
-        iconButton('right', '翌月', () => changeMonth(1)),
-        iconButton('calendar', '今日', goToday),
+      el('div', { class: 'hist-mode' },
+        el('span', { class: 'hist-mode-label', text: '表示' }),
+        modeSelect,
       ),
-      el('label', { class: 'hist-filter' }, '種目', filter),
+      navRow,
+      filterLabel,
       grid,
     ),
   );
