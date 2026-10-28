@@ -6,6 +6,8 @@ export const view = { id: 'record', label: '記録', mount };
 const MEMO_MAX = 30;
 
 let exercises = [];
+// 編集中のセット id。null なら新規入力
+let editingId = null;
 
 function buildForm() {
   return el('section', {},
@@ -18,7 +20,10 @@ function buildForm() {
       el('label', {}, '回数',
         el('input', { type: 'number', id: 'set-reps', min: '1', step: '1', inputmode: 'numeric', required: '' })),
       el('label', {}, 'メモ', el('input', { type: 'text', id: 'set-memo', maxlength: String(MEMO_MAX) })),
-      el('button', { type: 'submit', text: '保存' }),
+      el('div', { class: 'form-actions' },
+        el('button', { type: 'submit', id: 'set-submit', text: '保存' }),
+        el('button', { type: 'button', id: 'set-cancel', text: 'キャンセル', hidden: '' }),
+      ),
     ),
   );
 }
@@ -91,14 +96,17 @@ function buildGroup(group) {
 
     if (set.memo) row.append(el('small', { text: set.memo }));
 
-    row.append(el('button', {
-      type: 'button',
-      text: '削除',
-      onclick: async () => {
-        await remove('workoutSet', set.id);
-        await renderSets();
-      },
-    }));
+    row.append(el('div', { class: 'set-actions' },
+      el('button', { type: 'button', text: '編集', onclick: () => startEditing(set) }),
+      el('button', {
+        type: 'button',
+        text: '削除',
+        onclick: async () => {
+          await remove('workoutSet', set.id);
+          await renderSets();
+        },
+      }),
+    ));
     groupEl.append(row);
   }
   return groupEl;
@@ -145,6 +153,26 @@ async function reloadExercises() {
   );
 }
 
+function startEditing(set) {
+  editingId = set.id;
+  byId('set-date').value = set.date;
+  byId('set-exercise').value = set.exerciseId;
+  byId('set-weight').value = String(set.weight);
+  byId('set-reps').value = String(set.reps);
+  byId('set-memo').value = set.memo ?? '';
+  byId('set-submit').textContent = '更新';
+  byId('set-cancel').hidden = false;
+  byId('set-form').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  byId('set-weight').focus();
+}
+
+function stopEditing() {
+  editingId = null;
+  byId('set-submit').textContent = '保存';
+  byId('set-cancel').hidden = true;
+  for (const id of ['set-weight', 'set-reps', 'set-memo']) byId(id).value = '';
+}
+
 function wireEvents() {
   byId('set-form').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -167,13 +195,24 @@ function wireEvents() {
       return;
     }
 
-    await put('workoutSet', { id: crypto.randomUUID(), date, exerciseId, weight, reps, memo });
-    byId('set-weight').value = '';
-    byId('set-reps').value = '';
-    byId('set-memo').value = '';
+    await put('workoutSet', {
+      id: editingId ?? crypto.randomUUID(),
+      date,
+      exerciseId,
+      weight,
+      reps,
+      memo,
+    });
+    const updated = editingId !== null;
+    stopEditing();
     byId('list-date').value = date;
     await renderSets();
-    setStatus('記録しました');
+    setStatus(updated ? '更新しました' : '記録しました');
+  });
+
+  byId('set-cancel').addEventListener('click', () => {
+    stopEditing();
+    setStatus('編集をやめました');
   });
 
   byId('list-date').addEventListener('change', renderSets);

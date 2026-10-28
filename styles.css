@@ -221,6 +221,25 @@ nav .tab.active {
   font-size: 0.8rem;
 }
 
+.set-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* 編集ボタンは危険な操作ではないので色を変える */
+.set-actions button:first-child {
+  color: var(--fg);
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.form-actions button[type='submit'] {
+  flex: 1;
+}
+
 ul {
   display: grid;
   gap: 0.5rem;
