@@ -161,7 +161,7 @@ function wireEvents() {
     const card = buildExportCard(date, groupSets(sets, names));
     document.body.append(card);
     try {
-      const canvas = await window.html2canvas(card, { backgroundColor: '#ffffff', scale: 2 });
+      const canvas = await window.html2canvas(card, { backgroundColor: '#fbf1c7', scale: 2 });
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
       const url = URL.createObjectURL(blob);
       const link = el('a', { href: url, download: `open-workout-memo-${date}.png` });
