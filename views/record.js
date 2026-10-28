@@ -31,25 +31,47 @@ function buildList() {
   );
 }
 
-function groupSets(sets, names) {
+function groupSets(sets, exercises) {
+  const found = new Map(exercises.map((exercise) => [exercise.id, exercise]));
   const groups = new Map();
   for (const set of sets) {
     if (!groups.has(set.exerciseId)) groups.set(set.exerciseId, []);
     groups.get(set.exerciseId).push(set);
   }
   return [...groups.entries()]
-    .map(([id, list]) => ({ name: names.get(id) ?? '不明な種目', sets: list }))
+    .map(([id, list]) => ({
+      name: found.get(id)?.name ?? '不明な種目',
+      bodyPart: found.get(id)?.bodyPart ?? '',
+      sets: list,
+    }))
     .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 }
 
-function buildGroup(name, sets) {
-  const group = el('div', { class: 'group' });
-  group.append(el('h3', { text: `${name} ベスト ${rmText(bestSet(sets))}` }));
+function groupTitle(group) {
+  const part = group.bodyPart ? `（${group.bodyPart}）` : '';
+  return `${group.name}${part} ベスト ${rmText(bestSet(group.sets))}`;
+}
+
+// 部位はこの順で並べる。自由入力の部位は後ろ
+const PART_ORDER = ['腕', '肩', '背中', '胸', '脚'];
+
+function partSummary(groups) {
+  const parts = [...new Set(groups.map((group) => group.bodyPart).filter(Boolean))];
+  return parts
+    .sort((a, b) => (PART_ORDER.indexOf(a) + 1 || 99) - (PART_ORDER.indexOf(b) + 1 || 99))
+    .join('・');
+}
+
+function buildGroup(group) {
+  const groupEl = el('div', { class: 'group' });
+  groupEl.append(el('h3', { text: groupTitle(group) }));
+
+  const sets = group.sets;
 
   // id はランダムなので、表示順は重量と回数で決める
   sets.sort((a, b) => a.weight - b.weight || a.reps - b.reps);
 
-  group.append(el('div', { class: 'set-head' },
+  groupEl.append(el('div', { class: 'set-head' },
     el('span', { text: '重量' }),
     el('span', {}),
     el('span', { text: '回数' }),
@@ -75,31 +97,33 @@ function buildGroup(name, sets) {
         await renderSets();
       },
     }));
-    group.append(row);
+    groupEl.append(row);
   }
-  return group;
+  return groupEl;
 }
 
 async function renderSets() {
   const date = byId('list-date').value;
   const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
-  const names = new Map(exercises.map((exercise) => [exercise.id, exercise.name]));
 
   byId('set-count').textContent = `合計 ${sets.length} セット`;
   byId('set-list').replaceChildren(
-    ...groupSets(sets, names).map((group) => buildGroup(group.name, group.sets)),
+    ...groupSets(sets, exercises).map((group) => buildGroup(group)),
   );
 }
 
 function buildExportCard(date, groups) {
   const card = el('div', { class: 'export-card' }, el('h2', { text: `トレーニング記録 ${date}` }));
 
+  const parts = partSummary(groups);
+  if (parts) card.append(el('p', { class: 'export-parts', text: `部位 ${parts}` }));
+
   let total = 0;
   for (const group of groups) {
     const list = el('ul', {}, ...group.sets.map((set) =>
       el('li', { text: `${set.weight} kg × ${set.reps} 回　${rmText(set)}${set.memo ? `　${set.memo}` : ''}` }),
     ));
-    card.append(el('h3', { text: `${group.name} ベスト ${rmText(bestSet(group.sets))}` }), list);
+    card.append(el('h3', { text: groupTitle(group) }), list);
     total += group.sets.length;
   }
 
@@ -166,8 +190,7 @@ function wireEvents() {
       return;
     }
 
-    const names = new Map(exercises.map((exercise) => [exercise.id, exercise.name]));
-    const card = buildExportCard(date, groupSets(sets, names));
+    const card = buildExportCard(date, groupSets(sets, exercises));
     document.body.append(card);
     try {
       const canvas = await window.html2canvas(card, { backgroundColor: '#fbf1c7', scale: 2 });
