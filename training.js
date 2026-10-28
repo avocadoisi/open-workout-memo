@@ -1,4 +1,6 @@
-// トレーニングの計算と表示用の書式。DOM には触らない
+// トレーニングの計算と表示用の書式。見出しの組み立てだけ DOM を触る
+
+import { el } from './dom.js';
 
 export const WEEKDAYS = ['月', '火', '水', '木', '金', '土', '日'];
 
@@ -59,9 +61,14 @@ export function groupSets(sets, exercises) {
     .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 }
 
+// ベストかどうかは言葉ではなく強調（strong）で示す
 export function groupTitle(group) {
   const part = group.bodyPart ? `（${group.bodyPart}）` : '';
-  return `${group.name}${part} ベスト ${rmText(bestSet(group.sets))}・ボリューム ${volumeOf(group.sets)} kg`;
+  return [
+    el('span', { text: `${group.name}${part} ` }),
+    el('strong', { text: rmText(bestSet(group.sets)) }),
+    el('span', { text: `・ボリューム ${volumeOf(group.sets)} kg` }),
+  ];
 }
 
 export function partSummary(groups) {

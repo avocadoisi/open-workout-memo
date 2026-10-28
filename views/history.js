@@ -34,6 +34,7 @@ const CSS = `
 .hist-day.selected .hist-dot { background: var(--accent-fg); }
 .hist-summary { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin: 0 0 0.75rem; font-size: 0.875rem; opacity: 0.85; }
 .hist-detail .group + .group { margin-top: 1rem; }
+.hist-total { margin: 1rem 0 0; }
 .hist-detail .group h4 { margin: 0.5rem 0 0.25rem; font-size: 0.9rem; }
 .hist-empty { margin: 0; opacity: 0.7; }
 `;
@@ -113,17 +114,17 @@ function buildDetail() {
     return section;
   }
 
-  section.append(el('p', { class: 'hist-summary' },
-    el('span', { text: `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg` }),
-  ));
-
   // 記録画面と同じ構造にして見た目を揃える
   for (const group of groupSets(sets, state.exercises)) {
     section.append(el('div', { class: 'group' },
-      el('h3', { text: groupTitle(group) }),
+      el('h3', {}, ...groupTitle(group)),
       setTable(group.sets),
     ));
   }
+  // 合計はセットの下に置く
+  section.append(el('p', { class: 'hist-summary hist-total' },
+    el('span', { text: `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg` }),
+  ));
   return section;
 }
 
@@ -189,7 +190,7 @@ function buildPartHistory() {
     section.append(el('div', { class: 'group' },
       el('h3', { text: `${formatDate(date)} 合計 ${list.length} セット・ボリューム ${volumeOf(list)} kg` }),
       ...groupSets(list, state.exercises).map((group) => el('div', {},
-        el('h4', { text: groupTitle(group) }),
+        el('h4', {}, ...groupTitle(group)),
         setTable(group.sets),
       )),
     ));

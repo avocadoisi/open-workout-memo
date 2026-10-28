@@ -317,9 +317,25 @@ button {
   gap: 1rem;
 }
 
-.group h3 {
+.group h3,
+.group h4 {
   margin: 0 0 0.25rem;
   font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--fg-soft);
+}
+
+/* ベストの 1RM は言葉ではなく強調で示す */
+.group strong {
+  font-weight: 700;
+  color: var(--fg);
+}
+
+/* 合計はセットの下に置く */
+#set-count {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  opacity: 0.85;
 }
 
 .set-row {
@@ -330,9 +346,17 @@ button {
   padding: 0.25rem 0;
 }
 
-.set-row small {
+/* メモが入ってもボタンは1行目の右に置く */
+.set-row > small {
+  grid-row: 2;
   grid-column: 1 / -1;
   opacity: 0.7;
+}
+
+.set-row > .set-actions {
+  grid-row: 1;
+  grid-column: 2;
+  justify-self: end;
 }
 
 .set-main {

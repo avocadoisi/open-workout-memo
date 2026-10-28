@@ -44,7 +44,6 @@ function buildForm() {
 function buildList() {
   return el('section', {},
     el('h2', { text: '記録' }),
-    el('p', { id: 'set-count' }),
     el('button', {
       type: 'button',
       id: 'image-btn',
@@ -53,12 +52,13 @@ function buildList() {
       title: '画像を保存',
     }, icon('camera')),
     el('div', { id: 'set-list' }),
+    el('p', { id: 'set-count' }),
   );
 }
 
 function buildGroup(group) {
   return el('div', { class: 'group' },
-    el('h3', { text: groupTitle(group) }),
+    el('h3', {}, ...groupTitle(group)),
     setTable(group.sets, {
       extra: (set) => [el('div', { class: 'set-actions' },
         iconButton('pencil', '編集', () => startEditing(set)),
@@ -92,7 +92,7 @@ function buildExportCard(date, groups) {
   let total = 0;
   for (const group of groups) {
     card.append(
-      el('h3', { text: groupTitle(group) }),
+      el('h3', {}, ...groupTitle(group)),
       el('div', { class: 'export-table' }, setTable(group.sets, { head: '重量(kg)' })),
     );
     total += group.sets.length;
