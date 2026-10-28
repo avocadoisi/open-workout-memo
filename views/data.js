@@ -185,7 +185,7 @@ function wireEvents() {
 
   byId('export-btn').addEventListener('click', async () => {
     const data = await exportAll();
-    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
     const link = el('a', { href: url, download: `open-workout-memo-${todayString()}.json` });
     document.body.append(link);
     link.click();
