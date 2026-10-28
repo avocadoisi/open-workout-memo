@@ -55,8 +55,7 @@ function mount(container) {
   container.append(
     style,
     el('section', { class: 'pref' },
-      el('h2', { text: '配色' }),
-      el('div', { class: 'pref-choices' }, ...THEMES.map(themeChoice)),
+      el('div', { class: 'pref-choices', role: 'group', 'aria-label': '配色' }, ...THEMES.map(themeChoice)),
     ),
     el('section', { class: 'pref' },
       el('h2', { text: 'タイトル' }),
