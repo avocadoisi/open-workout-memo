@@ -367,15 +367,22 @@ li button {
   font-size: 15px;
 }
 
-.export-card ul {
-  margin: 0;
-  padding-left: 20px;
-  list-style: disc;
+.export-card .export-table {
+  font-size: 14px;
 }
 
-.export-card li {
-  display: list-item;
-  font-size: 14px;
+.export-card .export-table .set-main,
+.export-card .export-table .set-head {
+  grid-template-columns: 5em 1.5em 3em 8em;
+  gap: 0.2em 0.5em;
+}
+
+.export-card .export-row + .export-row .set-main {
+  padding-top: 2px;
+}
+
+.export-card .export-row small {
+  color: var(--fg-soft);
 }
 
 .export-card p {
