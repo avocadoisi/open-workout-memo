@@ -60,30 +60,32 @@
   --accent: var(--gb-blue);
 }
 
-/* kanagawa lotus */
-:root[data-theme='kanagawa'] {
-  --gb-bg0-hard: #e7dba0;
-  --gb-bg0: #f2ecbc;
-  --gb-bg0-soft: #e7dba0;
-  --gb-bg1: #e5ddb0;
-  --gb-bg2: #dcd7ba;
-  --gb-bg3: #c9c3a5;
-  --gb-bg4: #a09c84;
-  --gb-gray: #8a8980;
-  --gb-fg0: #1f1f28;
-  --gb-fg1: #545464;
-  --gb-fg2: #43436c;
-  --gb-fg3: #6b6b7a;
-  --gb-fg4: #8a8980;
-  --gb-red: #c84053;
-  --gb-orange: #cc6d00;
-  --gb-yellow: #77713f;
-  --gb-green: #6f894e;
-  --gb-aqua: #597b75;
-  --gb-blue: #4d699b;
-  --gb-purple: #624c83;
+/* tokyonight night（暗い） */
+:root[data-theme='tokyonight'] {
+  color-scheme: dark;
 
-  --accent: var(--gb-red);
+  --gb-bg0-hard: #16161e;
+  --gb-bg0: #1a1b26;
+  --gb-bg0-soft: #1f2335;
+  --gb-bg1: #24283b;
+  --gb-bg2: #2f3549;
+  --gb-bg3: #3b4261;
+  --gb-bg4: #545c7e;
+  --gb-gray: #565f89;
+  --gb-fg0: #c0caf5;
+  --gb-fg1: #c0caf5;
+  --gb-fg2: #a9b1d6;
+  --gb-fg3: #9aa5ce;
+  --gb-fg4: #7f87ad;
+  --gb-red: #f7768e;
+  --gb-orange: #ff9e64;
+  --gb-yellow: #e0af68;
+  --gb-green: #9ece6a;
+  --gb-aqua: #7dcfff;
+  --gb-blue: #7aa2f7;
+  --gb-purple: #bb9af7;
+
+  --accent: var(--gb-blue);
 }
 
 * {
@@ -152,7 +154,7 @@ header .header-actions {
 .tile:hover,
 .tile:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgb(60 56 54 / 15%);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 18%);
 }
 
 .tile-frame {
