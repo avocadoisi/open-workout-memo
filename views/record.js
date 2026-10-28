@@ -3,6 +3,8 @@ import { byId, el, option, setStatus, todayString, rmText, rmValue, bestSet, vol
 
 export const view = { id: 'record', label: '記録', mount };
 
+const MEMO_MAX = 30;
+
 let exercises = [];
 
 function buildForm() {
@@ -15,7 +17,7 @@ function buildForm() {
         el('input', { type: 'number', id: 'set-weight', min: '0', step: '0.5', inputmode: 'decimal', required: '' })),
       el('label', {}, '回数',
         el('input', { type: 'number', id: 'set-reps', min: '1', step: '1', inputmode: 'numeric', required: '' })),
-      el('label', {}, 'メモ', el('input', { type: 'text', id: 'set-memo', maxlength: '200' })),
+      el('label', {}, 'メモ', el('input', { type: 'text', id: 'set-memo', maxlength: String(MEMO_MAX) })),
       el('button', { type: 'submit', text: '保存' }),
     ),
   );
@@ -150,7 +152,7 @@ function wireEvents() {
     const exerciseId = byId('set-exercise').value;
     const weight = byId('set-weight').valueAsNumber;
     const reps = byId('set-reps').valueAsNumber;
-    const memo = byId('set-memo').value.trim();
+    const memo = byId('set-memo').value.trim().slice(0, MEMO_MAX);
 
     if (!date || !exerciseId) {
       setStatus('日付と種目を入力してください', true);
