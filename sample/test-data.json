@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "exportedAt": "2026-10-28T13:12:33.963Z",
+  "exportedAt": "2026-10-28T13:16:30.715Z",
   "exercises": [
     {
       "id": "ex-squat",
@@ -30,658 +30,2402 @@
   "workoutSets": [
     {
       "id": "set-001",
-      "date": "2026-09-22",
-      "exerciseId": "ex-bench",
-      "weight": 60,
+      "date": "2026-08-04",
+      "exerciseId": "ex-squat",
+      "weight": 55,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-002",
-      "date": "2026-09-22",
-      "exerciseId": "ex-bench",
-      "weight": 80,
+      "date": "2026-08-04",
+      "exerciseId": "ex-squat",
+      "weight": 62.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-003",
-      "date": "2026-09-22",
-      "exerciseId": "ex-bench",
-      "weight": 100,
-      "reps": 5,
-      "memo": "体が重い"
-    },
-    {
-      "id": "set-004",
-      "date": "2026-09-22",
-      "exerciseId": "ex-bench",
-      "weight": 100,
-      "reps": 5,
-      "memo": "体が重い"
-    },
-    {
-      "id": "set-005",
-      "date": "2026-09-22",
+      "date": "2026-08-04",
       "exerciseId": "ex-squat",
-      "weight": 60,
+      "weight": 72.5,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-006",
-      "date": "2026-09-22",
+      "id": "set-004",
+      "date": "2026-08-04",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-005",
+      "date": "2026-08-04",
       "exerciseId": "ex-squat",
       "weight": 90,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-006",
+      "date": "2026-08-04",
+      "exerciseId": "ex-bench",
+      "weight": 42.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-007",
-      "date": "2026-09-22",
-      "exerciseId": "ex-squat",
-      "weight": 110,
+      "date": "2026-08-04",
+      "exerciseId": "ex-bench",
+      "weight": 52.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-008",
-      "date": "2026-09-22",
-      "exerciseId": "ex-squat",
-      "weight": 110,
-      "reps": 3,
-      "memo": ""
-    },
-    {
-      "id": "set-009",
-      "date": "2026-09-25",
-      "exerciseId": "ex-dead",
+      "date": "2026-08-04",
+      "exerciseId": "ex-bench",
       "weight": 60,
       "reps": 5,
       "memo": ""
     },
     {
+      "id": "set-009",
+      "date": "2026-08-04",
+      "exerciseId": "ex-bench",
+      "weight": 70,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
       "id": "set-010",
-      "date": "2026-09-25",
+      "date": "2026-08-04",
       "exerciseId": "ex-dead",
-      "weight": 100,
+      "weight": 72.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-011",
-      "date": "2026-09-25",
+      "date": "2026-08-04",
       "exerciseId": "ex-dead",
-      "weight": 130,
-      "reps": 3,
+      "weight": 95,
+      "reps": 5,
       "memo": ""
     },
     {
       "id": "set-012",
-      "date": "2026-09-25",
+      "date": "2026-08-04",
       "exerciseId": "ex-dead",
-      "weight": 140,
-      "reps": 1,
-      "memo": "自己ベスト"
+      "weight": 120,
+      "reps": 2,
+      "memo": "きつい"
     },
     {
       "id": "set-013",
-      "date": "2026-09-28",
-      "exerciseId": "ex-bench",
-      "weight": 60,
+      "date": "2026-08-07",
+      "exerciseId": "ex-squat",
+      "weight": 55,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-014",
-      "date": "2026-09-28",
-      "exerciseId": "ex-bench",
-      "weight": 80,
+      "date": "2026-08-07",
+      "exerciseId": "ex-squat",
+      "weight": 65,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-015",
-      "date": "2026-09-28",
-      "exerciseId": "ex-bench",
-      "weight": 102.5,
+      "date": "2026-08-07",
+      "exerciseId": "ex-squat",
+      "weight": 77.5,
       "reps": 5,
-      "memo": "体が重い"
+      "memo": ""
     },
     {
       "id": "set-016",
-      "date": "2026-09-28",
-      "exerciseId": "ex-bench",
-      "weight": 102.5,
-      "reps": 5,
-      "memo": "体が重い"
+      "date": "2026-08-07",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 3,
+      "memo": "きつい"
     },
     {
       "id": "set-017",
-      "date": "2026-09-28",
-      "exerciseId": "ex-squat",
-      "weight": 60,
+      "date": "2026-08-07",
+      "exerciseId": "ex-bench",
+      "weight": 42.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-018",
-      "date": "2026-09-28",
-      "exerciseId": "ex-squat",
-      "weight": 90,
+      "date": "2026-08-07",
+      "exerciseId": "ex-bench",
+      "weight": 55,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-019",
-      "date": "2026-09-28",
-      "exerciseId": "ex-squat",
-      "weight": 115,
+      "date": "2026-08-07",
+      "exerciseId": "ex-bench",
+      "weight": 70,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-020",
+      "date": "2026-08-07",
+      "exerciseId": "ex-dead",
+      "weight": 72.5,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-020",
-      "date": "2026-09-28",
-      "exerciseId": "ex-squat",
-      "weight": 115,
-      "reps": 3,
-      "memo": ""
-    },
-    {
       "id": "set-021",
-      "date": "2026-10-01",
+      "date": "2026-08-07",
       "exerciseId": "ex-dead",
-      "weight": 60,
+      "weight": 85,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-022",
-      "date": "2026-10-01",
+      "date": "2026-08-07",
       "exerciseId": "ex-dead",
-      "weight": 100,
+      "weight": 95,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-023",
-      "date": "2026-10-01",
+      "date": "2026-08-07",
       "exerciseId": "ex-dead",
-      "weight": 135,
-      "reps": 3,
+      "weight": 107.5,
+      "reps": 5,
       "memo": ""
     },
     {
       "id": "set-024",
-      "date": "2026-10-01",
+      "date": "2026-08-07",
       "exerciseId": "ex-dead",
-      "weight": 145,
-      "reps": 1,
-      "memo": "自己ベスト"
+      "weight": 120,
+      "reps": 2,
+      "memo": "きつい"
     },
     {
       "id": "set-025",
-      "date": "2026-10-04",
-      "exerciseId": "ex-bench",
-      "weight": 60,
+      "date": "2026-08-11",
+      "exerciseId": "ex-squat",
+      "weight": 55,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-026",
-      "date": "2026-10-04",
-      "exerciseId": "ex-bench",
-      "weight": 80,
+      "date": "2026-08-11",
+      "exerciseId": "ex-squat",
+      "weight": 75,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-027",
-      "date": "2026-10-04",
-      "exerciseId": "ex-bench",
-      "weight": 105,
-      "reps": 5,
-      "memo": "体が重い"
+      "date": "2026-08-11",
+      "exerciseId": "ex-squat",
+      "weight": 92.5,
+      "reps": 3,
+      "memo": "きつい"
     },
     {
       "id": "set-028",
-      "date": "2026-10-04",
+      "date": "2026-08-11",
       "exerciseId": "ex-bench",
-      "weight": 105,
+      "weight": 42.5,
       "reps": 5,
-      "memo": "体が重い"
+      "memo": ""
     },
     {
       "id": "set-029",
-      "date": "2026-10-04",
-      "exerciseId": "ex-squat",
-      "weight": 60,
+      "date": "2026-08-11",
+      "exerciseId": "ex-bench",
+      "weight": 50,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-030",
-      "date": "2026-10-04",
-      "exerciseId": "ex-squat",
-      "weight": 90,
+      "date": "2026-08-11",
+      "exerciseId": "ex-bench",
+      "weight": 57.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-031",
-      "date": "2026-10-04",
-      "exerciseId": "ex-squat",
-      "weight": 120,
+      "date": "2026-08-11",
+      "exerciseId": "ex-bench",
+      "weight": 65,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-032",
-      "date": "2026-10-04",
-      "exerciseId": "ex-squat",
-      "weight": 120,
+      "date": "2026-08-11",
+      "exerciseId": "ex-bench",
+      "weight": 72.5,
       "reps": 3,
-      "memo": ""
+      "memo": "きつい"
     },
     {
       "id": "set-033",
-      "date": "2026-10-07",
+      "date": "2026-08-11",
       "exerciseId": "ex-dead",
-      "weight": 60,
+      "weight": 75,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-034",
-      "date": "2026-10-07",
+      "date": "2026-08-11",
       "exerciseId": "ex-dead",
-      "weight": 100,
+      "weight": 90,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-035",
-      "date": "2026-10-07",
+      "date": "2026-08-11",
       "exerciseId": "ex-dead",
-      "weight": 140,
-      "reps": 3,
+      "weight": 107.5,
+      "reps": 5,
       "memo": ""
     },
     {
       "id": "set-036",
-      "date": "2026-10-07",
+      "date": "2026-08-11",
       "exerciseId": "ex-dead",
-      "weight": 150,
-      "reps": 1,
-      "memo": "自己ベスト"
+      "weight": 122.5,
+      "reps": 2,
+      "memo": "きつい"
     },
     {
       "id": "set-037",
-      "date": "2026-10-07",
+      "date": "2026-08-14",
       "exerciseId": "ex-squat",
-      "weight": 80,
-      "reps": 12,
-      "memo": "高回数セット（1RM は参考値）"
+      "weight": 55,
+      "reps": 5,
+      "memo": ""
     },
     {
       "id": "set-038",
-      "date": "2026-10-10",
-      "exerciseId": "ex-bench",
-      "weight": 60,
+      "date": "2026-08-14",
+      "exerciseId": "ex-squat",
+      "weight": 65,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-039",
-      "date": "2026-10-10",
-      "exerciseId": "ex-bench",
-      "weight": 80,
+      "date": "2026-08-14",
+      "exerciseId": "ex-squat",
+      "weight": 75,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-040",
-      "date": "2026-10-10",
-      "exerciseId": "ex-bench",
-      "weight": 107.5,
+      "date": "2026-08-14",
+      "exerciseId": "ex-squat",
+      "weight": 82.5,
       "reps": 5,
-      "memo": "体が重い"
+      "memo": ""
     },
     {
       "id": "set-041",
-      "date": "2026-10-10",
-      "exerciseId": "ex-bench",
-      "weight": 107.5,
-      "reps": 5,
-      "memo": "体が重い"
+      "date": "2026-08-14",
+      "exerciseId": "ex-squat",
+      "weight": 92.5,
+      "reps": 3,
+      "memo": "きつい"
     },
     {
       "id": "set-042",
-      "date": "2026-10-10",
-      "exerciseId": "ex-squat",
-      "weight": 60,
+      "date": "2026-08-14",
+      "exerciseId": "ex-bench",
+      "weight": 42.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-043",
-      "date": "2026-10-10",
-      "exerciseId": "ex-squat",
-      "weight": 90,
+      "date": "2026-08-14",
+      "exerciseId": "ex-bench",
+      "weight": 52.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-044",
-      "date": "2026-10-10",
-      "exerciseId": "ex-squat",
-      "weight": 125,
+      "date": "2026-08-14",
+      "exerciseId": "ex-bench",
+      "weight": 62.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-045",
-      "date": "2026-10-10",
-      "exerciseId": "ex-squat",
-      "weight": 125,
+      "date": "2026-08-14",
+      "exerciseId": "ex-bench",
+      "weight": 72.5,
       "reps": 3,
-      "memo": ""
+      "memo": "きつい"
     },
     {
       "id": "set-046",
-      "date": "2026-10-13",
+      "date": "2026-08-14",
       "exerciseId": "ex-dead",
-      "weight": 60,
+      "weight": 75,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-047",
-      "date": "2026-10-13",
+      "date": "2026-08-14",
       "exerciseId": "ex-dead",
-      "weight": 100,
+      "weight": 97.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-048",
-      "date": "2026-10-13",
+      "date": "2026-08-14",
       "exerciseId": "ex-dead",
-      "weight": 145,
-      "reps": 3,
-      "memo": ""
+      "weight": 122.5,
+      "reps": 2,
+      "memo": "きつい"
     },
     {
       "id": "set-049",
-      "date": "2026-10-13",
-      "exerciseId": "ex-dead",
-      "weight": 155,
-      "reps": 1,
-      "memo": "自己ベスト"
+      "date": "2026-08-18",
+      "exerciseId": "ex-squat",
+      "weight": 57.5,
+      "reps": 5,
+      "memo": ""
     },
     {
       "id": "set-050",
-      "date": "2026-10-16",
-      "exerciseId": "ex-bench",
-      "weight": 60,
+      "date": "2026-08-18",
+      "exerciseId": "ex-squat",
+      "weight": 70,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-051",
-      "date": "2026-10-16",
-      "exerciseId": "ex-bench",
-      "weight": 80,
+      "date": "2026-08-18",
+      "exerciseId": "ex-squat",
+      "weight": 82.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-052",
-      "date": "2026-10-16",
-      "exerciseId": "ex-bench",
-      "weight": 110,
-      "reps": 5,
-      "memo": "体が重い"
+      "date": "2026-08-18",
+      "exerciseId": "ex-squat",
+      "weight": 95,
+      "reps": 3,
+      "memo": "きつい"
     },
     {
       "id": "set-053",
-      "date": "2026-10-16",
+      "date": "2026-08-18",
       "exerciseId": "ex-bench",
-      "weight": 110,
+      "weight": 45,
       "reps": 5,
-      "memo": "体が重い"
+      "memo": ""
     },
     {
       "id": "set-054",
-      "date": "2026-10-16",
-      "exerciseId": "ex-squat",
-      "weight": 60,
+      "date": "2026-08-18",
+      "exerciseId": "ex-bench",
+      "weight": 57.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-055",
-      "date": "2026-10-16",
-      "exerciseId": "ex-squat",
-      "weight": 90,
-      "reps": 5,
-      "memo": ""
+      "date": "2026-08-18",
+      "exerciseId": "ex-bench",
+      "weight": 72.5,
+      "reps": 3,
+      "memo": "きつい"
     },
     {
       "id": "set-056",
-      "date": "2026-10-16",
-      "exerciseId": "ex-squat",
-      "weight": 130,
+      "date": "2026-08-18",
+      "exerciseId": "ex-dead",
+      "weight": 75,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-057",
-      "date": "2026-10-16",
-      "exerciseId": "ex-squat",
-      "weight": 130,
-      "reps": 3,
+      "date": "2026-08-18",
+      "exerciseId": "ex-dead",
+      "weight": 87.5,
+      "reps": 5,
       "memo": ""
     },
     {
       "id": "set-058",
-      "date": "2026-10-19",
+      "date": "2026-08-18",
       "exerciseId": "ex-dead",
-      "weight": 60,
+      "weight": 100,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-059",
-      "date": "2026-10-19",
+      "date": "2026-08-18",
       "exerciseId": "ex-dead",
-      "weight": 100,
+      "weight": 112.5,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-060",
-      "date": "2026-10-19",
+      "date": "2026-08-18",
       "exerciseId": "ex-dead",
-      "weight": 150,
-      "reps": 3,
-      "memo": ""
+      "weight": 125,
+      "reps": 2,
+      "memo": "きつい"
     },
     {
       "id": "set-061",
-      "date": "2026-10-19",
-      "exerciseId": "ex-dead",
-      "weight": 160,
-      "reps": 1,
-      "memo": "自己ベスト"
-    },
-    {
-      "id": "set-062",
-      "date": "2026-10-19",
-      "exerciseId": "ex-front",
-      "weight": 60,
-      "reps": 8,
-      "memo": "アーカイブ済み種目の記録"
-    },
-    {
-      "id": "set-063",
-      "date": "2026-10-22",
-      "exerciseId": "ex-bench",
-      "weight": 60,
+      "date": "2026-08-21",
+      "exerciseId": "ex-squat",
+      "weight": 57.5,
       "reps": 5,
       "memo": ""
     },
     {
+      "id": "set-062",
+      "date": "2026-08-21",
+      "exerciseId": "ex-squat",
+      "weight": 75,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-063",
+      "date": "2026-08-21",
+      "exerciseId": "ex-squat",
+      "weight": 95,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
       "id": "set-064",
-      "date": "2026-10-22",
+      "date": "2026-08-21",
       "exerciseId": "ex-bench",
-      "weight": 80,
+      "weight": 45,
       "reps": 5,
       "memo": ""
     },
     {
       "id": "set-065",
-      "date": "2026-10-22",
+      "date": "2026-08-21",
       "exerciseId": "ex-bench",
-      "weight": 112.5,
+      "weight": 50,
       "reps": 5,
-      "memo": "体が重い"
+      "memo": ""
     },
     {
       "id": "set-066",
-      "date": "2026-10-22",
+      "date": "2026-08-21",
       "exerciseId": "ex-bench",
-      "weight": 112.5,
+      "weight": 57.5,
       "reps": 5,
-      "memo": "体が重い"
+      "memo": ""
     },
     {
       "id": "set-067",
-      "date": "2026-10-22",
+      "date": "2026-08-21",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-068",
+      "date": "2026-08-21",
+      "exerciseId": "ex-bench",
+      "weight": 72.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-069",
+      "date": "2026-08-21",
+      "exerciseId": "ex-dead",
+      "weight": 75,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-070",
+      "date": "2026-08-21",
+      "exerciseId": "ex-dead",
+      "weight": 92.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-071",
+      "date": "2026-08-21",
+      "exerciseId": "ex-dead",
+      "weight": 110,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-072",
+      "date": "2026-08-21",
+      "exerciseId": "ex-dead",
+      "weight": 125,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-073",
+      "date": "2026-08-25",
+      "exerciseId": "ex-squat",
+      "weight": 57.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-074",
+      "date": "2026-08-25",
+      "exerciseId": "ex-squat",
+      "weight": 67.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-075",
+      "date": "2026-08-25",
+      "exerciseId": "ex-squat",
+      "weight": 77.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-076",
+      "date": "2026-08-25",
+      "exerciseId": "ex-squat",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-077",
+      "date": "2026-08-25",
+      "exerciseId": "ex-squat",
+      "weight": 97.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-078",
+      "date": "2026-08-25",
+      "exerciseId": "ex-bench",
+      "weight": 45,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-079",
+      "date": "2026-08-25",
+      "exerciseId": "ex-bench",
+      "weight": 55,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-080",
+      "date": "2026-08-25",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-081",
+      "date": "2026-08-25",
+      "exerciseId": "ex-bench",
+      "weight": 75,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-082",
+      "date": "2026-08-25",
+      "exerciseId": "ex-dead",
+      "weight": 77.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-083",
+      "date": "2026-08-25",
+      "exerciseId": "ex-dead",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-084",
+      "date": "2026-08-25",
+      "exerciseId": "ex-dead",
+      "weight": 130,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-085",
+      "date": "2026-08-28",
+      "exerciseId": "ex-squat",
+      "weight": 57.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-086",
+      "date": "2026-08-28",
+      "exerciseId": "ex-squat",
+      "weight": 72.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-087",
+      "date": "2026-08-28",
+      "exerciseId": "ex-squat",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-088",
+      "date": "2026-08-28",
+      "exerciseId": "ex-squat",
+      "weight": 97.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-089",
+      "date": "2026-08-28",
+      "exerciseId": "ex-bench",
+      "weight": 45,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-090",
+      "date": "2026-08-28",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-091",
+      "date": "2026-08-28",
+      "exerciseId": "ex-bench",
+      "weight": 75,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-092",
+      "date": "2026-08-28",
+      "exerciseId": "ex-dead",
+      "weight": 77.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-093",
+      "date": "2026-08-28",
+      "exerciseId": "ex-dead",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-094",
+      "date": "2026-08-28",
+      "exerciseId": "ex-dead",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-095",
+      "date": "2026-08-28",
+      "exerciseId": "ex-dead",
+      "weight": 115,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-096",
+      "date": "2026-08-28",
+      "exerciseId": "ex-dead",
+      "weight": 130,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-097",
+      "date": "2026-09-01",
       "exerciseId": "ex-squat",
       "weight": 60,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-068",
-      "date": "2026-10-22",
+      "id": "set-098",
+      "date": "2026-09-01",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-099",
+      "date": "2026-09-01",
+      "exerciseId": "ex-squat",
+      "weight": 100,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-100",
+      "date": "2026-09-01",
+      "exerciseId": "ex-bench",
+      "weight": 45,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-101",
+      "date": "2026-09-01",
+      "exerciseId": "ex-bench",
+      "weight": 52.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-102",
+      "date": "2026-09-01",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-103",
+      "date": "2026-09-01",
+      "exerciseId": "ex-bench",
+      "weight": 67.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-104",
+      "date": "2026-09-01",
+      "exerciseId": "ex-bench",
+      "weight": 75,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-105",
+      "date": "2026-09-01",
+      "exerciseId": "ex-dead",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-106",
+      "date": "2026-09-01",
+      "exerciseId": "ex-dead",
+      "weight": 97.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-107",
+      "date": "2026-09-01",
+      "exerciseId": "ex-dead",
+      "weight": 115,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-108",
+      "date": "2026-09-01",
+      "exerciseId": "ex-dead",
+      "weight": 132.5,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-109",
+      "date": "2026-09-04",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-110",
+      "date": "2026-09-04",
+      "exerciseId": "ex-squat",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-111",
+      "date": "2026-09-04",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-112",
+      "date": "2026-09-04",
       "exerciseId": "ex-squat",
       "weight": 90,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-069",
-      "date": "2026-10-22",
+      "id": "set-113",
+      "date": "2026-09-04",
       "exerciseId": "ex-squat",
-      "weight": 135,
-      "reps": 5,
-      "memo": ""
-    },
-    {
-      "id": "set-070",
-      "date": "2026-10-22",
-      "exerciseId": "ex-squat",
-      "weight": 135,
+      "weight": 100,
       "reps": 3,
-      "memo": ""
+      "memo": "きつい"
     },
     {
-      "id": "set-071",
-      "date": "2026-10-25",
-      "exerciseId": "ex-dead",
-      "weight": 60,
+      "id": "set-114",
+      "date": "2026-09-04",
+      "exerciseId": "ex-bench",
+      "weight": 45,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-072",
-      "date": "2026-10-25",
+      "id": "set-115",
+      "date": "2026-09-04",
+      "exerciseId": "ex-bench",
+      "weight": 55,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-116",
+      "date": "2026-09-04",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-117",
+      "date": "2026-09-04",
+      "exerciseId": "ex-bench",
+      "weight": 75,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-118",
+      "date": "2026-09-04",
+      "exerciseId": "ex-dead",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-119",
+      "date": "2026-09-04",
+      "exerciseId": "ex-dead",
+      "weight": 105,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-120",
+      "date": "2026-09-04",
+      "exerciseId": "ex-dead",
+      "weight": 132.5,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-121",
+      "date": "2026-09-08",
+      "exerciseId": "ex-squat",
+      "weight": 62.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-122",
+      "date": "2026-09-08",
+      "exerciseId": "ex-squat",
+      "weight": 75,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-123",
+      "date": "2026-09-08",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-124",
+      "date": "2026-09-08",
+      "exerciseId": "ex-squat",
+      "weight": 102.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-125",
+      "date": "2026-09-08",
+      "exerciseId": "ex-bench",
+      "weight": 47.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-126",
+      "date": "2026-09-08",
+      "exerciseId": "ex-bench",
+      "weight": 62.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-127",
+      "date": "2026-09-08",
+      "exerciseId": "ex-bench",
+      "weight": 77.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-128",
+      "date": "2026-09-08",
+      "exerciseId": "ex-dead",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-129",
+      "date": "2026-09-08",
+      "exerciseId": "ex-dead",
+      "weight": 95,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-130",
+      "date": "2026-09-08",
+      "exerciseId": "ex-dead",
+      "weight": 107.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-131",
+      "date": "2026-09-08",
+      "exerciseId": "ex-dead",
+      "weight": 122.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-132",
+      "date": "2026-09-08",
+      "exerciseId": "ex-dead",
+      "weight": 135,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-133",
+      "date": "2026-09-11",
+      "exerciseId": "ex-squat",
+      "weight": 62.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-134",
+      "date": "2026-09-11",
+      "exerciseId": "ex-squat",
+      "weight": 82.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-135",
+      "date": "2026-09-11",
+      "exerciseId": "ex-squat",
+      "weight": 102.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-136",
+      "date": "2026-09-11",
+      "exerciseId": "ex-bench",
+      "weight": 47.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-137",
+      "date": "2026-09-11",
+      "exerciseId": "ex-bench",
+      "weight": 55,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-138",
+      "date": "2026-09-11",
+      "exerciseId": "ex-bench",
+      "weight": 62.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-139",
+      "date": "2026-09-11",
+      "exerciseId": "ex-bench",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-140",
+      "date": "2026-09-11",
+      "exerciseId": "ex-bench",
+      "weight": 77.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-141",
+      "date": "2026-09-11",
+      "exerciseId": "ex-dead",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-142",
+      "date": "2026-09-11",
       "exerciseId": "ex-dead",
       "weight": 100,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-073",
-      "date": "2026-10-25",
+      "id": "set-143",
+      "date": "2026-09-11",
       "exerciseId": "ex-dead",
-      "weight": 155,
-      "reps": 3,
+      "weight": 117.5,
+      "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-074",
-      "date": "2026-10-25",
+      "id": "set-144",
+      "date": "2026-09-11",
       "exerciseId": "ex-dead",
-      "weight": 165,
-      "reps": 1,
-      "memo": "自己ベスト"
+      "weight": 135,
+      "reps": 2,
+      "memo": "きつい"
     },
     {
-      "id": "set-075",
-      "date": "2026-10-28",
-      "exerciseId": "ex-bench",
-      "weight": 60,
-      "reps": 5,
-      "memo": ""
-    },
-    {
-      "id": "set-076",
-      "date": "2026-10-28",
-      "exerciseId": "ex-bench",
-      "weight": 80,
-      "reps": 5,
-      "memo": ""
-    },
-    {
-      "id": "set-077",
-      "date": "2026-10-28",
-      "exerciseId": "ex-bench",
-      "weight": 115,
-      "reps": 5,
-      "memo": "体が重い"
-    },
-    {
-      "id": "set-078",
-      "date": "2026-10-28",
-      "exerciseId": "ex-bench",
-      "weight": 115,
-      "reps": 5,
-      "memo": "体が重い"
-    },
-    {
-      "id": "set-079",
-      "date": "2026-10-28",
+      "id": "set-145",
+      "date": "2026-09-15",
       "exerciseId": "ex-squat",
       "weight": 60,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-080",
-      "date": "2026-10-28",
+      "id": "set-146",
+      "date": "2026-09-15",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-147",
+      "date": "2026-09-15",
+      "exerciseId": "ex-squat",
+      "weight": 100,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-148",
+      "date": "2026-09-15",
+      "exerciseId": "ex-bench",
+      "weight": 45,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-149",
+      "date": "2026-09-15",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-150",
+      "date": "2026-09-15",
+      "exerciseId": "ex-bench",
+      "weight": 75,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-151",
+      "date": "2026-09-15",
+      "exerciseId": "ex-dead",
+      "weight": 77.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-152",
+      "date": "2026-09-15",
+      "exerciseId": "ex-dead",
+      "weight": 105,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-153",
+      "date": "2026-09-15",
+      "exerciseId": "ex-dead",
+      "weight": 130,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-154",
+      "date": "2026-09-18",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-155",
+      "date": "2026-09-18",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-156",
+      "date": "2026-09-18",
+      "exerciseId": "ex-squat",
+      "weight": 100,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-157",
+      "date": "2026-09-18",
+      "exerciseId": "ex-bench",
+      "weight": 45,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-158",
+      "date": "2026-09-18",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-159",
+      "date": "2026-09-18",
+      "exerciseId": "ex-bench",
+      "weight": 75,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-160",
+      "date": "2026-09-18",
+      "exerciseId": "ex-dead",
+      "weight": 77.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-161",
+      "date": "2026-09-18",
+      "exerciseId": "ex-dead",
+      "weight": 105,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-162",
+      "date": "2026-09-18",
+      "exerciseId": "ex-dead",
+      "weight": 130,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-163",
+      "date": "2026-09-22",
+      "exerciseId": "ex-squat",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-164",
+      "date": "2026-09-22",
+      "exerciseId": "ex-squat",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-165",
+      "date": "2026-09-22",
+      "exerciseId": "ex-squat",
+      "weight": 107.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-166",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 47.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-167",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 57.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-168",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-169",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 72.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-170",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-171",
+      "date": "2026-09-22",
+      "exerciseId": "ex-dead",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-172",
+      "date": "2026-09-22",
+      "exerciseId": "ex-dead",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-173",
+      "date": "2026-09-22",
+      "exerciseId": "ex-dead",
+      "weight": 122.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-174",
+      "date": "2026-09-22",
+      "exerciseId": "ex-dead",
+      "weight": 140,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-175",
+      "date": "2026-09-25",
+      "exerciseId": "ex-squat",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-176",
+      "date": "2026-09-25",
+      "exerciseId": "ex-squat",
+      "weight": 75,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-177",
+      "date": "2026-09-25",
+      "exerciseId": "ex-squat",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-178",
+      "date": "2026-09-25",
+      "exerciseId": "ex-squat",
+      "weight": 97.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-179",
+      "date": "2026-09-25",
+      "exerciseId": "ex-squat",
+      "weight": 107.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-180",
+      "date": "2026-09-25",
+      "exerciseId": "ex-bench",
+      "weight": 47.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-181",
+      "date": "2026-09-25",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-182",
+      "date": "2026-09-25",
+      "exerciseId": "ex-bench",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-183",
+      "date": "2026-09-25",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-184",
+      "date": "2026-09-25",
+      "exerciseId": "ex-dead",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-185",
+      "date": "2026-09-25",
+      "exerciseId": "ex-dead",
+      "weight": 112.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-186",
+      "date": "2026-09-25",
+      "exerciseId": "ex-dead",
+      "weight": 140,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-187",
+      "date": "2026-09-29",
+      "exerciseId": "ex-squat",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-188",
+      "date": "2026-09-29",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-189",
+      "date": "2026-09-29",
+      "exerciseId": "ex-squat",
+      "weight": 95,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-190",
+      "date": "2026-09-29",
+      "exerciseId": "ex-squat",
+      "weight": 110,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-191",
+      "date": "2026-09-29",
+      "exerciseId": "ex-bench",
+      "weight": 50,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-192",
+      "date": "2026-09-29",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-193",
+      "date": "2026-09-29",
+      "exerciseId": "ex-bench",
+      "weight": 82.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-194",
+      "date": "2026-09-29",
+      "exerciseId": "ex-dead",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-195",
+      "date": "2026-09-29",
+      "exerciseId": "ex-dead",
+      "weight": 100,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-196",
+      "date": "2026-09-29",
+      "exerciseId": "ex-dead",
+      "weight": 115,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-197",
+      "date": "2026-09-29",
+      "exerciseId": "ex-dead",
+      "weight": 130,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-198",
+      "date": "2026-09-29",
+      "exerciseId": "ex-dead",
+      "weight": 145,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-199",
+      "date": "2026-10-02",
+      "exerciseId": "ex-squat",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-200",
+      "date": "2026-10-02",
+      "exerciseId": "ex-squat",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-201",
+      "date": "2026-10-02",
+      "exerciseId": "ex-squat",
+      "weight": 110,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-202",
+      "date": "2026-10-02",
+      "exerciseId": "ex-bench",
+      "weight": 50,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-203",
+      "date": "2026-10-02",
+      "exerciseId": "ex-bench",
+      "weight": 57.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-204",
+      "date": "2026-10-02",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-205",
+      "date": "2026-10-02",
+      "exerciseId": "ex-bench",
+      "weight": 75,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-206",
+      "date": "2026-10-02",
+      "exerciseId": "ex-bench",
+      "weight": 82.5,
+      "reps": 3,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-207",
+      "date": "2026-10-02",
+      "exerciseId": "ex-dead",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-208",
+      "date": "2026-10-02",
+      "exerciseId": "ex-dead",
+      "weight": 105,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-209",
+      "date": "2026-10-02",
+      "exerciseId": "ex-dead",
+      "weight": 125,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-210",
+      "date": "2026-10-02",
+      "exerciseId": "ex-dead",
+      "weight": 145,
+      "reps": 2,
+      "memo": "きつい"
+    },
+    {
+      "id": "set-211",
+      "date": "2026-10-06",
+      "exerciseId": "ex-squat",
+      "weight": 67.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-212",
+      "date": "2026-10-06",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-213",
+      "date": "2026-10-06",
       "exerciseId": "ex-squat",
       "weight": 90,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-081",
-      "date": "2026-10-28",
+      "id": "set-214",
+      "date": "2026-10-06",
       "exerciseId": "ex-squat",
-      "weight": 140,
+      "weight": 102.5,
       "reps": 5,
       "memo": ""
     },
     {
-      "id": "set-082",
-      "date": "2026-10-28",
+      "id": "set-215",
+      "date": "2026-10-06",
       "exerciseId": "ex-squat",
-      "weight": 140,
+      "weight": 112.5,
       "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-216",
+      "date": "2026-10-06",
+      "exerciseId": "ex-bench",
+      "weight": 50,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-217",
+      "date": "2026-10-06",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-218",
+      "date": "2026-10-06",
+      "exerciseId": "ex-bench",
+      "weight": 72.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-219",
+      "date": "2026-10-06",
+      "exerciseId": "ex-bench",
+      "weight": 82.5,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-220",
+      "date": "2026-10-06",
+      "exerciseId": "ex-dead",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-221",
+      "date": "2026-10-06",
+      "exerciseId": "ex-dead",
+      "weight": 117.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-222",
+      "date": "2026-10-06",
+      "exerciseId": "ex-dead",
+      "weight": 147.5,
+      "reps": 2,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-223",
+      "date": "2026-10-09",
+      "exerciseId": "ex-squat",
+      "weight": 67.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-224",
+      "date": "2026-10-09",
+      "exerciseId": "ex-squat",
+      "weight": 82.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-225",
+      "date": "2026-10-09",
+      "exerciseId": "ex-squat",
+      "weight": 97.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-226",
+      "date": "2026-10-09",
+      "exerciseId": "ex-squat",
+      "weight": 112.5,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-227",
+      "date": "2026-10-09",
+      "exerciseId": "ex-bench",
+      "weight": 50,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-228",
+      "date": "2026-10-09",
+      "exerciseId": "ex-bench",
+      "weight": 67.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-229",
+      "date": "2026-10-09",
+      "exerciseId": "ex-bench",
+      "weight": 82.5,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-230",
+      "date": "2026-10-09",
+      "exerciseId": "ex-dead",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-231",
+      "date": "2026-10-09",
+      "exerciseId": "ex-dead",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-232",
+      "date": "2026-10-09",
+      "exerciseId": "ex-dead",
+      "weight": 117.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-233",
+      "date": "2026-10-09",
+      "exerciseId": "ex-dead",
+      "weight": 132.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-234",
+      "date": "2026-10-09",
+      "exerciseId": "ex-dead",
+      "weight": 147.5,
+      "reps": 2,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-235",
+      "date": "2026-10-13",
+      "exerciseId": "ex-squat",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-236",
+      "date": "2026-10-13",
+      "exerciseId": "ex-squat",
+      "weight": 92.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-237",
+      "date": "2026-10-13",
+      "exerciseId": "ex-squat",
+      "weight": 115,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-238",
+      "date": "2026-10-13",
+      "exerciseId": "ex-bench",
+      "weight": 50,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-239",
+      "date": "2026-10-13",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-240",
+      "date": "2026-10-13",
+      "exerciseId": "ex-bench",
+      "weight": 67.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-241",
+      "date": "2026-10-13",
+      "exerciseId": "ex-bench",
+      "weight": 77.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-242",
+      "date": "2026-10-13",
+      "exerciseId": "ex-bench",
+      "weight": 85,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-243",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-244",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 110,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-245",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 130,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-246",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 150,
+      "reps": 2,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-247",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-248",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-249",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 92.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-250",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-251",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 115,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-252",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 50,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-253",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 62.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-254",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 72.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-255",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 85,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-256",
+      "date": "2026-10-16",
+      "exerciseId": "ex-dead",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-257",
+      "date": "2026-10-16",
+      "exerciseId": "ex-dead",
+      "weight": 120,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-258",
+      "date": "2026-10-16",
+      "exerciseId": "ex-dead",
+      "weight": 150,
+      "reps": 2,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-259",
+      "date": "2026-10-20",
+      "exerciseId": "ex-squat",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-260",
+      "date": "2026-10-20",
+      "exerciseId": "ex-squat",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-261",
+      "date": "2026-10-20",
+      "exerciseId": "ex-squat",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-262",
+      "date": "2026-10-20",
+      "exerciseId": "ex-squat",
+      "weight": 117.5,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-263",
+      "date": "2026-10-20",
+      "exerciseId": "ex-bench",
+      "weight": 52.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-264",
+      "date": "2026-10-20",
+      "exerciseId": "ex-bench",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-265",
+      "date": "2026-10-20",
+      "exerciseId": "ex-bench",
+      "weight": 87.5,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-266",
+      "date": "2026-10-20",
+      "exerciseId": "ex-dead",
+      "weight": 92.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-267",
+      "date": "2026-10-20",
+      "exerciseId": "ex-dead",
+      "weight": 107.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-268",
+      "date": "2026-10-20",
+      "exerciseId": "ex-dead",
+      "weight": 122.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-269",
+      "date": "2026-10-20",
+      "exerciseId": "ex-dead",
+      "weight": 137.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-270",
+      "date": "2026-10-20",
+      "exerciseId": "ex-dead",
+      "weight": 152.5,
+      "reps": 2,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-271",
+      "date": "2026-10-23",
+      "exerciseId": "ex-squat",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-272",
+      "date": "2026-10-23",
+      "exerciseId": "ex-squat",
+      "weight": 95,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-273",
+      "date": "2026-10-23",
+      "exerciseId": "ex-squat",
+      "weight": 117.5,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-274",
+      "date": "2026-10-23",
+      "exerciseId": "ex-bench",
+      "weight": 52.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-275",
+      "date": "2026-10-23",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-276",
+      "date": "2026-10-23",
+      "exerciseId": "ex-bench",
+      "weight": 70,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-277",
+      "date": "2026-10-23",
+      "exerciseId": "ex-bench",
+      "weight": 77.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-278",
+      "date": "2026-10-23",
+      "exerciseId": "ex-bench",
+      "weight": 87.5,
+      "reps": 3,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-279",
+      "date": "2026-10-23",
+      "exerciseId": "ex-dead",
+      "weight": 92.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-280",
+      "date": "2026-10-23",
+      "exerciseId": "ex-dead",
+      "weight": 112.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-281",
+      "date": "2026-10-23",
+      "exerciseId": "ex-dead",
+      "weight": 132.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-282",
+      "date": "2026-10-23",
+      "exerciseId": "ex-dead",
+      "weight": 152.5,
+      "reps": 2,
+      "memo": "自己ベスト更新"
+    },
+    {
+      "id": "set-283",
+      "date": "2026-10-27",
+      "exerciseId": "ex-squat",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-284",
+      "date": "2026-10-27",
+      "exerciseId": "ex-squat",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-285",
+      "date": "2026-10-27",
+      "exerciseId": "ex-squat",
+      "weight": 107.5,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-286",
+      "date": "2026-10-27",
+      "exerciseId": "ex-bench",
+      "weight": 47.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-287",
+      "date": "2026-10-27",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-288",
+      "date": "2026-10-27",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-289",
+      "date": "2026-10-27",
+      "exerciseId": "ex-dead",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-290",
+      "date": "2026-10-27",
+      "exerciseId": "ex-dead",
+      "weight": 112.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-291",
+      "date": "2026-10-27",
+      "exerciseId": "ex-dead",
+      "weight": 142.5,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-292",
+      "date": "2026-10-30",
+      "exerciseId": "ex-squat",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-293",
+      "date": "2026-10-30",
+      "exerciseId": "ex-squat",
+      "weight": 87.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-294",
+      "date": "2026-10-30",
+      "exerciseId": "ex-squat",
+      "weight": 107.5,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-295",
+      "date": "2026-10-30",
+      "exerciseId": "ex-bench",
+      "weight": 47.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-296",
+      "date": "2026-10-30",
+      "exerciseId": "ex-bench",
+      "weight": 65,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-297",
+      "date": "2026-10-30",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 8,
+      "memo": ""
+    },
+    {
+      "id": "set-298",
+      "date": "2026-10-30",
+      "exerciseId": "ex-dead",
+      "weight": 85,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-299",
+      "date": "2026-10-30",
+      "exerciseId": "ex-dead",
+      "weight": 112.5,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-300",
+      "date": "2026-10-30",
+      "exerciseId": "ex-dead",
+      "weight": 142.5,
+      "reps": 8,
       "memo": ""
     }
   ],
@@ -699,70 +2443,202 @@
   ],
   "metricLogs": [
     {
-      "id": "ml-weight-0",
-      "date": "2026-09-22",
+      "id": "ml-w001",
+      "date": "2026-08-04",
       "metricDefId": "metric-weight",
-      "value": 74.8
+      "value": 75.4
     },
     {
-      "id": "ml-waist-0",
-      "date": "2026-09-22",
+      "id": "ml-m002",
+      "date": "2026-08-04",
       "metricDefId": "metric-waist",
-      "value": 82
+      "value": 83
     },
     {
-      "id": "ml-weight-2",
-      "date": "2026-09-28",
+      "id": "ml-w003",
+      "date": "2026-08-07",
       "metricDefId": "metric-weight",
-      "value": 74.5
+      "value": 75
     },
     {
-      "id": "ml-weight-4",
-      "date": "2026-10-04",
+      "id": "ml-w004",
+      "date": "2026-08-11",
       "metricDefId": "metric-weight",
       "value": 74.9
     },
     {
-      "id": "ml-waist-4",
-      "date": "2026-10-04",
+      "id": "ml-w005",
+      "date": "2026-08-14",
+      "metricDefId": "metric-weight",
+      "value": 75.1
+    },
+    {
+      "id": "ml-w006",
+      "date": "2026-08-18",
+      "metricDefId": "metric-weight",
+      "value": 74.7
+    },
+    {
+      "id": "ml-m007",
+      "date": "2026-08-18",
+      "metricDefId": "metric-waist",
+      "value": 82
+    },
+    {
+      "id": "ml-w008",
+      "date": "2026-08-21",
+      "metricDefId": "metric-weight",
+      "value": 74.7
+    },
+    {
+      "id": "ml-w009",
+      "date": "2026-08-25",
+      "metricDefId": "metric-weight",
+      "value": 74.9
+    },
+    {
+      "id": "ml-w010",
+      "date": "2026-08-28",
+      "metricDefId": "metric-weight",
+      "value": 74.5
+    },
+    {
+      "id": "ml-w011",
+      "date": "2026-09-01",
+      "metricDefId": "metric-weight",
+      "value": 74.4
+    },
+    {
+      "id": "ml-m012",
+      "date": "2026-09-01",
       "metricDefId": "metric-waist",
       "value": 81
     },
     {
-      "id": "ml-weight-6",
-      "date": "2026-10-10",
+      "id": "ml-w013",
+      "date": "2026-09-04",
+      "metricDefId": "metric-weight",
+      "value": 74.6
+    },
+    {
+      "id": "ml-w014",
+      "date": "2026-09-08",
       "metricDefId": "metric-weight",
       "value": 74.2
     },
     {
-      "id": "ml-weight-8",
-      "date": "2026-10-16",
+      "id": "ml-w015",
+      "date": "2026-09-11",
       "metricDefId": "metric-weight",
-      "value": 73.9
+      "value": 74.1
     },
     {
-      "id": "ml-waist-8",
-      "date": "2026-10-16",
+      "id": "ml-w016",
+      "date": "2026-09-15",
+      "metricDefId": "metric-weight",
+      "value": 74.3
+    },
+    {
+      "id": "ml-m017",
+      "date": "2026-09-15",
       "metricDefId": "metric-waist",
       "value": 80
     },
     {
-      "id": "ml-weight-10",
-      "date": "2026-10-22",
+      "id": "ml-w018",
+      "date": "2026-09-18",
       "metricDefId": "metric-weight",
-      "value": 74
+      "value": 73.9
     },
     {
-      "id": "ml-weight-12",
-      "date": "2026-10-28",
+      "id": "ml-w019",
+      "date": "2026-09-22",
+      "metricDefId": "metric-weight",
+      "value": 73.8
+    },
+    {
+      "id": "ml-w020",
+      "date": "2026-09-25",
+      "metricDefId": "metric-weight",
+      "value": 74.1
+    },
+    {
+      "id": "ml-w021",
+      "date": "2026-09-29",
+      "metricDefId": "metric-weight",
+      "value": 73.7
+    },
+    {
+      "id": "ml-m022",
+      "date": "2026-09-29",
+      "metricDefId": "metric-waist",
+      "value": 79
+    },
+    {
+      "id": "ml-w023",
+      "date": "2026-10-02",
       "metricDefId": "metric-weight",
       "value": 73.6
     },
     {
-      "id": "ml-waist-12",
-      "date": "2026-10-28",
+      "id": "ml-w024",
+      "date": "2026-10-06",
+      "metricDefId": "metric-weight",
+      "value": 73.8
+    },
+    {
+      "id": "ml-w025",
+      "date": "2026-10-09",
+      "metricDefId": "metric-weight",
+      "value": 73.4
+    },
+    {
+      "id": "ml-w026",
+      "date": "2026-10-13",
+      "metricDefId": "metric-weight",
+      "value": 73.3
+    },
+    {
+      "id": "ml-m027",
+      "date": "2026-10-13",
       "metricDefId": "metric-waist",
-      "value": 79
+      "value": 78
+    },
+    {
+      "id": "ml-w028",
+      "date": "2026-10-16",
+      "metricDefId": "metric-weight",
+      "value": 73.5
+    },
+    {
+      "id": "ml-w029",
+      "date": "2026-10-20",
+      "metricDefId": "metric-weight",
+      "value": 73.1
+    },
+    {
+      "id": "ml-w030",
+      "date": "2026-10-23",
+      "metricDefId": "metric-weight",
+      "value": 73
+    },
+    {
+      "id": "ml-w031",
+      "date": "2026-10-27",
+      "metricDefId": "metric-weight",
+      "value": 73.2
+    },
+    {
+      "id": "ml-m032",
+      "date": "2026-10-27",
+      "metricDefId": "metric-waist",
+      "value": 77
+    },
+    {
+      "id": "ml-w033",
+      "date": "2026-10-30",
+      "metricDefId": "metric-weight",
+      "value": 72.9
     }
   ]
 }
