@@ -86,5 +86,6 @@ export JSON の形:
 - GitHub Pages の Source は「GitHub Actions」にし、その workflow は `on: workflow_dispatch` のみ
   （「Deploy from a branch」にすると push のたびに自動デプロイされるので使わない）
 - 実行: `gh workflow run deploy.yml`
+- URL: https://avocadoisi.github.io/open-workout-memo/
 
 理由: マージのたびに CI/デプロイを走らせるとコストがかかるため。記録アプリなので即時反映の必要もない。
