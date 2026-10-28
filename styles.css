@@ -218,9 +218,6 @@ header .header-actions {
 }
 
 h1 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   margin: 0;
   /* 極太の見出し用フォント。読み込み失敗時は W9 で代替 */
   font-family: "Dela Gothic One", "Hiragino Sans W9", "Hiragino Sans", system-ui, sans-serif;
@@ -228,6 +225,19 @@ h1 {
   font-synthesis-weight: none;
   font-size: 1.25rem;
   letter-spacing: -0.01em;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 h1 img {
