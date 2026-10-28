@@ -1,8 +1,8 @@
 // nvim の colorscheme のパレットを参考にした配色。実色は styles.css のパレット定義にある
 export const THEMES = [
-  { id: 'gruvbox', label: 'gruvbox light' },
-  { id: 'catppuccin', label: 'catppuccin latte' },
-  { id: 'tokyonight', label: 'tokyonight night' },
+  { id: 'gruvbox', label: 'gruvbox light', swatch: '#af3a03' },
+  { id: 'catppuccin', label: 'catppuccin latte', swatch: '#1e66f5' },
+  { id: 'tokyonight', label: 'tokyonight night', swatch: '#bb9af7' },
 ];
 
 const KEY = 'owa-theme';
