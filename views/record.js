@@ -1,5 +1,7 @@
 import { getAll, put, remove } from '../db.js';
-import { byId, el, option, setStatus, todayString, rmText, rmValue, bestSet, volumeOf } from '../ui.js';
+import {
+  byId, el, groupSets, groupTitle, option, partSummary, rmText, rmValue, setStatus, todayString, volumeOf,
+} from '../ui.js';
 
 export const view = { id: 'record', label: '記録', mount };
 
@@ -31,42 +33,10 @@ function buildForm() {
 function buildList() {
   return el('section', {},
     el('h2', { text: '記録' }),
-    el('label', {}, '日付', el('input', { type: 'date', id: 'list-date' })),
     el('p', { id: 'set-count' }),
     el('button', { type: 'button', id: 'image-btn', text: '画像を保存' }),
     el('div', { id: 'set-list' }),
   );
-}
-
-function groupSets(sets, exercises) {
-  const found = new Map(exercises.map((exercise) => [exercise.id, exercise]));
-  const groups = new Map();
-  for (const set of sets) {
-    if (!groups.has(set.exerciseId)) groups.set(set.exerciseId, []);
-    groups.get(set.exerciseId).push(set);
-  }
-  return [...groups.entries()]
-    .map(([id, list]) => ({
-      name: found.get(id)?.name ?? '不明な種目',
-      bodyPart: found.get(id)?.bodyPart ?? '',
-      sets: list,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
-}
-
-function groupTitle(group) {
-  const part = group.bodyPart ? `（${group.bodyPart}）` : '';
-  return `${group.name}${part} ベスト ${rmText(bestSet(group.sets))}・ボリューム ${volumeOf(group.sets)} kg`;
-}
-
-// 部位はこの順で並べる。自由入力の部位は後ろ
-const PART_ORDER = ['腕', '肩', '背中', '胸', '脚'];
-
-function partSummary(groups) {
-  const parts = [...new Set(groups.map((group) => group.bodyPart).filter(Boolean))];
-  return parts
-    .sort((a, b) => (PART_ORDER.indexOf(a) + 1 || 99) - (PART_ORDER.indexOf(b) + 1 || 99))
-    .join('・');
 }
 
 function buildGroup(group) {
@@ -113,7 +83,7 @@ function buildGroup(group) {
 }
 
 async function renderSets() {
-  const date = byId('list-date').value;
+  const date = byId('set-date').value;
   const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
 
   byId('set-count').textContent = sets.length
@@ -153,9 +123,10 @@ async function reloadExercises() {
   );
 }
 
-function startEditing(set) {
+async function startEditing(set) {
   editingId = set.id;
   byId('set-date').value = set.date;
+  await renderSets();
   byId('set-exercise').value = set.exerciseId;
   byId('set-weight').value = String(set.weight);
   byId('set-reps').value = String(set.reps);
@@ -205,7 +176,6 @@ function wireEvents() {
     });
     const updated = editingId !== null;
     stopEditing();
-    byId('list-date').value = date;
     await renderSets();
     setStatus(updated ? '更新しました' : '記録しました');
   });
@@ -215,10 +185,10 @@ function wireEvents() {
     setStatus('編集をやめました');
   });
 
-  byId('list-date').addEventListener('change', renderSets);
+  byId('set-date').addEventListener('change', renderSets);
 
   byId('image-btn').addEventListener('click', async () => {
-    const date = byId('list-date').value;
+    const date = byId('set-date').value;
     if (!date) {
       setStatus('日付を選んでください', true);
       return;
@@ -257,7 +227,6 @@ async function mount(container) {
   container.append(buildForm(), buildList());
   const today = todayString();
   byId('set-date').value = today;
-  byId('list-date').value = today;
   await reloadExercises();
   wireEvents();
   await renderSets();
