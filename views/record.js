@@ -1,7 +1,8 @@
 import { getAll, put, remove } from '../db.js';
 import {
-  byId, el, groupSets, groupTitle, option, partSummary, rmValue, setStatus, todayString, volumeOf,
+  byId, el, groupSets, groupTitle, iconButton, option, partSummary, rmValue, setStatus, todayString, volumeOf,
 } from '../ui.js';
+import { icon } from '../icons.js';
 
 export const view = { id: 'record', label: '記録', mount };
 
@@ -35,7 +36,13 @@ function buildList() {
   return el('section', {},
     el('h2', { text: '記録' }),
     el('p', { id: 'set-count' }),
-    el('button', { type: 'button', id: 'image-btn', text: '画像を保存' }),
+    el('button', {
+      type: 'button',
+      id: 'image-btn',
+      class: 'icon-btn',
+      'aria-label': '画像を保存',
+      title: '画像を保存',
+    }, icon('camera')),
     el('div', { id: 'set-list' }),
   );
 }
@@ -68,14 +75,10 @@ function buildGroup(group) {
     if (set.memo) row.append(el('small', { text: set.memo }));
 
     row.append(el('div', { class: 'set-actions' },
-      el('button', { type: 'button', text: '編集', onclick: () => startEditing(set) }),
-      el('button', {
-        type: 'button',
-        text: '削除',
-        onclick: async () => {
-          await remove('workoutSet', set.id);
-          await renderSets();
-        },
+      iconButton('pencil', '編集', () => startEditing(set)),
+      iconButton('trash', '削除', async () => {
+        await remove('workoutSet', set.id);
+        await renderSets();
       }),
     ));
     groupEl.append(row);

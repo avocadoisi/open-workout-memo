@@ -1,3 +1,5 @@
+import { icon } from './icons.js';
+
 export const byId = (id) => document.getElementById(id);
 
 // textContent / setAttribute だけで組み立てる（innerHTML は使わない）
@@ -11,6 +13,17 @@ export function el(tag, props = {}, ...children) {
   }
   node.append(...children);
   return node;
+}
+
+// 文字ではなくアイコンだけのボタン。読み上げ用に label は残す
+export function iconButton(name, label, onClick) {
+  return el('button', {
+    type: 'button',
+    class: 'icon-btn',
+    'aria-label': label,
+    title: label,
+    onclick: onClick,
+  }, icon(name));
 }
 
 let statusTimer;

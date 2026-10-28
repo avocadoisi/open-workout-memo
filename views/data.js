@@ -1,5 +1,6 @@
 import { getAll, put, exportAll, mergeAll, replaceAll } from '../db.js';
-import { byId, el, option, setStatus, todayString, unitLabel } from '../ui.js';
+import { byId, el, iconButton, option, setStatus, todayString, unitLabel } from '../ui.js';
+import { icon } from '../icons.js';
 
 export const view = { id: 'data', label: 'データ', mount };
 
@@ -51,7 +52,13 @@ function buildMetricSection() {
 function buildDataSection() {
   return el('section', {},
     el('h2', { text: 'データ' }),
-    el('button', { type: 'button', id: 'export-btn', text: 'エクスポート' }),
+    el('button', {
+      type: 'button',
+      id: 'export-btn',
+      class: 'icon-btn',
+      'aria-label': 'エクスポート',
+      title: 'エクスポート',
+    }, icon('download')),
     el('label', {}, 'インポート',
       el('input', { type: 'file', id: 'import-file', accept: 'application/json,.json' })),
     el('div', { id: 'import-actions', hidden: '' },
@@ -75,26 +82,18 @@ async function reloadExercises() {
     if (exercise.archived) {
       item.classList.add('archived');
       label.textContent += ' アーカイブ済み';
-      item.append(el('button', {
-        type: 'button',
-        text: '復活',
-        onclick: async () => {
-          await put('exercise', { ...exercise, archived: false });
-          await reloadExercises();
-          setStatus('種目を復活しました');
-        },
+      item.append(iconButton('restore', '復活', async () => {
+        await put('exercise', { ...exercise, archived: false });
+        await reloadExercises();
+        setStatus('種目を復活しました');
       }));
       return item;
     }
 
-    item.append(el('button', {
-      type: 'button',
-      text: 'アーカイブ',
-      onclick: async () => {
-        await put('exercise', { ...exercise, archived: true });
-        await reloadExercises();
-        setStatus('種目をアーカイブしました');
-      },
+    item.append(iconButton('archive', 'アーカイブ', async () => {
+      await put('exercise', { ...exercise, archived: true });
+      await reloadExercises();
+      setStatus('種目をアーカイブしました');
     }));
     return item;
   }));
