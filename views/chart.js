@@ -83,18 +83,21 @@ function chartOptions(unit, kind) {
   };
 }
 
-function buildSection(title, selectLabel) {
-  const select = el('select', { class: 'chart-select' });
+function buildSection(title, selectLabels) {
+  const selects = selectLabels.map((label) => {
+    const select = el('select', { class: 'chart-select' });
+    return { label, select };
+  });
   const canvas = el('canvas', {});
   const box = el('div', { class: 'chart-box' }, canvas);
   const message = el('p', { class: 'chart-empty' });
   const section = el('section', { class: 'chart-card' },
     el('h2', { text: title }),
-    el('label', {}, selectLabel, select),
+    ...selects.map(({ label, select }) => el('label', {}, label, select)),
     message,
     box,
   );
-  return { section, select, canvas, box, message };
+  return { section, selects: selects.map((item) => item.select), canvas, box, message };
 }
 
 async function mount(container) {
@@ -113,14 +116,15 @@ async function mount(container) {
 
   const rangeSelect = el('select', { 'aria-label': '期間' },
     ...RANGES.map((range) => option(range.value, range.label)));
-  const rm = buildSection('推定1RM の推移', '種目');
-  const volume = buildSection('ボリュームの推移', '種目');
-  const metric = buildSection('指標の推移', '指標');
+  const series = buildSection('種目の推移', ['種目', '表示']);
+  const [exerciseSelect, modeSelect] = series.selects;
+  modeSelect.replaceChildren(option('rm', '推定1RM'), option('volume', 'ボリューム'));
+  const metric = buildSection('指標の推移', ['指標']);
+  const [metricSelect] = metric.selects;
 
   container.append(
     el('section', { class: 'chart-card' }, el('h2', { text: 'グラフ' }), el('label', {}, '期間', rangeSelect)),
-    rm.section,
-    volume.section,
+    series.section,
     metric.section,
   );
 
@@ -128,26 +132,23 @@ async function mount(container) {
     option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
 
   // アーカイブ済みの種目も過去の記録を見るために残す
-  rm.select.replaceChildren(...exerciseOptions());
-  volume.select.replaceChildren(...exerciseOptions());
-  metric.select.replaceChildren(...metricDefs.map((def) => option(def.id, def.name)));
+  exerciseSelect.replaceChildren(...exerciseOptions());
+  metricSelect.replaceChildren(...metricDefs.map((def) => option(def.id, def.name)));
 
   if (exercises.length === 0) {
-    rm.select.disabled = true;
-    volume.select.disabled = true;
-    rm.message.textContent = '種目がありません';
-    volume.message.textContent = '種目がありません';
+    exerciseSelect.disabled = true;
+    series.message.textContent = '種目がありません';
   }
   if (metricDefs.length === 0) {
-    metric.select.disabled = true;
-    metric.select.parentElement.hidden = true;
+    metricSelect.disabled = true;
+    metricSelect.parentElement.hidden = true;
     metric.message.textContent = '指標がありません';
   }
 
   // ライブラリが読めない（オフラインなど）ときは描画せずメッセージを出す
   const Chart = window.Chart;
   if (typeof Chart !== 'function') {
-    for (const part of [rm, volume, metric]) {
+    for (const part of [series, metric]) {
       part.message.textContent = 'グラフを描画できませんでした';
       part.box.hidden = true;
     }
@@ -168,12 +169,18 @@ async function mount(container) {
     const { colors, options } = chartOptions(unit, kind);
     part.message.textContent = '';
     part.box.hidden = false;
+    // 折れ線と棒を切り替えるときは chart を作り直す
+    if (part.chart && part.kind !== kind) {
+      part.chart.destroy();
+      part.chart = null;
+    }
     if (!part.chart) {
       part.chart = new Chart(part.canvas, {
         type: kind,
         data: { labels: [], datasets: [{ data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0.25 }] },
         options,
       });
+      part.kind = kind;
     }
     const dataset = part.chart.data.datasets[0];
     dataset.data = points.map((point) => point.value);
@@ -199,26 +206,27 @@ async function mount(container) {
     const inRange = (date) => !from || date >= from;
 
     if (exercises.length > 0) {
-      const best = new Map();
+      const mode = modeSelect.value;
+      const points = new Map();
       for (const set of sets) {
-        if (set.exerciseId !== rm.select.value || !inRange(set.date)) continue;
-        best.set(set.date, Math.max(best.get(set.date) ?? 0, estimate1RM(set.weight, set.reps)));
+        if (set.exerciseId !== exerciseSelect.value || !inRange(set.date)) continue;
+        const value = mode === 'rm'
+          ? Math.max(points.get(set.date) ?? 0, estimate1RM(set.weight, set.reps))
+          : (points.get(set.date) ?? 0) + set.weight * set.reps;
+        points.set(set.date, value);
       }
-      update(rm, toPoints(best), { unit: 'kg', kind: 'line', empty: '記録がありません' });
-
-      const total = new Map();
-      for (const set of sets) {
-        if (set.exerciseId !== volume.select.value || !inRange(set.date)) continue;
-        total.set(set.date, (total.get(set.date) ?? 0) + set.weight * set.reps);
-      }
-      update(volume, toPoints(total), { unit: 'kg', kind: 'bar', empty: '記録がありません' });
+      update(series, toPoints(points), {
+        unit: 'kg',
+        kind: mode === 'rm' ? 'line' : 'bar',
+        empty: '記録がありません',
+      });
     }
 
     if (metricDefs.length > 0) {
-      const def = metricDefs.find((item) => item.id === metric.select.value);
+      const def = metricDefs.find((item) => item.id === metricSelect.value);
       const latest = new Map();
       for (const log of logs) {
-        if (log.metricDefId !== metric.select.value || !inRange(log.date)) continue;
+        if (log.metricDefId !== metricSelect.value || !inRange(log.date)) continue;
         latest.set(log.date, log.value);
       }
       update(metric, toPoints(latest), {
@@ -229,7 +237,7 @@ async function mount(container) {
     }
   }
 
-  for (const select of [rangeSelect, rm.select, volume.select, metric.select]) {
+  for (const select of [rangeSelect, exerciseSelect, modeSelect, metricSelect]) {
     select.addEventListener('change', render);
   }
 
