@@ -1,5 +1,5 @@
 import { getAll } from '../db.js';
-import { el, option, rmText, rmValue, todayString, bestSet } from '../ui.js';
+import { el, option, rmText, rmValue, todayString, bestSet, volumeOf } from '../ui.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -129,10 +129,9 @@ function buildDetail() {
     return section;
   }
 
-  const volume = Math.round(sets.reduce((sum, set) => sum + set.weight * set.reps, 0));
   section.append(el('p', { class: 'hist-summary' },
     el('span', { text: `合計 ${sets.length} セット` }),
-    el('span', { text: `ボリューム ${volume} kg` }),
+    el('span', { text: `ボリューム ${volumeOf(sets)} kg` }),
   ));
 
   for (const group of groupSets(sets)) {

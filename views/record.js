@@ -1,5 +1,5 @@
 import { getAll, put, remove } from '../db.js';
-import { byId, el, option, setStatus, todayString, rmText, rmValue, bestSet } from '../ui.js';
+import { byId, el, option, setStatus, todayString, rmText, rmValue, bestSet, volumeOf } from '../ui.js';
 
 export const view = { id: 'record', label: '記録', mount };
 
@@ -49,7 +49,7 @@ function groupSets(sets, exercises) {
 
 function groupTitle(group) {
   const part = group.bodyPart ? `（${group.bodyPart}）` : '';
-  return `${group.name}${part} ベスト ${rmText(bestSet(group.sets))}`;
+  return `${group.name}${part} ベスト ${rmText(bestSet(group.sets))}・ボリューム ${volumeOf(group.sets)} kg`;
 }
 
 // 部位はこの順で並べる。自由入力の部位は後ろ
@@ -106,7 +106,9 @@ async function renderSets() {
   const date = byId('list-date').value;
   const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
 
-  byId('set-count').textContent = `合計 ${sets.length} セット`;
+  byId('set-count').textContent = sets.length
+    ? `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg`
+    : '合計 0 セット';
   byId('set-list').replaceChildren(
     ...groupSets(sets, exercises).map((group) => buildGroup(group)),
   );
@@ -127,7 +129,7 @@ function buildExportCard(date, groups) {
     total += group.sets.length;
   }
 
-  card.append(el('p', { text: `合計 ${total} セット` }));
+  card.append(el('p', { text: `合計 ${total} セット・ボリューム ${volumeOf(groups.flatMap((group) => group.sets))} kg` }));
   return card;
 }
 
