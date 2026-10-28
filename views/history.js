@@ -10,6 +10,7 @@ const state = {
   month: 0,
   selected: '',
   exerciseId: '',
+  part: '',
   mode: 'calendar',
   sets: [],
   exercises: [],
@@ -34,6 +35,7 @@ const CSS = `
 .hist-day.selected .hist-dot { background: var(--accent-fg); }
 .hist-summary { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin: 0 0 0.75rem; font-size: 0.875rem; opacity: 0.85; }
 .hist-detail .group + .group { margin-top: 1rem; }
+.hist-detail .group h4 { margin: 0.5rem 0 0.25rem; font-size: 0.9rem; }
 .hist-empty { margin: 0; opacity: 0.7; }
 `;
 
@@ -48,6 +50,8 @@ let yearSelect;
 let grid;
 let filter;
 let filterLabel;
+let partLabel;
+let partSelect;
 let navRow;
 let modeSelect;
 let detailSection;
@@ -183,6 +187,43 @@ function buildExerciseHistory() {
   return section;
 }
 
+// 選んだ部位のセットを日付の新しい順に、日ごとに種目でまとめる
+function buildPartHistory() {
+  const parts = new Map(state.exercises.map((exercise) => [exercise.id, exercise.bodyPart]));
+  const sets = state.sets
+    .filter((set) => !state.part || parts.get(set.exerciseId) === state.part)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const section = el('section', { class: 'hist-detail' },
+    el('h2', { text: state.part ? `${state.part} の履歴` : 'すべての部位の履歴' }));
+  if (sets.length === 0) {
+    section.append(el('p', { class: 'hist-empty', text: '記録なし' }));
+    return section;
+  }
+
+  const byDate = new Map();
+  for (const set of sets) {
+    if (!byDate.has(set.date)) byDate.set(set.date, []);
+    byDate.get(set.date).push(set);
+  }
+
+  section.append(el('p', { class: 'hist-summary' },
+    el('span', { text: `記録 ${byDate.size} 日・合計 ${sets.length} セット` }),
+    el('span', { text: `ボリューム ${volumeOf(sets)} kg` }),
+  ));
+
+  for (const [date, list] of byDate) {
+    section.append(el('div', { class: 'group' },
+      el('h3', { text: `${formatDate(date)} 合計 ${list.length} セット・ボリューム ${volumeOf(list)} kg` }),
+      ...groupSets(list, state.exercises).map((group) => el('div', {},
+        el('h4', { text: groupTitle(group) }),
+        setTable(group.sets),
+      )),
+    ));
+  }
+  return section;
+}
+
 function render() {
   monthLabel.textContent = `${state.month + 1}月`;
   // 記録のある年を下限に、今年まで選べるようにする（記録が無い年も見られるように5年分は出す）
@@ -197,12 +238,16 @@ function render() {
     state.exerciseId = state.exercises.find((exercise) => !exercise.archived)?.id ?? '';
   }
   filter.value = state.exerciseId;
+  partSelect.value = state.part;
   modeSelect.value = state.mode;
   navRow.hidden = state.mode !== 'calendar';
   grid.hidden = state.mode !== 'calendar';
-  filterLabel.hidden = state.mode === 'calendar' && state.exercises.length === 0;
+  filterLabel.hidden = state.mode === 'part' || (state.mode === 'calendar' && state.exercises.length === 0);
+  partLabel.hidden = state.mode !== 'part';
   buildCalendar();
-  const next = state.mode === 'exercise' ? buildExerciseHistory() : buildDetail();
+  let next = buildDetail();
+  if (state.mode === 'exercise') next = buildExerciseHistory();
+  if (state.mode === 'part') next = buildPartHistory();
   detailSection.replaceWith(next);
   detailSection = next;
 }
@@ -243,7 +288,8 @@ async function mount(container) {
     month: month - 1,
     selected: today,
     exerciseId: params.get('exercise') ?? '',
-    mode: params.has('exercise') ? 'exercise' : 'calendar',
+    part: params.get('part') ?? '',
+    mode: params.has('exercise') ? 'exercise' : params.has('part') ? 'part' : 'calendar',
     sets: [],
     exercises: [],
   });
@@ -269,7 +315,7 @@ async function mount(container) {
       state.mode = event.target.value;
       render();
     },
-  }, option('calendar', 'カレンダー'), option('exercise', '種目ごと'));
+  }, option('calendar', 'カレンダー'), option('exercise', '種目ごと'), option('part', '部位ごと'));
   filter = el('select', {
     onchange: (event) => {
       state.exerciseId = event.target.value;
@@ -279,6 +325,15 @@ async function mount(container) {
     .filter((exercise) => !exercise.archived)
     .map((exercise) => option(exercise.id, exercise.name)));
 
+  const parts = [...new Set(state.exercises.map((exercise) => exercise.bodyPart).filter(Boolean))];
+  partSelect = el('select', {
+    'aria-label': '部位',
+    onchange: (event) => {
+      state.part = event.target.value;
+      render();
+    },
+  }, option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
+
   navRow = el('div', { class: 'hist-nav' },
     iconButton('left', '前月', () => changeMonth(-1)),
     navLabel,
@@ -286,6 +341,7 @@ async function mount(container) {
     iconButton('calendar', '今日', goToday),
   );
   filterLabel = el('label', { class: 'hist-filter' }, '種目', filter);
+  partLabel = el('label', { class: 'hist-filter' }, '部位', partSelect);
 
   container.append(
     el('section', {},
@@ -295,6 +351,7 @@ async function mount(container) {
       ),
       navRow,
       filterLabel,
+      partLabel,
       grid,
     ),
   );
