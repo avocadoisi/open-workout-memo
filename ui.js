@@ -50,6 +50,11 @@ export function rmText(set) {
   return `1RM ${rmValue(set)}`;
 }
 
+// 総ボリューム（重量 × 回数の合計）
+export function volumeOf(sets) {
+  return Math.round(sets.reduce((sum, set) => sum + set.weight * set.reps, 0));
+}
+
 export function bestSet(sets) {
   return sets.reduce((best, set) =>
     estimate1RM(set.weight, set.reps) > estimate1RM(best.weight, best.reps) ? set : best,

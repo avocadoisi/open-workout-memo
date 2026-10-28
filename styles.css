@@ -179,9 +179,9 @@ nav .tab.active {
 
 .set-main {
   display: grid;
-  grid-template-columns: 2.75rem 0.75rem 1.5rem 1fr;
+  grid-template-columns: 2.75rem 0.75rem 1.5rem 5rem;
   align-items: baseline;
-  gap: 0.25rem;
+  gap: 0.25rem 0.4rem;
 }
 
 /* 数字の桁を揃えたいので、重量・回数・1RM は表の列に並べる */
@@ -197,7 +197,7 @@ nav .tab.active {
 
 .set-head {
   display: grid;
-  grid-template-columns: 2.75rem 0.75rem 1.5rem 1fr;
+  grid-template-columns: 2.75rem 0.75rem 1.5rem 5rem;
   gap: 0.25rem;
   margin-bottom: 0.15rem;
   padding-bottom: 0.15rem;
