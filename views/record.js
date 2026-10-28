@@ -16,6 +16,7 @@ function buildForm() {
     el('h2', { text: 'セットを記録' }),
     el('form', { id: 'set-form' },
       el('label', {}, '日付', el('input', { type: 'date', id: 'set-date', required: '' })),
+      el('label', {}, '部位', el('select', { id: 'set-part' })),
       el('label', {}, '種目', el('select', { id: 'set-exercise', required: '' })),
       el('label', {}, '重量 (kg)',
         el('input', { type: 'number', id: 'set-weight', min: '0', step: '0.5', inputmode: 'decimal', required: '' })),
@@ -127,21 +128,35 @@ function buildExportCard(date, groups) {
   return card;
 }
 
+function fillPartOptions() {
+  const parts = [...new Set(exercises.filter((e) => !e.archived).map((e) => e.bodyPart).filter(Boolean))];
+  const select = byId('set-part');
+  const previous = select.value;
+  select.replaceChildren(option('', 'すべて'), ...parts.map((part) => option(part, part)));
+  if (parts.includes(previous)) select.value = previous;
+}
+
+function fillExerciseOptions(exerciseId) {
+  const part = byId('set-part').value;
+  const previous = exerciseId ?? byId('set-exercise').value;
+  const list = exercises.filter((e) => !e.archived && (!part || e.bodyPart === part));
+  byId('set-exercise').replaceChildren(...list.map((exercise) => option(exercise.id, exercise.name)));
+  if (list.some((exercise) => exercise.id === previous)) byId('set-exercise').value = previous;
+}
+
 async function reloadExercises() {
   exercises = await getAll('exercise');
   exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
-  byId('set-exercise').replaceChildren(
-    ...exercises
-      .filter((exercise) => !exercise.archived)
-      .map((exercise) => option(exercise.id, exercise.name)),
-  );
+  fillPartOptions();
+  fillExerciseOptions();
 }
 
 async function startEditing(set) {
   editingId = set.id;
   byId('set-date').value = set.date;
   await renderSets();
-  byId('set-exercise').value = set.exerciseId;
+  byId('set-part').value = exercises.find((e) => e.id === set.exerciseId)?.bodyPart ?? '';
+  fillExerciseOptions(set.exerciseId);
   byId('set-weight').value = String(set.weight);
   byId('set-reps').value = String(set.reps);
   byId('set-memo').value = set.memo ?? '';
@@ -200,6 +215,7 @@ function wireEvents() {
   });
 
   byId('set-date').addEventListener('change', renderSets);
+  byId('set-part').addEventListener('change', () => fillExerciseOptions());
 
   byId('image-btn').addEventListener('click', async () => {
     const date = byId('set-date').value;
