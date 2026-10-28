@@ -196,6 +196,8 @@ async function mount(container) {
       dataset.backgroundColor = withAlpha(colors.line, 0.12);
       dataset.fill = true;
       dataset.pointBackgroundColor = colors.line;
+      // 点が多いと線が潰れるので、60点を超えたら点はホバー/タップ時だけ出す
+      dataset.pointRadius = points.length > 60 ? 0 : 3;
     }
     part.chart.data.labels = points.map((point) => dateLabel(point.date));
     part.chart.update();
