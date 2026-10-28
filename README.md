@@ -2,6 +2,9 @@
 
 筋トレと体重の記録を、サーバーなしで完結させる個人用アプリ。
 
+**https://avocadoisi.github.io/open-workout-memo/**
+（公開は手動。`gh workflow run deploy.yml` を叩いたときだけビルドが走る）
+
 ## コンセプト
 
 「記録したいときに開いて、書いて、閉じる」。アカウントもサーバーも同期もなし。
