@@ -178,10 +178,34 @@ nav .tab.active {
 }
 
 .set-main {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.75rem;
+  display: grid;
+  grid-template-columns: 2.75rem 0.75rem 1.5rem 1fr;
   align-items: baseline;
+  gap: 0.25rem;
+}
+
+/* 数字の桁を揃えたいので、重量・回数・1RM は表の列に並べる */
+.set-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.set-times {
+  text-align: center;
+  color: var(--fg-soft);
+}
+
+.set-head {
+  display: grid;
+  grid-template-columns: 2.75rem 0.75rem 1.5rem 1fr;
+  gap: 0.25rem;
+  margin-bottom: 0.15rem;
+  padding-bottom: 0.15rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-soft);
+  font-size: 0.75rem;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .set-rm {

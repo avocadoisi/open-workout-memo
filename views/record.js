@@ -1,5 +1,5 @@
 import { getAll, put, remove } from '../db.js';
-import { byId, el, option, setStatus, todayString, rmText, bestSet } from '../ui.js';
+import { byId, el, option, setStatus, todayString, rmText, rmValue, bestSet } from '../ui.js';
 
 export const view = { id: 'record', label: '記録', mount };
 
@@ -49,10 +49,19 @@ function buildGroup(name, sets) {
   // id はランダムなので、表示順は重量と回数で決める
   sets.sort((a, b) => a.weight - b.weight || a.reps - b.reps);
 
+  group.append(el('div', { class: 'set-head' },
+    el('span', { text: '重量' }),
+    el('span', {}),
+    el('span', { text: '回数' }),
+    el('span', { text: '1RM' }),
+  ));
+
   for (const set of sets) {
     const main = el('span', { class: 'set-main' },
-      el('span', { text: `${set.weight} kg × ${set.reps} 回` }),
-      el('span', { class: 'set-rm', text: rmText(set) }),
+      el('span', { class: 'set-num', text: String(set.weight) }),
+      el('span', { class: 'set-times', text: '×' }),
+      el('span', { class: 'set-num', text: String(set.reps) }),
+      el('span', { class: 'set-rm', text: rmValue(set) }),
     );
     const row = el('div', { class: 'set-row' }, main);
 
