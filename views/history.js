@@ -1,9 +1,8 @@
 import { getAll } from '../db.js';
-import { bestSet, el, groupSets, groupTitle, iconButton, option, rmText, rmValue, todayString, volumeOf } from '../ui.js';
+import { el, iconButton, option, setTable } from '../dom.js';
+import { WEEKDAYS, bestSet, formatDate, groupSets, groupTitle, rmText, todayString, volumeOf } from '../training.js';
 
 export const view = { id: 'history', label: '履歴', mount };
-
-const WEEKDAYS = ['月', '火', '水', '木', '金', '土', '日'];
 
 const state = {
   year: 0,
@@ -76,12 +75,6 @@ function daySets() {
   return state.sets.filter((set) => set.date === state.selected && matchesFilter(set));
 }
 
-function formatDate(key) {
-  const [year, month, day] = key.split('-').map(Number);
-  const weekday = WEEKDAYS[(new Date(year, month - 1, day).getDay() + 6) % 7];
-  return `${year}年${month}月${day}日(${weekday})`;
-}
-
 function buildCalendar() {
   const marked = new Set(monthSets().map((set) => set.date));
   const today = todayString();
@@ -132,26 +125,6 @@ function buildDetail() {
     ));
   }
   return section;
-}
-
-function setTable(sets) {
-  return el('div', {},
-    el('div', { class: 'set-head' },
-      el('span', { text: '重量' }),
-      el('span', {}),
-      el('span', { text: '回数' }),
-      el('span', { text: '1RM' }),
-    ),
-    ...sets.map((set) => el('div', { class: 'set-row' },
-      el('div', { class: 'set-main' },
-        el('span', { class: 'set-num', text: String(set.weight) }),
-        el('span', { class: 'set-times', text: '×' }),
-        el('span', { class: 'set-num', text: String(set.reps) }),
-        el('span', { class: 'set-rm', text: rmValue(set) }),
-      ),
-      ...(set.memo ? [el('small', { text: set.memo })] : []),
-    )),
-  );
 }
 
 // 選んだ種目のセットを日付の新しい順にまとめる

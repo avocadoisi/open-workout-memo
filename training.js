@@ -1,43 +1,6 @@
-import { icon } from './icons.js';
+// トレーニングの計算と表示用の書式。DOM には触らない
 
-export const byId = (id) => document.getElementById(id);
-
-// textContent / setAttribute だけで組み立てる（innerHTML は使わない）
-export function el(tag, props = {}, ...children) {
-  const node = document.createElement(tag);
-  for (const [key, value] of Object.entries(props)) {
-    if (key === 'text') node.textContent = value;
-    else if (key === 'class') node.className = value;
-    else if (key.startsWith('on')) node.addEventListener(key.slice(2).toLowerCase(), value);
-    else node.setAttribute(key, value);
-  }
-  node.append(...children);
-  return node;
-}
-
-// 文字ではなくアイコンだけのボタン。読み上げ用に label は残す
-export function iconButton(name, label, onClick) {
-  return el('button', {
-    type: 'button',
-    class: 'icon-btn',
-    'aria-label': label,
-    title: label,
-    onclick: onClick,
-  }, icon(name));
-}
-
-let statusTimer;
-
-export function setStatus(message, isError = false) {
-  const status = byId('status');
-  status.textContent = message;
-  status.classList.toggle('error', isError);
-  clearTimeout(statusTimer);
-  statusTimer = setTimeout(() => {
-    status.textContent = '';
-    status.classList.remove('error');
-  }, 5000);
-}
+export const WEEKDAYS = ['月', '火', '水', '木', '金', '土', '日'];
 
 export function todayString() {
   const now = new Date();
@@ -46,10 +9,18 @@ export function todayString() {
   return `${now.getFullYear()}-${month}-${day}`;
 }
 
+// 'YYYY-MM-DD' → 2026年10月30日(金)
+export function formatDate(key) {
+  const [year, month, day] = key.split('-').map(Number);
+  const weekday = WEEKDAYS[(new Date(year, month - 1, day).getDay() + 6) % 7];
+  return `${year}年${month}月${day}日(${weekday})`;
+}
+
 export function unitLabel(unit) {
   return unit === 'length' ? 'cm' : 'kg';
 }
 
+// Brzycki 式
 export function estimate1RM(weight, reps) {
   return Math.round(((weight * 36) / (37 + reps)) * 10) / 10;
 }
@@ -104,8 +75,4 @@ export function bestSet(sets) {
   return sets.reduce((best, set) =>
     estimate1RM(set.weight, set.reps) > estimate1RM(best.weight, best.reps) ? set : best,
   );
-}
-
-export function option(value, label) {
-  return el('option', { value, text: label });
 }

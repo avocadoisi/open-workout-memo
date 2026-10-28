@@ -1,5 +1,6 @@
 import { getAll, put, exportAll, mergeAll, replaceAll } from '../db.js';
-import { byId, el, iconButton, option, setStatus, todayString, unitLabel } from '../ui.js';
+import { byId, el, iconButton, option, setStatus } from '../dom.js';
+import { todayString, unitLabel } from '../training.js';
 import { icon } from '../icons.js';
 
 export const view = { id: 'data', label: 'データ', mount };
@@ -184,7 +185,7 @@ function wireEvents() {
 
   byId('export-btn').addEventListener('click', async () => {
     const data = await exportAll();
-    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
     const link = el('a', { href: url, download: `open-workout-memo-${todayString()}.json` });
     document.body.append(link);
     link.click();

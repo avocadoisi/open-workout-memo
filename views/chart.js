@@ -1,5 +1,6 @@
 import { getAll } from '../db.js';
-import { el, option, estimate1RM } from '../ui.js';
+import { el, option } from '../dom.js';
+import { estimate1RM } from '../training.js';
 
 export const view = { id: 'chart', label: 'グラフ', mount };
 
