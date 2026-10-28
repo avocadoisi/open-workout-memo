@@ -1,0 +1,768 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-10-28T13:12:33.963Z",
+  "exercises": [
+    {
+      "id": "ex-squat",
+      "name": "スクワット",
+      "bodyPart": "脚",
+      "archived": false
+    },
+    {
+      "id": "ex-bench",
+      "name": "ベンチプレス",
+      "bodyPart": "胸",
+      "archived": false
+    },
+    {
+      "id": "ex-dead",
+      "name": "デッドリフト",
+      "bodyPart": "背中",
+      "archived": false
+    },
+    {
+      "id": "ex-front",
+      "name": "フロントスクワット",
+      "bodyPart": "脚",
+      "archived": true
+    }
+  ],
+  "workoutSets": [
+    {
+      "id": "set-001",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-002",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-003",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 100,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-004",
+      "date": "2026-09-22",
+      "exerciseId": "ex-bench",
+      "weight": 100,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-005",
+      "date": "2026-09-22",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-006",
+      "date": "2026-09-22",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-007",
+      "date": "2026-09-22",
+      "exerciseId": "ex-squat",
+      "weight": 110,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-008",
+      "date": "2026-09-22",
+      "exerciseId": "ex-squat",
+      "weight": 110,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-009",
+      "date": "2026-09-25",
+      "exerciseId": "ex-dead",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-010",
+      "date": "2026-09-25",
+      "exerciseId": "ex-dead",
+      "weight": 100,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-011",
+      "date": "2026-09-25",
+      "exerciseId": "ex-dead",
+      "weight": 130,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-012",
+      "date": "2026-09-25",
+      "exerciseId": "ex-dead",
+      "weight": 140,
+      "reps": 1,
+      "memo": "自己ベスト"
+    },
+    {
+      "id": "set-013",
+      "date": "2026-09-28",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-014",
+      "date": "2026-09-28",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-015",
+      "date": "2026-09-28",
+      "exerciseId": "ex-bench",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-016",
+      "date": "2026-09-28",
+      "exerciseId": "ex-bench",
+      "weight": 102.5,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-017",
+      "date": "2026-09-28",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-018",
+      "date": "2026-09-28",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-019",
+      "date": "2026-09-28",
+      "exerciseId": "ex-squat",
+      "weight": 115,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-020",
+      "date": "2026-09-28",
+      "exerciseId": "ex-squat",
+      "weight": 115,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-021",
+      "date": "2026-10-01",
+      "exerciseId": "ex-dead",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-022",
+      "date": "2026-10-01",
+      "exerciseId": "ex-dead",
+      "weight": 100,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-023",
+      "date": "2026-10-01",
+      "exerciseId": "ex-dead",
+      "weight": 135,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-024",
+      "date": "2026-10-01",
+      "exerciseId": "ex-dead",
+      "weight": 145,
+      "reps": 1,
+      "memo": "自己ベスト"
+    },
+    {
+      "id": "set-025",
+      "date": "2026-10-04",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-026",
+      "date": "2026-10-04",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-027",
+      "date": "2026-10-04",
+      "exerciseId": "ex-bench",
+      "weight": 105,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-028",
+      "date": "2026-10-04",
+      "exerciseId": "ex-bench",
+      "weight": 105,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-029",
+      "date": "2026-10-04",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-030",
+      "date": "2026-10-04",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-031",
+      "date": "2026-10-04",
+      "exerciseId": "ex-squat",
+      "weight": 120,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-032",
+      "date": "2026-10-04",
+      "exerciseId": "ex-squat",
+      "weight": 120,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-033",
+      "date": "2026-10-07",
+      "exerciseId": "ex-dead",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-034",
+      "date": "2026-10-07",
+      "exerciseId": "ex-dead",
+      "weight": 100,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-035",
+      "date": "2026-10-07",
+      "exerciseId": "ex-dead",
+      "weight": 140,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-036",
+      "date": "2026-10-07",
+      "exerciseId": "ex-dead",
+      "weight": 150,
+      "reps": 1,
+      "memo": "自己ベスト"
+    },
+    {
+      "id": "set-037",
+      "date": "2026-10-07",
+      "exerciseId": "ex-squat",
+      "weight": 80,
+      "reps": 12,
+      "memo": "高回数セット（1RM は参考値）"
+    },
+    {
+      "id": "set-038",
+      "date": "2026-10-10",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-039",
+      "date": "2026-10-10",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-040",
+      "date": "2026-10-10",
+      "exerciseId": "ex-bench",
+      "weight": 107.5,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-041",
+      "date": "2026-10-10",
+      "exerciseId": "ex-bench",
+      "weight": 107.5,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-042",
+      "date": "2026-10-10",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-043",
+      "date": "2026-10-10",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-044",
+      "date": "2026-10-10",
+      "exerciseId": "ex-squat",
+      "weight": 125,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-045",
+      "date": "2026-10-10",
+      "exerciseId": "ex-squat",
+      "weight": 125,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-046",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-047",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 100,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-048",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 145,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-049",
+      "date": "2026-10-13",
+      "exerciseId": "ex-dead",
+      "weight": 155,
+      "reps": 1,
+      "memo": "自己ベスト"
+    },
+    {
+      "id": "set-050",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-051",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-052",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 110,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-053",
+      "date": "2026-10-16",
+      "exerciseId": "ex-bench",
+      "weight": 110,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-054",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-055",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-056",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 130,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-057",
+      "date": "2026-10-16",
+      "exerciseId": "ex-squat",
+      "weight": 130,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-058",
+      "date": "2026-10-19",
+      "exerciseId": "ex-dead",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-059",
+      "date": "2026-10-19",
+      "exerciseId": "ex-dead",
+      "weight": 100,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-060",
+      "date": "2026-10-19",
+      "exerciseId": "ex-dead",
+      "weight": 150,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-061",
+      "date": "2026-10-19",
+      "exerciseId": "ex-dead",
+      "weight": 160,
+      "reps": 1,
+      "memo": "自己ベスト"
+    },
+    {
+      "id": "set-062",
+      "date": "2026-10-19",
+      "exerciseId": "ex-front",
+      "weight": 60,
+      "reps": 8,
+      "memo": "アーカイブ済み種目の記録"
+    },
+    {
+      "id": "set-063",
+      "date": "2026-10-22",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-064",
+      "date": "2026-10-22",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-065",
+      "date": "2026-10-22",
+      "exerciseId": "ex-bench",
+      "weight": 112.5,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-066",
+      "date": "2026-10-22",
+      "exerciseId": "ex-bench",
+      "weight": 112.5,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-067",
+      "date": "2026-10-22",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-068",
+      "date": "2026-10-22",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-069",
+      "date": "2026-10-22",
+      "exerciseId": "ex-squat",
+      "weight": 135,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-070",
+      "date": "2026-10-22",
+      "exerciseId": "ex-squat",
+      "weight": 135,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-071",
+      "date": "2026-10-25",
+      "exerciseId": "ex-dead",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-072",
+      "date": "2026-10-25",
+      "exerciseId": "ex-dead",
+      "weight": 100,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-073",
+      "date": "2026-10-25",
+      "exerciseId": "ex-dead",
+      "weight": 155,
+      "reps": 3,
+      "memo": ""
+    },
+    {
+      "id": "set-074",
+      "date": "2026-10-25",
+      "exerciseId": "ex-dead",
+      "weight": 165,
+      "reps": 1,
+      "memo": "自己ベスト"
+    },
+    {
+      "id": "set-075",
+      "date": "2026-10-28",
+      "exerciseId": "ex-bench",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-076",
+      "date": "2026-10-28",
+      "exerciseId": "ex-bench",
+      "weight": 80,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-077",
+      "date": "2026-10-28",
+      "exerciseId": "ex-bench",
+      "weight": 115,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-078",
+      "date": "2026-10-28",
+      "exerciseId": "ex-bench",
+      "weight": 115,
+      "reps": 5,
+      "memo": "体が重い"
+    },
+    {
+      "id": "set-079",
+      "date": "2026-10-28",
+      "exerciseId": "ex-squat",
+      "weight": 60,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-080",
+      "date": "2026-10-28",
+      "exerciseId": "ex-squat",
+      "weight": 90,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-081",
+      "date": "2026-10-28",
+      "exerciseId": "ex-squat",
+      "weight": 140,
+      "reps": 5,
+      "memo": ""
+    },
+    {
+      "id": "set-082",
+      "date": "2026-10-28",
+      "exerciseId": "ex-squat",
+      "weight": 140,
+      "reps": 3,
+      "memo": ""
+    }
+  ],
+  "metricDefs": [
+    {
+      "id": "metric-weight",
+      "name": "体重",
+      "unit": "weight"
+    },
+    {
+      "id": "metric-waist",
+      "name": "ウエスト",
+      "unit": "length"
+    }
+  ],
+  "metricLogs": [
+    {
+      "id": "ml-weight-0",
+      "date": "2026-09-22",
+      "metricDefId": "metric-weight",
+      "value": 74.8
+    },
+    {
+      "id": "ml-waist-0",
+      "date": "2026-09-22",
+      "metricDefId": "metric-waist",
+      "value": 82
+    },
+    {
+      "id": "ml-weight-2",
+      "date": "2026-09-28",
+      "metricDefId": "metric-weight",
+      "value": 74.5
+    },
+    {
+      "id": "ml-weight-4",
+      "date": "2026-10-04",
+      "metricDefId": "metric-weight",
+      "value": 74.9
+    },
+    {
+      "id": "ml-waist-4",
+      "date": "2026-10-04",
+      "metricDefId": "metric-waist",
+      "value": 81
+    },
+    {
+      "id": "ml-weight-6",
+      "date": "2026-10-10",
+      "metricDefId": "metric-weight",
+      "value": 74.2
+    },
+    {
+      "id": "ml-weight-8",
+      "date": "2026-10-16",
+      "metricDefId": "metric-weight",
+      "value": 73.9
+    },
+    {
+      "id": "ml-waist-8",
+      "date": "2026-10-16",
+      "metricDefId": "metric-waist",
+      "value": 80
+    },
+    {
+      "id": "ml-weight-10",
+      "date": "2026-10-22",
+      "metricDefId": "metric-weight",
+      "value": 74
+    },
+    {
+      "id": "ml-weight-12",
+      "date": "2026-10-28",
+      "metricDefId": "metric-weight",
+      "value": 73.6
+    },
+    {
+      "id": "ml-waist-12",
+      "date": "2026-10-28",
+      "metricDefId": "metric-waist",
+      "value": 79
+    }
+  ]
+}
