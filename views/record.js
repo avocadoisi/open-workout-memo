@@ -1,6 +1,6 @@
 import { getAll, put, remove } from '../db.js';
 import {
-  byId, el, groupSets, groupTitle, option, partSummary, rmText, rmValue, setStatus, todayString, volumeOf,
+  byId, el, groupSets, groupTitle, option, partSummary, rmValue, setStatus, todayString, volumeOf,
 } from '../ui.js';
 
 export const view = { id: 'record', label: '記録', mount };
@@ -102,10 +102,24 @@ function buildExportCard(date, groups) {
 
   let total = 0;
   for (const group of groups) {
-    const list = el('ul', {}, ...group.sets.map((set) =>
-      el('li', { text: `${set.weight} kg × ${set.reps} 回　${rmText(set)}${set.memo ? `　${set.memo}` : ''}` }),
-    ));
-    card.append(el('h3', { text: groupTitle(group) }), list);
+    const table = el('div', { class: 'export-table' },
+      el('div', { class: 'set-head' },
+        el('span', { text: '重量(kg)' }),
+        el('span', {}),
+        el('span', { text: '回数' }),
+        el('span', { text: '1RM' }),
+      ),
+      ...group.sets.map((set) => el('div', { class: 'export-row' },
+        el('div', { class: 'set-main' },
+          el('span', { class: 'set-num', text: String(set.weight) }),
+          el('span', { class: 'set-times', text: '×' }),
+          el('span', { class: 'set-num', text: String(set.reps) }),
+          el('span', { class: 'set-rm', text: rmValue(set) }),
+        ),
+        ...(set.memo ? [el('small', { text: set.memo })] : []),
+      )),
+    );
+    card.append(el('h3', { text: groupTitle(group) }), table);
     total += group.sets.length;
   }
 
