@@ -1,5 +1,5 @@
 import { getAll } from '../db.js';
-import { el, option, rmText, rmValue, todayString, bestSet, volumeOf } from '../ui.js';
+import { el, groupSets, groupTitle, option, rmValue, todayString, volumeOf } from '../ui.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -30,10 +30,7 @@ const CSS = `
 .hist-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
 .hist-day.selected .hist-dot { background: var(--accent-fg); }
 .hist-summary { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin: 0 0 0.75rem; font-size: 0.875rem; opacity: 0.85; }
-.hist-group h3 { margin: 0.75rem 0 0.25rem; font-size: 0.9rem; }
-.hist-set { display: grid; gap: 0.1rem; padding: 0.25rem 0; border-top: 1px solid var(--border); min-width: 0; }
-.hist-table { margin-top: 0.25rem; }
-.hist-set small { opacity: 0.7; overflow-wrap: anywhere; }
+.hist-detail .group + .group { margin-top: 1rem; }
 .hist-empty { margin: 0; opacity: 0.7; }
 `;
 
@@ -67,22 +64,6 @@ function monthSets() {
 
 function daySets() {
   return state.sets.filter((set) => set.date === state.selected && matchesFilter(set));
-}
-
-function groupSets(sets) {
-  const names = new Map(state.exercises.map((exercise) => [exercise.id, exercise.name]));
-  const groups = new Map();
-  for (const set of sets) {
-    if (!groups.has(set.exerciseId)) groups.set(set.exerciseId, []);
-    groups.get(set.exerciseId).push(set);
-  }
-  return [...groups.entries()]
-    .map(([id, list]) => ({
-      name: names.get(id) ?? '不明な種目',
-      // id はランダムなので表示順は重量と回数で決める
-      sets: list.sort((a, b) => a.weight - b.weight || a.reps - b.reps),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 }
 
 function formatDate(key) {
@@ -122,7 +103,7 @@ function buildCalendar() {
 
 function buildDetail() {
   const sets = daySets();
-  const section = el('section', {}, el('h2', { text: `${formatDate(state.selected)} の記録` }));
+  const section = el('section', { class: 'hist-detail' }, el('h2', { text: `${formatDate(state.selected)} の記録` }));
 
   if (sets.length === 0) {
     section.append(el('p', { class: 'hist-empty', text: '記録なし' }));
@@ -130,30 +111,28 @@ function buildDetail() {
   }
 
   section.append(el('p', { class: 'hist-summary' },
-    el('span', { text: `合計 ${sets.length} セット` }),
-    el('span', { text: `ボリューム ${volumeOf(sets)} kg` }),
+    el('span', { text: `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg` }),
   ));
 
-  for (const group of groupSets(sets)) {
-    section.append(el('div', { class: 'hist-group' },
-      el('h3', { text: `${group.name} ベスト ${rmText(bestSet(group.sets))}` }),
-      el('div', { class: 'hist-table' },
-        el('div', { class: 'set-head' },
-          el('span', { text: '重量' }),
-          el('span', {}),
-          el('span', { text: '回数' }),
-          el('span', { text: '1RM' }),
-        ),
-        ...group.sets.map((set) => el('div', { class: 'hist-set' },
-          el('div', { class: 'set-main' },
-            el('span', { class: 'set-num', text: String(set.weight) }),
-            el('span', { class: 'set-times', text: '×' }),
-            el('span', { class: 'set-num', text: String(set.reps) }),
-            el('span', { class: 'set-rm', text: rmValue(set) }),
-          ),
-          ...(set.memo ? [el('small', { text: set.memo })] : []),
-        )),
+  // 記録画面と同じ構造にして見た目を揃える
+  for (const group of groupSets(sets, state.exercises)) {
+    section.append(el('div', { class: 'group' },
+      el('h3', { text: groupTitle(group) }),
+      el('div', { class: 'set-head' },
+        el('span', { text: '重量' }),
+        el('span', {}),
+        el('span', { text: '回数' }),
+        el('span', { text: '1RM' }),
       ),
+      ...group.sets.map((set) => el('div', { class: 'set-row' },
+        el('div', { class: 'set-main' },
+          el('span', { class: 'set-num', text: String(set.weight) }),
+          el('span', { class: 'set-times', text: '×' }),
+          el('span', { class: 'set-num', text: String(set.reps) }),
+          el('span', { class: 'set-rm', text: rmValue(set) }),
+        ),
+        ...(set.memo ? [el('small', { text: set.memo })] : []),
+      )),
     ));
   }
   return section;

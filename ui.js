@@ -55,6 +55,38 @@ export function volumeOf(sets) {
   return Math.round(sets.reduce((sum, set) => sum + set.weight * set.reps, 0));
 }
 
+// 部位はこの順で並べる。自由入力の部位は後ろ
+const PART_ORDER = ['腕', '肩', '背中', '胸', '脚'];
+
+export function groupSets(sets, exercises) {
+  const found = new Map(exercises.map((exercise) => [exercise.id, exercise]));
+  const groups = new Map();
+  for (const set of sets) {
+    if (!groups.has(set.exerciseId)) groups.set(set.exerciseId, []);
+    groups.get(set.exerciseId).push(set);
+  }
+  return [...groups.entries()]
+    .map(([id, list]) => ({
+      name: found.get(id)?.name ?? '不明な種目',
+      bodyPart: found.get(id)?.bodyPart ?? '',
+      // id はランダムなので表示順は重量と回数で決める
+      sets: list.sort((a, b) => a.weight - b.weight || a.reps - b.reps),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+}
+
+export function groupTitle(group) {
+  const part = group.bodyPart ? `（${group.bodyPart}）` : '';
+  return `${group.name}${part} ベスト ${rmText(bestSet(group.sets))}・ボリューム ${volumeOf(group.sets)} kg`;
+}
+
+export function partSummary(groups) {
+  const parts = [...new Set(groups.map((group) => group.bodyPart).filter(Boolean))];
+  return parts
+    .sort((a, b) => (PART_ORDER.indexOf(a) + 1 || 99) - (PART_ORDER.indexOf(b) + 1 || 99))
+    .join('・');
+}
+
 export function bestSet(sets) {
   return sets.reduce((best, set) =>
     estimate1RM(set.weight, set.reps) > estimate1RM(best.weight, best.reps) ? set : best,
