@@ -86,24 +86,10 @@ export async function seedIfEmpty() {
   await done(tx);
 }
 
-// 書き出しは小さく。空の memo と archived: false は省く（読み込み側は無くても動く）
-function trimRow(storeName, row) {
-  if (storeName === 'workoutSet' && !row.memo) {
-    const { memo, ...rest } = row;
-    return rest;
-  }
-  if (storeName === 'exercise' && !row.archived) {
-    const { archived, ...rest } = row;
-    return rest;
-  }
-  return row;
-}
-
 export async function exportAll() {
   const data = { schemaVersion: 1, exportedAt: new Date().toISOString() };
   for (const storeName of STORES) {
-    const rows = await getAll(storeName);
-    data[EXPORT_KEYS[storeName]] = rows.map((row) => trimRow(storeName, row));
+    data[EXPORT_KEYS[storeName]] = await getAll(storeName);
   }
   return data;
 }
