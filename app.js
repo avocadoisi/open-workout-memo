@@ -1,5 +1,6 @@
 import { seedIfEmpty } from './db.js';
 import { byId, el, setStatus } from './ui.js';
+import { icon } from './icons.js';
 import { view as recordView } from './views/record.js';
 import { view as historyView } from './views/history.js';
 import { view as chartView } from './views/chart.js';
@@ -31,7 +32,7 @@ async function mountHome(host) {
       frame,
       el('div', { class: 'tile-head' },
         el('span', { class: 'tile-title', text: view.label }),
-        el('span', { class: 'tile-open', text: 'ひらく ›' }),
+        el('span', { class: 'tile-open', 'aria-hidden': 'true' }, icon('right')),
       ),
     ));
   }
@@ -69,7 +70,12 @@ async function render() {
 async function init() {
   try {
     await seedIfEmpty();
-    byId('minimize').addEventListener('click', () => { location.hash = HOME; });
+    const minimize = byId('minimize');
+    minimize.classList.add('icon-btn');
+    minimize.setAttribute('aria-label', '最小化');
+    minimize.title = '最小化';
+    minimize.replaceChildren(icon('minimize'));
+    minimize.addEventListener('click', () => { location.hash = HOME; });
     window.addEventListener('hashchange', render);
     await render();
   } catch (error) {

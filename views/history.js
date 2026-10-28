@@ -1,5 +1,5 @@
 import { getAll } from '../db.js';
-import { el, groupSets, groupTitle, option, rmValue, todayString, volumeOf } from '../ui.js';
+import { el, groupSets, groupTitle, iconButton, option, rmValue, todayString, volumeOf } from '../ui.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -221,10 +221,10 @@ async function mount(container) {
   container.append(
     el('section', {},
       el('div', { class: 'hist-nav' },
-        el('button', { type: 'button', text: '‹ 前月', onclick: () => changeMonth(-1) }),
+        iconButton('left', '前月', () => changeMonth(-1)),
         navLabel,
-        el('button', { type: 'button', text: '翌月 ›', onclick: () => changeMonth(1) }),
-        el('button', { type: 'button', text: '今日', onclick: goToday }),
+        iconButton('right', '翌月', () => changeMonth(1)),
+        iconButton('calendar', '今日', goToday),
       ),
       el('label', { class: 'hist-filter' }, '種目', filter),
       grid,
