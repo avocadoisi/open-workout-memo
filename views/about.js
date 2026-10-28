@@ -14,7 +14,6 @@ const POINTS = [
 const CSS = `
 .about { display: grid; gap: 0.75rem; }
 .about p { margin: 0; }
-.about-lead { font-weight: 700; }
 .about ul { gap: 0.75rem; }
 .about li { display: grid; gap: 0.15rem; }
 .about-title { font-weight: 700; }
@@ -26,7 +25,6 @@ function mount(container) {
   style.textContent = CSS;
   container.append(style, el('section', { class: 'about' },
     el('h2', { text: '挙上log について' }),
-    el('p', { class: 'about-lead', text: '挙げた重さを、淡々と残すための記録帳。' }),
     el('p', { text: 'サーバーもログインも同期もなし。記録があるのは、開いているブラウザの中だけです。' }),
     el('ul', {}, ...POINTS.map(([title, body]) => el('li', {},
       el('span', { class: 'about-title', text: title }),
