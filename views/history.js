@@ -17,7 +17,8 @@ const state = {
 const CSS = `
 .hist-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
 .hist-nav button { padding: 0.4rem 0.6rem; font-size: 0.875rem; }
-.hist-month { flex: 1; text-align: center; font-weight: 700; }
+.hist-month { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.25rem; font-weight: 700; }
+.hist-year { width: auto; padding: 0.2rem 0.3rem; font-size: 0.875rem; font-weight: 700; }
 .hist-filter { margin-bottom: 0.75rem; }
 .hist-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
 .hist-wd { padding: 0.25rem 0; text-align: center; font-size: 0.75rem; opacity: 0.7; }
@@ -43,6 +44,8 @@ const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
 const monthPrefix = () => `${state.year}-${pad(state.month + 1)}`;
 
 let navLabel;
+let monthLabel;
+let yearSelect;
 let grid;
 let filter;
 let detailSection;
@@ -149,7 +152,15 @@ function buildDetail() {
 }
 
 function render() {
-  navLabel.textContent = `${state.year}年${state.month + 1}月`;
+  monthLabel.textContent = `${state.month + 1}月`;
+  // 記録のある年を下限に、今年まで選べるようにする（記録が無い年も見られるように5年分は出す）
+  const currentYear = new Date().getFullYear();
+  let earliest = currentYear - 4;
+  for (const set of state.sets) earliest = Math.min(earliest, Number(set.date.slice(0, 4)));
+  const years = [];
+  for (let year = earliest; year <= Math.max(currentYear, state.year); year += 1) years.push(year);
+  yearSelect.replaceChildren(...years.map((year) => option(String(year), `${year}年`)));
+  yearSelect.value = String(state.year);
   filter.value = state.exerciseId;
   buildCalendar();
   const next = buildDetail();
@@ -163,6 +174,13 @@ async function changeMonth(delta) {
   state.month = moved.getMonth();
   await load();
   // 月を移したら、その月が今日を含むなら今日、そうでなければ1日を選ぶ
+  const today = todayString();
+  state.selected = today.startsWith(monthPrefix()) ? today : dateKey(state.year, state.month, 1);
+  render();
+}
+
+async function changeYear(year) {
+  state.year = year;
   const today = todayString();
   state.selected = today.startsWith(monthPrefix()) ? today : dateKey(state.year, state.month, 1);
   render();
@@ -195,7 +213,14 @@ async function mount(container) {
 
   await load();
 
-  navLabel = el('span', { class: 'hist-month' });
+  navLabel = el('div', { class: 'hist-month' });
+  yearSelect = el('select', {
+    class: 'hist-year',
+    'aria-label': '年',
+    onchange: (event) => changeYear(Number(event.target.value)),
+  });
+  monthLabel = el('span', {});
+  navLabel.append(yearSelect, monthLabel);
   grid = el('div', { class: 'hist-cal' });
   filter = el('select', {
     onchange: (event) => {
