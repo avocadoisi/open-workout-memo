@@ -7,7 +7,14 @@ export const view = {
   mount,
 };
 
-const COLORS = { line: '#2b6cb0', grid: '#e2e8f0', axis: '#cbd5e0', text: '#4a5568' };
+// canvas は CSS 変数を使えないので、パレットの値を CSS から読む
+const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const palette = () => ({
+  line: cssVar('--gb-orange'),
+  grid: cssVar('--gb-bg2'),
+  axis: cssVar('--gb-bg3'),
+  text: cssVar('--gb-fg4'),
+});
 const PAD = { top: 14, right: 12, bottom: 26, left: 44 };
 const CHART_HEIGHT = 160;
 const TICKS = 4;
@@ -21,7 +28,7 @@ const CSS = `
 .chart-card { display: grid; gap: 0.5rem; }
 .chart-card h2 { margin: 0; }
 .chart-canvas { display: block; width: 100%; height: ${CHART_HEIGHT}px; }
-.chart-empty { margin: 0; color: #718096; font-size: 0.875rem; }
+.chart-empty { margin: 0; color: var(--fg-soft); font-size: 0.875rem; }
 `;
 
 const pad2 = (value) => String(value).padStart(2, '0');
@@ -111,10 +118,11 @@ function drawSeries(canvas, points, { unit, kind }) {
     ? left + plotW / 2
     : left + (index / (points.length - 1)) * plotW);
 
+  const pal = palette();
   ctx.font = '10px system-ui, sans-serif';
   ctx.lineWidth = 1;
-  ctx.strokeStyle = COLORS.grid;
-  ctx.fillStyle = COLORS.text;
+  ctx.strokeStyle = pal.grid;
+  ctx.fillStyle = pal.text;
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
   for (const value of ticks.values) {
@@ -126,14 +134,14 @@ function drawSeries(canvas, points, { unit, kind }) {
     ctx.fillText(formatValue(Math.round(value * 10) / 10), left - 6, y);
   }
 
-  ctx.strokeStyle = COLORS.axis;
+  ctx.strokeStyle = pal.axis;
   ctx.beginPath();
   ctx.moveTo(left, top);
   ctx.lineTo(left, bottom);
   ctx.lineTo(right, bottom);
   ctx.stroke();
 
-  ctx.fillStyle = COLORS.text;
+  ctx.fillStyle = pal.text;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
   ctx.fillText(unit, left, 0);
@@ -145,7 +153,7 @@ function drawSeries(canvas, points, { unit, kind }) {
 
   if (kind === 'bar') {
     const barW = Math.max(2, Math.min(16, (plotW / points.length) * 0.6));
-    ctx.fillStyle = COLORS.line;
+    ctx.fillStyle = pal.line;
     points.forEach((point, index) => {
       const x = Math.min(Math.max(xOf(index) - barW / 2, left), right - barW);
       const y = yOf(point.value);
@@ -154,7 +162,7 @@ function drawSeries(canvas, points, { unit, kind }) {
     return;
   }
 
-  ctx.strokeStyle = COLORS.line;
+  ctx.strokeStyle = pal.line;
   ctx.lineWidth = 2;
   ctx.beginPath();
   points.forEach((point, index) => {
@@ -163,7 +171,7 @@ function drawSeries(canvas, points, { unit, kind }) {
   });
   ctx.stroke();
 
-  ctx.fillStyle = COLORS.line;
+  ctx.fillStyle = pal.line;
   for (const [index, point] of points.entries()) {
     ctx.beginPath();
     ctx.arc(xOf(index), yOf(point.value), 2.5, 0, Math.PI * 2);

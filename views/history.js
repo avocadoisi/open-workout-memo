@@ -25,9 +25,9 @@ const CSS = `
 .hist-day { display: grid; place-items: center; align-content: center; gap: 2px; aspect-ratio: 1; min-width: 0; padding: 0; color: inherit; background: transparent; border: 1px solid transparent; font-size: 0.875rem; }
 .hist-day.has-record { font-weight: 700; }
 .hist-day.today { border-color: var(--accent); }
-.hist-day.selected { color: #fff; background: var(--accent); border-color: var(--accent); }
+.hist-day.selected { color: var(--accent-fg); background: var(--accent); border-color: var(--accent); }
 .hist-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
-.hist-day.selected .hist-dot { background: #fff; }
+.hist-day.selected .hist-dot { background: var(--accent-fg); }
 .hist-summary { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin: 0 0 0.75rem; font-size: 0.875rem; opacity: 0.85; }
 .hist-group h3 { margin: 0.75rem 0 0.25rem; font-size: 0.9rem; }
 .hist-set { display: grid; gap: 0.1rem; padding: 0.25rem 0; border-top: 1px solid var(--border); min-width: 0; }
