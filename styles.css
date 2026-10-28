@@ -92,6 +92,11 @@
   box-sizing: border-box;
 }
 
+/* display を持つクラスが hidden を上書きしないように */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   padding-bottom: 2rem;

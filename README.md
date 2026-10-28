@@ -17,7 +17,7 @@
 
 ## 画面
 
-ホーム（`#/`）にプレビュー付きのタイルが並び、押すと全画面で開く。開いた画面のヘッダーには「最小化」があり、ホームに戻る。記録（`#/record`）/ 履歴（`#/history`、月カレンダー）/ グラフ（`#/chart`、1RM とボリュームの推移）/ データ（`#/data`）。
+ホーム（`#/`）にプレビュー付きのタイルが並び、押すと全画面で開く。開いた画面のヘッダーには「最小化」があり、ホームに戻る。記録（`#/record`）/ 履歴（`#/history`、カレンダー・種目ごと・部位ごと）/ グラフ（`#/chart`、1RM とボリュームの推移）/ データ（`#/data`）。
 
 ## データモデル
 
@@ -36,7 +36,7 @@ metricLog:  { id, date, metricDefId, value }
 Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グラフの Chart.js、見出しフォントの Dela Gothic One だけ CDN から読む）。
 `index.html` / `app.js`（ハッシュルーティング）/ `ui.js` / `db.js` / `views/*.js`（各画面）/ `styles.css`。
 各 view は `export const view = { id, label, mount(container) }` を出す。
-配色は gruvbox light。色は `styles.css` の `--gb-*` にだけ書き、画面側は参照する。
+配色はヘッダーの丸3つで切り替える（gruvbox light / catppuccin latte / tokyonight night）。色は `styles.css` の `--gb-*` にだけ書き、画面側は参照する。
 
 ## テストデータ
 
