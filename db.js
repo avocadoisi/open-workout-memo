@@ -94,19 +94,36 @@ export async function exportAll() {
   return data;
 }
 
-export async function replaceAll(data) {
-  // 空のトランザクションを作らないよう、検証を先に済ませる
+// 空のトランザクションを作らないよう、検証を先に済ませる
+function exportRows(data) {
   const rows = {};
   for (const storeName of STORES) {
     const list = data[EXPORT_KEYS[storeName]];
     if (!Array.isArray(list)) throw new Error(`${EXPORT_KEYS[storeName]} が配列ではありません`);
     rows[storeName] = list;
   }
+  return rows;
+}
+
+export async function replaceAll(data) {
+  const rows = exportRows(data);
 
   const db = await openDB();
   const tx = db.transaction(STORES, 'readwrite');
   for (const storeName of STORES) {
     tx.objectStore(storeName).clear();
+    for (const row of rows[storeName]) tx.objectStore(storeName).put(row);
+  }
+  await done(tx);
+}
+
+// 既存のデータは残したまま、同じ id のものだけ上書きする
+export async function mergeAll(data) {
+  const rows = exportRows(data);
+
+  const db = await openDB();
+  const tx = db.transaction(STORES, 'readwrite');
+  for (const storeName of STORES) {
     for (const row of rows[storeName]) tx.objectStore(storeName).put(row);
   }
   await done(tx);
