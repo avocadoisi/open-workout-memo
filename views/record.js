@@ -1,7 +1,6 @@
 import { getAll, put, remove } from '../db.js';
-import {
-  byId, el, groupSets, groupTitle, iconButton, option, partSummary, rmValue, setStatus, todayString, volumeOf,
-} from '../ui.js';
+import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
+import { groupSets, groupTitle, partSummary, todayString, volumeOf } from '../training.js';
 import { icon } from '../icons.js';
 
 export const view = { id: 'record', label: '記録', mount };
@@ -58,42 +57,18 @@ function buildList() {
 }
 
 function buildGroup(group) {
-  const groupEl = el('div', { class: 'group' });
-  groupEl.append(el('h3', { text: groupTitle(group) }));
-
-  const sets = group.sets;
-
-  // id はランダムなので、表示順は重量と回数で決める
-  sets.sort((a, b) => a.weight - b.weight || a.reps - b.reps);
-
-  groupEl.append(el('div', { class: 'set-head' },
-    el('span', { text: '重量' }),
-    el('span', {}),
-    el('span', { text: '回数' }),
-    el('span', { text: '1RM' }),
-  ));
-
-  for (const set of sets) {
-    const main = el('span', { class: 'set-main' },
-      el('span', { class: 'set-num', text: String(set.weight) }),
-      el('span', { class: 'set-times', text: '×' }),
-      el('span', { class: 'set-num', text: String(set.reps) }),
-      el('span', { class: 'set-rm', text: rmValue(set) }),
-    );
-    const row = el('div', { class: 'set-row' }, main);
-
-    if (set.memo) row.append(el('small', { text: set.memo }));
-
-    row.append(el('div', { class: 'set-actions' },
-      iconButton('pencil', '編集', () => startEditing(set)),
-      iconButton('trash', '削除', async () => {
-        await remove('workoutSet', set.id);
-        await renderSets();
-      }),
-    ));
-    groupEl.append(row);
-  }
-  return groupEl;
+  return el('div', { class: 'group' },
+    el('h3', { text: groupTitle(group) }),
+    setTable(group.sets, {
+      extra: (set) => [el('div', { class: 'set-actions' },
+        iconButton('pencil', '編集', () => startEditing(set)),
+        iconButton('trash', '削除', async () => {
+          await remove('workoutSet', set.id);
+          await renderSets();
+        }),
+      )],
+    }),
+  );
 }
 
 async function renderSets() {
@@ -116,24 +91,10 @@ function buildExportCard(date, groups) {
 
   let total = 0;
   for (const group of groups) {
-    const table = el('div', { class: 'export-table' },
-      el('div', { class: 'set-head' },
-        el('span', { text: '重量(kg)' }),
-        el('span', {}),
-        el('span', { text: '回数' }),
-        el('span', { text: '1RM' }),
-      ),
-      ...group.sets.map((set) => el('div', { class: 'export-row' },
-        el('div', { class: 'set-main' },
-          el('span', { class: 'set-num', text: String(set.weight) }),
-          el('span', { class: 'set-times', text: '×' }),
-          el('span', { class: 'set-num', text: String(set.reps) }),
-          el('span', { class: 'set-rm', text: rmValue(set) }),
-        ),
-        ...(set.memo ? [el('small', { text: set.memo })] : []),
-      )),
+    card.append(
+      el('h3', { text: groupTitle(group) }),
+      el('div', { class: 'export-table' }, setTable(group.sets, { head: '重量(kg)' })),
     );
-    card.append(el('h3', { text: groupTitle(group) }), table);
     total += group.sets.length;
   }
 

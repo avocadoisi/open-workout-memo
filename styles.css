@@ -494,11 +494,11 @@ li button {
   gap: 0.2em 0.5em;
 }
 
-.export-card .export-row + .export-row .set-main {
+.export-card .set-row + .set-row .set-main {
   padding-top: 2px;
 }
 
-.export-card .export-row small {
+.export-card .set-row small {
   color: var(--fg-soft);
 }
 

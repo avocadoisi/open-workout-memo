@@ -1,5 +1,5 @@
 import { seedIfEmpty } from './db.js';
-import { byId, el, setStatus } from './ui.js';
+import { byId, el, setStatus } from './dom.js';
 import { icon } from './icons.js';
 import { THEMES, applyTheme, currentTheme } from './themes.js';
 import { view as recordView } from './views/record.js';
