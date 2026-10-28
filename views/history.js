@@ -1,5 +1,5 @@
 import { getAll } from '../db.js';
-import { el, option, rmText, todayString, bestSet } from '../ui.js';
+import { el, option, rmText, rmValue, todayString, bestSet } from '../ui.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -32,8 +32,7 @@ const CSS = `
 .hist-summary { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin: 0 0 0.75rem; font-size: 0.875rem; opacity: 0.85; }
 .hist-group h3 { margin: 0.75rem 0 0.25rem; font-size: 0.9rem; }
 .hist-set { display: grid; gap: 0.1rem; padding: 0.25rem 0; border-top: 1px solid var(--border); min-width: 0; }
-.hist-set-main { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; align-items: baseline; }
-.hist-rm { font-size: 0.8rem; opacity: 0.7; }
+.hist-table { margin-top: 0.25rem; }
 .hist-set small { opacity: 0.7; overflow-wrap: anywhere; }
 .hist-empty { margin: 0; opacity: 0.7; }
 `;
@@ -139,13 +138,23 @@ function buildDetail() {
   for (const group of groupSets(sets)) {
     section.append(el('div', { class: 'hist-group' },
       el('h3', { text: `${group.name} ベスト ${rmText(bestSet(group.sets))}` }),
-      ...group.sets.map((set) => el('div', { class: 'hist-set' },
-        el('div', { class: 'hist-set-main' },
-          el('span', { text: `${set.weight} kg × ${set.reps} 回` }),
-          el('span', { class: 'hist-rm', text: rmText(set) }),
+      el('div', { class: 'hist-table' },
+        el('div', { class: 'set-head' },
+          el('span', { text: '重量' }),
+          el('span', {}),
+          el('span', { text: '回数' }),
+          el('span', { text: '1RM' }),
         ),
-        ...(set.memo ? [el('small', { text: set.memo })] : []),
-      )),
+        ...group.sets.map((set) => el('div', { class: 'hist-set' },
+          el('div', { class: 'set-main' },
+            el('span', { class: 'set-num', text: String(set.weight) }),
+            el('span', { class: 'set-times', text: '×' }),
+            el('span', { class: 'set-num', text: String(set.reps) }),
+            el('span', { class: 'set-rm', text: rmValue(set) }),
+          ),
+          ...(set.memo ? [el('small', { text: set.memo })] : []),
+        )),
+      ),
     ));
   }
   return section;

@@ -41,9 +41,13 @@ export function estimate1RM(weight, reps) {
   return Math.round(((weight * 36) / (37 + reps)) * 10) / 10;
 }
 
-// 10回超は Brzycki 式の誤差が大きいので参考値と添える
+// 単位込みの値。表の列に並べる用（10回超は Brzycki 式の誤差が大きいので参考値と添える）
+export function rmValue(set) {
+  return `${estimate1RM(set.weight, set.reps).toFixed(1)} kg${set.reps > 10 ? '（参考値）' : ''}`;
+}
+
 export function rmText(set) {
-  return `1RM ${estimate1RM(set.weight, set.reps).toFixed(1)} kg${set.reps > 10 ? '（参考値）' : ''}`;
+  return `1RM ${rmValue(set)}`;
 }
 
 export function bestSet(sets) {
