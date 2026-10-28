@@ -1,0 +1,9 @@
+import { el } from '../ui.js';
+
+export const view = {
+  id: 'history',
+  label: '履歴',
+  mount(container) {
+    container.append(el('section', {}, el('p', { class: 'placeholder', text: '準備中' })));
+  },
+};

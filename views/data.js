@@ -1,0 +1,197 @@
+import { getAll, put, exportAll, replaceAll } from '../db.js';
+import { byId, el, option, setStatus, todayString, unitLabel } from '../ui.js';
+
+export const view = { id: 'data', label: 'データ', mount };
+
+let exercises = [];
+let metricDefs = [];
+
+function buildExerciseSection() {
+  return el('section', {},
+    el('h2', { text: '種目' }),
+    el('form', { id: 'exercise-form' },
+      el('label', {}, '名前', el('input', { type: 'text', id: 'exercise-name', maxlength: '50', required: '' })),
+      el('label', {}, '部位', el('input', { type: 'text', id: 'exercise-part', maxlength: '50', required: '' })),
+      el('button', { type: 'submit', text: '追加' }),
+    ),
+    el('ul', { id: 'exercise-list' }),
+  );
+}
+
+function buildMetricSection() {
+  return el('section', {},
+    el('h2', { text: '指標' }),
+    el('form', { id: 'metric-def-form' },
+      el('label', {}, '指標名', el('input', { type: 'text', id: 'metric-name', maxlength: '50', required: '' })),
+      el('label', {}, '単位', el('select', { id: 'metric-unit' },
+        el('option', { value: 'weight', text: '重さ (kg)' }),
+        el('option', { value: 'length', text: '長さ (cm)' }),
+      )),
+      el('button', { type: 'submit', text: '指標を追加' }),
+    ),
+    el('form', { id: 'metric-log-form' },
+      el('label', {}, '指標', el('select', { id: 'metric-select' })),
+      el('label', {}, '日付', el('input', { type: 'date', id: 'metric-date' })),
+      el('label', {}, '値', el('input', { type: 'number', id: 'metric-value', step: '0.1', inputmode: 'decimal' })),
+      el('button', { type: 'submit', text: '記録' }),
+    ),
+    el('ul', { id: 'metric-log-list' }),
+  );
+}
+
+function buildDataSection() {
+  return el('section', {},
+    el('h2', { text: 'データ' }),
+    el('button', { type: 'button', id: 'export-btn', text: 'エクスポート' }),
+    el('label', {}, 'インポート（全置換）',
+      el('input', { type: 'file', id: 'import-file', accept: 'application/json,.json' })),
+  );
+}
+
+async function reloadExercises() {
+  exercises = await getAll('exercise');
+  exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+
+  byId('exercise-list').replaceChildren(...exercises.map((exercise) => {
+    const label = el('span', { text: `${exercise.name}（${exercise.bodyPart}）` });
+    const item = el('li', {}, label);
+    if (exercise.archived) {
+      item.classList.add('archived');
+      label.textContent += ' アーカイブ済み';
+      return item;
+    }
+
+    item.append(el('button', {
+      type: 'button',
+      text: 'アーカイブ',
+      onclick: async () => {
+        await put('exercise', { ...exercise, archived: true });
+        await reloadExercises();
+        setStatus('種目をアーカイブしました');
+      },
+    }));
+    return item;
+  }));
+}
+
+async function reloadMetricDefs() {
+  metricDefs = await getAll('metricDef');
+  metricDefs.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+
+  const select = byId('metric-select');
+  const previous = select.value;
+  select.replaceChildren(...metricDefs.map((def) => option(def.id, def.name)));
+  if (metricDefs.some((def) => def.id === previous)) select.value = previous;
+}
+
+async function renderMetricLogs() {
+  const date = byId('metric-date').value;
+  const logs = (await getAll('metricLog')).filter((log) => log.date === date);
+  const defs = new Map(metricDefs.map((def) => [def.id, def]));
+  const list = byId('metric-log-list');
+
+  if (logs.length === 0) {
+    list.replaceChildren(el('li', { text: '記録なし' }));
+    return;
+  }
+
+  list.replaceChildren(...logs.map((log) => {
+    const def = defs.get(log.metricDefId);
+    return el('li', {
+      text: def ? `${def.name}: ${log.value} ${unitLabel(def.unit)}` : '不明な指標',
+    });
+  }));
+}
+
+async function reloadAll() {
+  await reloadExercises();
+  await reloadMetricDefs();
+  await renderMetricLogs();
+}
+
+function wireEvents() {
+  byId('exercise-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const name = byId('exercise-name').value.trim();
+    const bodyPart = byId('exercise-part').value.trim();
+    if (!name || !bodyPart) {
+      setStatus('名前と部位を入力してください', true);
+      return;
+    }
+    await put('exercise', { id: crypto.randomUUID(), name, bodyPart, archived: false });
+    byId('exercise-name').value = '';
+    byId('exercise-part').value = '';
+    await reloadExercises();
+    setStatus('種目を追加しました');
+  });
+
+  byId('metric-def-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const name = byId('metric-name').value.trim();
+    const unit = byId('metric-unit').value;
+    if (!name) {
+      setStatus('指標名を入力してください', true);
+      return;
+    }
+    await put('metricDef', { id: crypto.randomUUID(), name, unit });
+    byId('metric-name').value = '';
+    await reloadMetricDefs();
+    await renderMetricLogs();
+    setStatus('指標を追加しました');
+  });
+
+  byId('metric-log-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const metricDefId = byId('metric-select').value;
+    const date = byId('metric-date').value;
+    const value = byId('metric-value').valueAsNumber;
+    if (!metricDefId || !date || !Number.isFinite(value)) {
+      setStatus('指標・日付・値を入力してください', true);
+      return;
+    }
+    await put('metricLog', { id: crypto.randomUUID(), date, metricDefId, value });
+    byId('metric-value').value = '';
+    await renderMetricLogs();
+    setStatus('指標を記録しました');
+  });
+
+  byId('metric-date').addEventListener('change', renderMetricLogs);
+
+  byId('export-btn').addEventListener('click', async () => {
+    const data = await exportAll();
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    const link = el('a', { href: url, download: `open-workout-memo-${todayString()}.json` });
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+    setStatus('エクスポートしました');
+  });
+
+  byId('import-file').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      const data = JSON.parse(await file.text());
+      if (data?.schemaVersion !== 1) {
+        setStatus('schemaVersion が 1 ではないためインポートできません', true);
+        return;
+      }
+      if (!window.confirm('現在のデータをすべて置き換えます。よろしいですか？')) return;
+      await replaceAll(data);
+      await reloadAll();
+      setStatus('インポートしました');
+    } catch (error) {
+      setStatus(`インポートに失敗しました: ${error.message}`, true);
+    } finally {
+      event.target.value = '';
+    }
+  });
+}
+
+async function mount(container) {
+  container.append(buildExerciseSection(), buildMetricSection(), buildDataSection());
+  byId('metric-date').value = todayString();
+  await reloadAll();
+  wireEvents();
+}
