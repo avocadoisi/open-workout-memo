@@ -11,6 +11,8 @@ const state = {
   exerciseId: '',
   part: '',
   mode: 'calendar',
+  // 種目ごと・部位ごとは直近この日数だけ描く（「もっと見る」で増やす）
+  days: 30,
   sets: [],
   exercises: [],
 };
@@ -37,6 +39,7 @@ const CSS = `
 .hist-total { margin: 1rem 0 0; }
 .hist-detail .group h4 { margin: 0.5rem 0 0.25rem; font-size: 0.9rem; }
 .hist-empty { margin: 0; opacity: 0.7; }
+.hist-more { margin: 1rem 0 0; padding: 0.5rem 0.75rem; font-size: 0.875rem; }
 `;
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -128,6 +131,25 @@ function buildDetail() {
   return section;
 }
 
+// 日付の新しい順に state.days 日ぶんだけ返す
+function recentDays(byDate) {
+  return [...byDate].slice(0, state.days);
+}
+
+function appendMore(section, byDate) {
+  const rest = byDate.size - state.days;
+  if (rest <= 0) return;
+  section.append(el('button', {
+    type: 'button',
+    class: 'hist-more',
+    text: `もっと見る（残り ${rest} 日）`,
+    onclick: () => {
+      state.days += 30;
+      render();
+    },
+  }));
+}
+
 // 選んだ種目のセットを日付の新しい順にまとめる
 function buildExerciseHistory() {
   const name = state.exercises.find((exercise) => exercise.id === state.exerciseId)?.name ?? '種目';
@@ -152,12 +174,13 @@ function buildExerciseHistory() {
     el('span', { text: `ベスト ${rmText(bestSet(sets))}` }),
   ));
 
-  for (const [date, list] of byDate) {
+  for (const [date, list] of recentDays(byDate)) {
     section.append(el('div', { class: 'group' },
       el('h3', { text: `${formatDate(date)} ベスト ${rmText(bestSet(list))}・ボリューム ${volumeOf(list)} kg` }),
       setTable(list),
     ));
   }
+  appendMore(section, byDate);
   return section;
 }
 
@@ -186,7 +209,7 @@ function buildPartHistory() {
     el('span', { text: `ボリューム ${volumeOf(sets)} kg` }),
   ));
 
-  for (const [date, list] of byDate) {
+  for (const [date, list] of recentDays(byDate)) {
     section.append(el('div', { class: 'group' },
       el('h3', { text: `${formatDate(date)} 合計 ${list.length} セット・ボリューム ${volumeOf(list)} kg` }),
       ...groupSets(list, state.exercises).map((group) => el('div', {},
@@ -195,6 +218,7 @@ function buildPartHistory() {
       )),
     ));
   }
+  appendMore(section, byDate);
   return section;
 }
 
@@ -263,6 +287,7 @@ async function mount(container) {
     selected: today,
     exerciseId: params.get('exercise') ?? '',
     part: params.get('part') ?? '',
+    days: 30,
     mode: params.has('exercise') ? 'exercise' : params.has('part') ? 'part' : 'calendar',
     sets: [],
     exercises: [],
@@ -287,12 +312,14 @@ async function mount(container) {
     'aria-label': '表示',
     onchange: (event) => {
       state.mode = event.target.value;
+      state.days = 30;
       render();
     },
   }, option('calendar', 'カレンダー'), option('exercise', '種目ごと'), option('part', '部位ごと'));
   filter = el('select', {
     onchange: (event) => {
       state.exerciseId = event.target.value;
+      state.days = 30;
       render();
     },
   }, option('', 'すべての種目'), ...state.exercises
@@ -304,6 +331,7 @@ async function mount(container) {
     'aria-label': '部位',
     onchange: (event) => {
       state.part = event.target.value;
+      state.days = 30;
       render();
     },
   }, option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
