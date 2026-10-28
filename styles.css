@@ -366,6 +366,11 @@ button {
   white-space: nowrap;
 }
 
+/* 1RM の値は左揃えなので、見出しも左に寄せる（右寄せのままだと列の中でズレて見える） */
+.set-head span:last-child {
+  text-align: left;
+}
+
 .set-rm {
   font-size: 0.8rem;
   opacity: 0.7;
