@@ -33,7 +33,7 @@ metricLog:  { id, date, metricDefId, value }
 
 ## 構成
 
-Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas とグラフの Chart.js だけ CDN から読む）。
+Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グラフの Chart.js、見出しフォントの Dela Gothic One だけ CDN から読む）。
 `index.html` / `app.js`（ハッシュルーティング）/ `ui.js` / `db.js` / `views/*.js`（各画面）/ `styles.css`。
 各 view は `export const view = { id, label, mount(container) }` を出す。
 配色は gruvbox light。色は `styles.css` の `--gb-*` にだけ書き、画面側は参照する。

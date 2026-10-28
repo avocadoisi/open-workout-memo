@@ -57,7 +57,12 @@ h1 {
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  /* 極太の見出し用フォント。読み込み失敗時は W9 で代替 */
+  font-family: "Dela Gothic One", "Hiragino Sans W9", "Hiragino Sans", system-ui, sans-serif;
+  font-weight: 900;
+  font-synthesis-weight: none;
   font-size: 1.25rem;
+  letter-spacing: -0.01em;
 }
 
 h1 img {
