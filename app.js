@@ -1,5 +1,5 @@
 import { seedIfEmpty } from './db.js';
-import { byId, el, option, setStatus } from './ui.js';
+import { byId, el, setStatus } from './ui.js';
 import { icon } from './icons.js';
 import { THEMES, applyTheme, currentTheme } from './themes.js';
 import { view as recordView } from './views/record.js';
@@ -79,14 +79,25 @@ async function init() {
     minimize.replaceChildren(icon('minimize'));
     minimize.addEventListener('click', () => { location.hash = HOME; });
 
-    const themeSelect = byId('theme');
-    themeSelect.replaceChildren(...THEMES.map((theme) => option(theme.id, theme.label)));
-    themeSelect.value = currentTheme();
-    applyTheme(themeSelect.value);
-    themeSelect.addEventListener('change', async () => {
-      applyTheme(themeSelect.value);
-      await render(); // グラフの線の色は描画時に読むので、描き直す
-    });
+    const themes = byId('themes');
+    const current = currentTheme();
+    for (const theme of THEMES) {
+      const dot = el('button', {
+        type: 'button',
+        class: 'theme-dot',
+        'aria-label': theme.label,
+        title: theme.label,
+        'aria-pressed': theme.id === current ? 'true' : 'false',
+        onclick: async () => {
+          applyTheme(theme.id);
+          for (const other of themes.children) other.setAttribute('aria-pressed', String(other === dot));
+          await render(); // グラフの線の色は描画時に読むので、描き直す
+        },
+      });
+      dot.style.background = theme.swatch;
+      themes.append(dot);
+    }
+    applyTheme(current);
     window.addEventListener('hashchange', render);
     await render();
   } catch (error) {
