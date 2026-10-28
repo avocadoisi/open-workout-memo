@@ -1,5 +1,6 @@
 import { getAll } from '../db.js';
 import { el, option } from '../dom.js';
+import { icon } from '../icons.js';
 import { estimate1RM } from '../training.js';
 
 export const view = { id: 'chart', label: 'グラフ', mount };
@@ -14,9 +15,15 @@ const RANGES = [
 const CSS = `
 .chart-card { display: grid; gap: 0.5rem; }
 .chart-card h2 { margin: 0; }
-.chart-box { position: relative; height: ${CHART_HEIGHT}px; }
+.chart-box { position: relative; height: ${CHART_HEIGHT}px; cursor: zoom-in; }
 .chart-box[hidden] { display: none; }
 .chart-empty { margin: 0; color: var(--fg-soft); font-size: 0.875rem; }
+.chart-zoom { position: fixed; inset: 0; z-index: 30; display: grid; grid-template-rows: auto 1fr auto; gap: 0.5rem; padding: 0.75rem; background: var(--bg); }
+.zoom-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.zoom-head p { margin: 0; font-weight: 700; }
+.zoom-frame { position: relative; overflow: hidden; touch-action: none; cursor: grab; }
+.zoom-box { position: absolute; inset: 0; transform-origin: 0 0; }
+.zoom-hint { margin: 0; color: var(--fg-soft); font-size: 0.75rem; text-align: center; }
 `;
 
 const pad2 = (value) => String(value).padStart(2, '0');
@@ -98,7 +105,7 @@ function buildSection(title, selectLabels) {
     message,
     box,
   );
-  return { section, selects: selects.map((item) => item.select), canvas, box, message };
+  return { section, title, selects: selects.map((item) => item.select), canvas, box, message };
 }
 
 async function mount(container) {
@@ -158,6 +165,107 @@ async function mount(container) {
 
   Chart.defaults.font.family = 'system-ui, -apple-system, "Hiragino Sans", sans-serif';
 
+  // タップで全画面に拡大。拡大縮小は CSS transform で行う
+  // shortcut: 6倍まで拡大すると canvas がぼける（必要になったら拡大後に描き直す）
+  function openZoom(part) {
+    const source = part.chart;
+    if (!source) return;
+    const closeButton = el('button', { type: 'button', class: 'icon-btn', 'aria-label': '閉じる', title: '閉じる' }, icon('close'));
+    const canvas = el('canvas', {});
+    const zoomBox = el('div', { class: 'zoom-box' }, canvas);
+    const frame = el('div', { class: 'zoom-frame' }, zoomBox);
+    const overlay = el('div', { class: 'chart-zoom', role: 'dialog', 'aria-label': `${part.title}を拡大` },
+      el('div', { class: 'zoom-head' }, el('p', { text: part.title }), closeButton),
+      frame,
+      el('p', { class: 'zoom-hint', text: 'ピンチ / ホイールで拡大・縮小、ドラッグで移動、ダブルタップで戻す' }),
+    );
+
+    const { options } = chartOptions(part.meta.unit, part.meta.kind);
+    options.animation = false;
+    const zoomChart = new Chart(canvas, {
+      type: source.config.type,
+      data: {
+        labels: [...source.data.labels],
+        datasets: [{ ...source.data.datasets[0], data: [...source.data.datasets[0].data] }],
+      },
+      options,
+    });
+
+    let scale = 1;
+    let x = 0;
+    let y = 0;
+    const clamp = (value) => Math.min(6, Math.max(1, value));
+    const apply = () => { zoomBox.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; };
+    // つまんだ位置（またはカーソル位置）を固定したまま拡大率を変える
+    const zoomAt = (nextScale, px, py) => {
+      const ratio = nextScale / scale;
+      scale = nextScale;
+      x = px - (px - x) * ratio;
+      y = py - (py - y) * ratio;
+      apply();
+    };
+    const localPoint = (event) => {
+      const rect = frame.getBoundingClientRect();
+      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    };
+
+    const pointers = new Map();
+    let start = null;
+    frame.addEventListener('pointerdown', (event) => {
+      // すでに離れているポインタだと例外になるので、掴めなくても続行する
+      try { frame.setPointerCapture(event.pointerId); } catch { /* 無視 */ }
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      start = { x: event.clientX, y: event.clientY, scale };
+    });
+    frame.addEventListener('pointermove', (event) => {
+      if (!pointers.has(event.pointerId)) return;
+      const before = [...pointers.values()];
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      const after = [...pointers.values()];
+      if (after.length >= 2) {
+        const distance = (list) => Math.hypot(list[0].x - list[1].x, list[0].y - list[1].y) || 1;
+        const center = localPoint({ clientX: (after[0].x + after[1].x) / 2, clientY: (after[0].y + after[1].y) / 2 });
+        zoomAt(clamp(scale * (distance(after) / distance(before))), center.x, center.y);
+        return;
+      }
+      x += event.clientX - before[0].x;
+      y += event.clientY - before[0].y;
+      apply();
+    });
+    const release = (event) => {
+      pointers.delete(event.pointerId);
+      start = null;
+    };
+    frame.addEventListener('pointerup', release);
+    frame.addEventListener('pointercancel', release);
+    frame.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      const point = localPoint(event);
+      zoomAt(clamp(scale * (event.deltaY < 0 ? 1.15 : 0.87)), point.x, point.y);
+    }, { passive: false });
+    frame.addEventListener('dblclick', () => {
+      scale = 1;
+      x = 0;
+      y = 0;
+      apply();
+    });
+
+    const close = () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+      zoomChart.destroy();
+      overlay.remove();
+    };
+    const onKey = (event) => {
+      if (event.key === 'Escape') close();
+    };
+    closeButton.addEventListener('click', close);
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    document.body.append(overlay);
+    apply();
+  }
+
   function update(part, points, { unit, kind, empty }) {
     if (!container.isConnected) return;
     if (points.length === 0) {
@@ -167,6 +275,8 @@ async function mount(container) {
       part.chart = null;
       return;
     }
+    part.unit = unit;
+    part.meta = { unit, kind };
     const { colors, options } = chartOptions(unit, kind);
     part.message.textContent = '';
     part.box.hidden = false;
@@ -242,6 +352,9 @@ async function mount(container) {
 
   for (const select of [rangeSelect, exerciseSelect, modeSelect, metricSelect]) {
     select.addEventListener('change', render);
+  }
+  for (const part of [series, metric]) {
+    part.canvas.addEventListener('click', () => openZoom(part));
   }
 
   render();
