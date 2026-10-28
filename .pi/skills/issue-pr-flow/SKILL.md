@@ -41,8 +41,20 @@ description: このリポジトリで変更を依頼されたときの作業手�
    git switch main && git pull
    ```
 
+7. **デプロイ — マージ時にはやらない**
+
+   マージでデプロイを走らせない。ユーザーから「デプロイして」「公開して」と明示的な指示があったときだけ実行する。
+   ```sh
+   gh workflow run deploy.yml
+   ```
+   デプロイ workflow は `on: workflow_dispatch` のみにする（push / PR トリガーを書かない）。
+   Pages の Source を「Deploy from a branch」にすると push のたびに自動デプロイされるので「GitHub Actions」を使う。
+   workflow がまだ無い段階で頼まれたら、先に workflow を作る issue を立てる。
+   「マージしたからデプロイしておきます」はしない。
+
 ## 守ること
 
 - `main` へ直接 push しない。
 - 依頼にない変更を混ぜない。気づいた点は issue だけ立てて報告する。
 - マージ後に issue が閉じたか `gh issue view <番号>` で確認する。
+- デプロイは指示待ち。無断でデプロイしない。

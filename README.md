@@ -51,3 +51,14 @@ metricLog:    { id, date, metricDefId, value }
 ## 開発
 
 変更は issue → ブランチ → PR → マージの順で行う（`.pi/skills/issue-pr-flow/SKILL.md`）。
+
+## デプロイ
+
+デプロイは自動化しない。**ユーザーの指示があったときだけ**手動で実行する。
+
+- マージ（main への push）ではデプロイ用の pipeline を走らせない
+- GitHub Pages の Source は「GitHub Actions」にし、その workflow は `on: workflow_dispatch` のみ
+  （「Deploy from a branch」にすると push のたびに自動デプロイされるので使わない）
+- 実行: `gh workflow run deploy.yml`
+
+理由: マージのたびに CI/デプロイを走らせるとコストがかかるため。記録アプリなので即時反映の必要もない。
