@@ -1,10 +1,19 @@
-import { getAll, put, exportAll, replaceAll } from '../db.js';
+import { getAll, put, exportAll, mergeAll, replaceAll } from '../db.js';
 import { byId, el, option, setStatus, todayString, unitLabel } from '../ui.js';
 
 export const view = { id: 'data', label: 'データ', mount };
 
 let exercises = [];
 let metricDefs = [];
+// 読み込み待ちのインポート内容
+let pending = null;
+
+function finishImport() {
+  pending = null;
+  byId('import-actions').hidden = true;
+  byId('import-summary').textContent = '';
+  reloadAll();
+}
 
 function buildExerciseSection() {
   return el('section', {},
@@ -43,8 +52,16 @@ function buildDataSection() {
   return el('section', {},
     el('h2', { text: 'データ' }),
     el('button', { type: 'button', id: 'export-btn', text: 'エクスポート' }),
-    el('label', {}, 'インポート（全置換）',
+    el('label', {}, 'インポート',
       el('input', { type: 'file', id: 'import-file', accept: 'application/json,.json' })),
+    el('div', { id: 'import-actions', hidden: '' },
+      el('p', { id: 'import-summary' }),
+      el('div', { class: 'form-actions' },
+        el('button', { type: 'button', id: 'import-merge', text: 'マージ' }),
+        el('button', { type: 'button', id: 'import-replace', class: 'danger', text: '全置換' }),
+        el('button', { type: 'button', id: 'import-cancel', class: 'plain', text: 'やめる' }),
+      ),
+    ),
   );
 }
 
@@ -179,22 +196,42 @@ function wireEvents() {
 
   byId('import-file').addEventListener('change', async (event) => {
     const file = event.target.files[0];
+    event.target.value = ''; // 同じファイルを選び直せるようにする
     if (!file) return;
+
     try {
       const data = JSON.parse(await file.text());
       if (data?.schemaVersion !== 1) {
         setStatus('schemaVersion が 1 ではないためインポートできません', true);
         return;
       }
-      if (!window.confirm('現在のデータをすべて置き換えます。よろしいですか？')) return;
-      await replaceAll(data);
-      await reloadAll();
-      setStatus('インポートしました');
+      pending = data;
+      byId('import-summary').textContent = `${file.name}: 種目 ${data.exercises.length}・セット ${data.workoutSets.length}・指標 ${data.metricDefs.length}・記録 ${data.metricLogs.length}`;
+      byId('import-actions').hidden = false;
+      setStatus('マージか全置換かを選んでください');
     } catch (error) {
       setStatus(`インポートに失敗しました: ${error.message}`, true);
-    } finally {
-      event.target.value = '';
     }
+  });
+
+  byId('import-merge').addEventListener('click', async () => {
+    if (!pending) return;
+    await mergeAll(pending);
+    finishImport();
+    setStatus('マージしました');
+  });
+
+  byId('import-replace').addEventListener('click', async () => {
+    if (!pending) return;
+    if (!window.confirm(`いまのデータをすべて消して、${pending.workoutSets.length} セットで置き換えます。元に戻せません。よろしいですか？`)) return;
+    await replaceAll(pending);
+    finishImport();
+    setStatus('全置換しました');
+  });
+
+  byId('import-cancel').addEventListener('click', () => {
+    finishImport();
+    setStatus('インポートをやめました');
   });
 }
 
