@@ -11,15 +11,15 @@
 - 配信: 静的サイト（GitHub Pages 等）。サーバー処理なし
 - 保存: IndexedDB（端末・ブラウザ単位）
 - 認証: なし。ログイン不要
-- エクスポート: 可能（JSON、トレ内容の画像）
-- 実装: Vanilla JS。ビルドなし、npm 依存なし
+- エクスポート: 可能（JSON、トレ内容の画像）。JSON はインポートで復元できる
+- 実装: Vanilla JS。ビルドなし、npm 依存なし（画像化のみ html2canvas を CDN から読む）
 
 ## 筋トレの要件
 
 - 種目は最初は Big3 のみ（スクワット / ベンチプレス / デッドリフト）
 - 部位・種目の追加が簡単にできる（UI から、コード変更なしで）
-- 1回の記録: 日付 / 種目 / 重量 / 回数 / セット数 / メモ
-- RM 換算（推定 1RM を表示）
+- 1回の記録: 日付 / 種目 / 重量 / 回数 / メモ（**1セット = 1レコード**、セット間で重量が違ってよい）
+- RM 換算（推定 1RM を表示）: Brzycki 式 `weight * 36 / (37 + reps)`。10回超は誤差が大きいので参考値と注記する
 - カレンダーベースで過去のトレを参照できる
 
 ## 体重・その他の記録（筋トレとは別トラック）
@@ -27,6 +27,7 @@
 - 体重を日付ごとに記録できる
 - 体重以外の指標も追加できる（指標ごとに単位を「重さ / 長さ」から選ぶ）
 - 筋トレの記録とは混ぜない（別ストア・別画面）
+- 保存単位は kg / cm 固定。lb・inch は表示のときだけ変換する
 
 ## やらないこと
 
@@ -38,15 +39,40 @@
 - データはブラウザに紐づく。キャッシュ削除や端末変更で消える → エクスポートで担保する
 - 秘密情報ではないが、端末を共有する場合はブラウザのプロファイル分離に依存する
 
-## データモデル（草案）
+## データモデル
 
 ```js
 // IndexedDB
-exercise:     { id, name, bodyPart, unit: 'weight' }      // Big3 を初期データとして投入
-workoutLog:   { id, date, exerciseId, weight, reps, sets, memo }
+exercise:     { id, name, bodyPart, archived: false }     // bodyPart は自由文字列。Big3 を初期投入
+workoutSet:   { id, date, exerciseId, weight, reps, memo } // 1セット=1レコード。weight は kg
 metricDef:    { id, name, unit: 'weight' | 'length' }      // 体重は unit: 'weight'
-metricLog:    { id, date, metricDefId, value }
+metricLog:    { id, date, metricDefId, value }             // value は kg または cm
 ```
+
+export JSON の形:
+
+```js
+{ schemaVersion: 1, exportedAt, exercises, workoutSets, metricDefs, metricLogs }
+```
+
+- `date` はローカル日付の文字列 `YYYY-MM-DD`（タイムゾーンで日付がずれないように）
+- `id` は `crypto.randomUUID()`
+- 種目・指標の削除は `archived: true`。過去の記録は残す
+- インポートは全置換（確認ダイアログを出す）。`schemaVersion` が未知なら拒否する
+- DB のマイグレーションは IndexedDB の `version` と `onupgradeneeded` で行う
+
+## 決定事項
+
+| 論点 | 決定 |
+|---|---|
+| セットの粒度 | 1セット = 1レコード |
+| インポート | あり（JSON 全置換） |
+| 画像化 | html2canvas を CDN 読み込み。ビルド無しを維持 |
+| 1RM | Brzycki |
+| 単位 | 保存 kg/cm、表示のみ変換 |
+| 種目・部位 | 部位は自由文字列、削除はアーカイブ |
+| PWA / Service Worker | 2版目（初版はオンライン前提） |
+| ライセンス | MIT |
 
 ## 開発
 
