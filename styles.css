@@ -286,6 +286,12 @@ li button {
   font-size: 14px;
 }
 
+.export-card .export-parts {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
 #status {
   min-height: 1.5rem;
   margin: 0 auto;
