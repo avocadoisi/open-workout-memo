@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>筋トレメモ</title>
 <link rel="stylesheet" href="styles.css">
+<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <header>
@@ -39,7 +40,18 @@
       <input type="date" id="list-date">
     </label>
     <p id="set-count"></p>
+    <button type="button" id="image-btn">画像を保存</button>
     <div id="set-list"></div>
+  </section>
+
+  <section>
+    <h2>カレンダー</h2>
+    <div class="calendar-nav">
+      <button type="button" id="calendar-prev" aria-label="前月">◀</button>
+      <span id="calendar-label"></span>
+      <button type="button" id="calendar-next" aria-label="翌月">▶</button>
+    </div>
+    <div id="calendar"></div>
   </section>
 
   <section>

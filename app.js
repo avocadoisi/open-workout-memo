@@ -5,12 +5,39 @@ const byId = (id) => document.getElementById(id);
 let exercises = [];
 let metricDefs = [];
 let statusTimer;
+let calendarMonth = '';
 
 function todayString() {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   return `${now.getFullYear()}-${month}-${day}`;
+}
+
+function estimate1RM(weight, reps) {
+  return Math.round(((weight * 36) / (37 + reps)) * 10) / 10;
+}
+
+// 10回超は Brzycki 式の誤差が大きいので参考値と添える
+function rmText(set) {
+  return `1RM ${estimate1RM(set.weight, set.reps).toFixed(1)} kg${set.reps > 10 ? '（参考値）' : ''}`;
+}
+
+function bestSet(sets) {
+  return sets.reduce((best, set) =>
+    estimate1RM(set.weight, set.reps) > estimate1RM(best.weight, best.reps) ? set : best,
+  );
+}
+
+function groupSets(sets, names) {
+  const groups = new Map();
+  for (const set of sets) {
+    if (!groups.has(set.exerciseId)) groups.set(set.exerciseId, []);
+    groups.get(set.exerciseId).push(set);
+  }
+  return [...groups.entries()]
+    .map(([id, list]) => ({ name: names.get(id) ?? '不明な種目', sets: list }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 }
 
 function unitLabel(unit) {
@@ -39,7 +66,7 @@ function buildGroup(name, sets) {
   const group = document.createElement('div');
   group.className = 'group';
   const heading = document.createElement('h3');
-  heading.textContent = name;
+  heading.textContent = `${name} ベスト ${rmText(bestSet(sets))}`;
   group.append(heading);
 
   // id はランダムなので、表示順は重量と回数で決める
@@ -49,7 +76,13 @@ function buildGroup(name, sets) {
     const row = document.createElement('div');
     row.className = 'set-row';
     const main = document.createElement('span');
-    main.textContent = `${set.weight} kg × ${set.reps} 回`;
+    main.className = 'set-main';
+    const load = document.createElement('span');
+    load.textContent = `${set.weight} kg × ${set.reps} 回`;
+    const rm = document.createElement('span');
+    rm.className = 'set-rm';
+    rm.textContent = rmText(set);
+    main.append(load, rm);
     row.append(main);
 
     if (set.memo) {
@@ -76,19 +109,89 @@ async function renderSets() {
   const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
   const names = new Map(exercises.map((exercise) => [exercise.id, exercise.name]));
 
-  const groups = new Map();
-  for (const set of sets) {
-    if (!groups.has(set.exerciseId)) groups.set(set.exerciseId, []);
-    groups.get(set.exerciseId).push(set);
+  byId('set-count').textContent = `合計 ${sets.length} セット`;
+  byId('set-list').replaceChildren(
+    ...groupSets(sets, names).map((group) => buildGroup(group.name, group.sets)),
+  );
+  await renderCalendar();
+}
+
+async function renderCalendar() {
+  calendarMonth ||= todayString().slice(0, 7);
+  const [year, month] = calendarMonth.split('-').map(Number);
+  const firstWeekday = (new Date(year, month - 1, 1).getDay() + 6) % 7; // 月曜始まり
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const recorded = new Set(
+    (await getAll('workoutSet'))
+      .filter((set) => typeof set.date === 'string' && set.date.startsWith(`${calendarMonth}-`))
+      .map((set) => set.date),
+  );
+  const selected = byId('list-date').value;
+  const today = todayString();
+
+  byId('calendar-label').textContent = `${year}年${month}月`;
+  const cells = ['月', '火', '水', '木', '金', '土', '日'].map((label) => {
+    const cell = document.createElement('span');
+    cell.className = 'weekday';
+    cell.textContent = label;
+    return cell;
+  });
+  for (let i = 0; i < firstWeekday; i += 1) {
+    const blank = document.createElement('span');
+    blank.className = 'blank';
+    cells.push(blank);
+  }
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = `${calendarMonth}-${String(day).padStart(2, '0')}`;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'day';
+    button.textContent = String(day);
+    button.classList.toggle('has-record', recorded.has(date));
+    button.classList.toggle('today', date === today);
+    button.classList.toggle('selected', date === selected);
+    button.addEventListener('click', async () => {
+      byId('list-date').value = date;
+      await renderSets();
+    });
+    cells.push(button);
+  }
+  byId('calendar').replaceChildren(...cells);
+}
+
+async function shiftMonth(delta) {
+  calendarMonth ||= todayString().slice(0, 7);
+  const [year, month] = calendarMonth.split('-').map(Number);
+  const next = new Date(year, month - 1 + delta, 1);
+  calendarMonth = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`;
+  await renderCalendar();
+}
+
+function buildExportCard(date, groups) {
+  const card = document.createElement('div');
+  card.className = 'export-card';
+  const title = document.createElement('h2');
+  title.textContent = `トレーニング記録 ${date}`;
+  card.append(title);
+
+  let total = 0;
+  for (const group of groups) {
+    const heading = document.createElement('h3');
+    heading.textContent = `${group.name} ベスト ${rmText(bestSet(group.sets))}`;
+    const list = document.createElement('ul');
+    for (const set of group.sets) {
+      const item = document.createElement('li');
+      item.textContent = `${set.weight} kg × ${set.reps} 回　${rmText(set)}${set.memo ? `　${set.memo}` : ''}`;
+      list.append(item);
+    }
+    card.append(heading, list);
+    total += group.sets.length;
   }
 
-  byId('set-count').textContent = `合計 ${sets.length} セット`;
-  const ids = [...groups.keys()].sort((a, b) =>
-    (names.get(a) ?? '不明な種目').localeCompare(names.get(b) ?? '不明な種目', 'ja'),
-  );
-  byId('set-list').replaceChildren(
-    ...ids.map((id) => buildGroup(names.get(id) ?? '不明な種目', groups.get(id))),
-  );
+  const count = document.createElement('p');
+  count.textContent = `合計 ${total} セット`;
+  card.append(count);
+  return card;
 }
 
 async function reloadExercises() {
@@ -204,6 +307,47 @@ function wireEvents() {
   });
 
   byId('list-date').addEventListener('change', renderSets);
+
+  byId('calendar-prev').addEventListener('click', () => shiftMonth(-1));
+  byId('calendar-next').addEventListener('click', () => shiftMonth(1));
+
+  byId('image-btn').addEventListener('click', async () => {
+    const date = byId('list-date').value;
+    if (!date) {
+      setStatus('日付を選んでください', true);
+      return;
+    }
+    const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
+    if (sets.length === 0) {
+      setStatus('この日の記録がないため画像化できません', true);
+      return;
+    }
+    if (typeof window.html2canvas !== 'function') {
+      setStatus('画像化ライブラリを読み込めませんでした', true);
+      return;
+    }
+
+    const names = new Map(exercises.map((exercise) => [exercise.id, exercise.name]));
+    const card = buildExportCard(date, groupSets(sets, names));
+    document.body.append(card);
+    try {
+      const canvas = await window.html2canvas(card, { backgroundColor: '#ffffff', scale: 2 });
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `open-workout-memo-${date}.png`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      setStatus('画像を保存しました');
+    } catch (error) {
+      setStatus(`画像の作成に失敗しました: ${error.message}`, true);
+    } finally {
+      card.remove();
+    }
+  });
 
   byId('exercise-form').addEventListener('submit', async (event) => {
     event.preventDefault();
