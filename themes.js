@@ -2,7 +2,7 @@
 export const THEMES = [
   { id: 'gruvbox', label: 'gruvbox light' },
   { id: 'catppuccin', label: 'catppuccin latte' },
-  { id: 'kanagawa', label: 'kanagawa lotus' },
+  { id: 'tokyonight', label: 'tokyonight night' },
 ];
 
 const KEY = 'owa-theme';
