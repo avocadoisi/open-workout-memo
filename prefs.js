@@ -16,14 +16,7 @@ export function currentTheme() {
 }
 
 export function applyTheme(id) {
-  const root = document.documentElement;
-  const apply = () => { root.dataset.theme = id; };
-  // 起動時は inline script が既に同じ配色を入れているので、切り替えのときだけクロスフェードする
-  // （::view-transition は reduced-motion の * 指定が効かないので、ここで避ける）
-  const crossfade = root.dataset.theme !== id && document.startViewTransition &&
-    !matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (crossfade) document.startViewTransition(apply);
-  else apply();
+  document.documentElement.dataset.theme = id;
   localStorage.setItem(THEME_KEY, id);
   const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg);

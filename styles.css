@@ -254,15 +254,6 @@ main {
 .view {
   display: grid;
   gap: 1rem;
-  /* 画面を開いたことが分かる程度に、短く控えめに動かす */
-  animation: view-in 0.18s ease-out both;
-}
-
-@keyframes view-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
 }
 
 section {
@@ -366,14 +357,13 @@ button:active {
   padding: 0.25rem 0;
 }
 
-/* 保存した行は下から出して、一瞬だけ背景を付ける（保存できたことが分かるように） */
+/* 保存した行は下から出す（フェードはしない。保存できたことだけ伝える） */
 .set-row.is-saved {
   animation: set-saved 0.25s ease-out;
 }
 
 @keyframes set-saved {
   from {
-    opacity: 0;
     transform: translateY(6px);
     background-color: var(--bg-soft);
   }
@@ -381,15 +371,6 @@ button:active {
   60% {
     background-color: var(--bg-soft);
   }
-}
-
-/* 削除する行は高さを畳んで消す（dom.js の collapseRow が 180ms 待つ） */
-.set-row.leaving {
-  overflow: hidden;
-  padding-top: 0;
-  padding-bottom: 0;
-  opacity: 0;
-  transition: max-height 0.18s ease, padding 0.18s ease, opacity 0.18s ease;
 }
 
 /* メモが入ってもボタンは1行目の右に置く */
