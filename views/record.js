@@ -1,5 +1,5 @@
 import { getAll, put, remove } from '../db.js';
-import { byId, collapseRow, el, iconButton, option, setStatus, setTable } from '../dom.js';
+import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
 import { groupSets, groupTitle, partSummary, todayString, volumeOf } from '../training.js';
 import { icon } from '../icons.js';
 
@@ -62,11 +62,8 @@ function buildGroup(group) {
     setTable(group.sets, {
       extra: (set) => [el('div', { class: 'set-actions' },
         iconButton('pencil', '編集', () => startEditing(set)),
-        iconButton('trash', '削除', async (event) => {
-          // currentTarget は await をまたぐと null になるので先に取る
-          const row = event.currentTarget.closest('.set-row');
+        iconButton('trash', '削除', async () => {
           await remove('workoutSet', set.id);
-          await collapseRow(row);
           await renderSets();
         }),
       )],
