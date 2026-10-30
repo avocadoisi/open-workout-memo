@@ -34,9 +34,11 @@ metricLog:  { id, date, metricDefId, value }
 ## 構成
 
 Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グラフの Chart.js、見出しフォントの Dela Gothic One だけ CDN から読む）。
-`index.html` / `app.js`（ハッシュルーティング）/ `ui.js` / `db.js` / `views/*.js`（各画面）/ `styles.css`。
+`index.html` / `app.js`（ハッシュルーティング）/ `dom.js` / `db.js` / `prefs.js` / `training.js` / `views/*.js`（各画面）/ `styles.css`。
 各 view は `export const view = { id, label, mount(container) }` を出す。
 配色はヘッダーの丸3つで切り替える（gruvbox light / catppuccin latte / tokyonight night）。色は `styles.css` の `--gb-*` にだけ書き、画面側は参照する。
+
+`manifest.json` / `sw.js` で PWA にしてある。一度開けば機内モードでも記録・履歴・グラフが開く（手元のファイルは network-first、CDN はキャッシュ優先なので、版数を手で上げなくても更新は届く）。
 
 ## テストデータ
 
@@ -50,6 +52,8 @@ Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グ
 ## 開発
 
 ローカルは `python3 -m http.server 8000` → http://localhost:8000/（`file://` では ESM が動かない）。
+テストは `node --test`（`training.test.mjs`、依存なし）。
+PWA の挙動（オフライン）は https か localhost でしか試せない。
 
 変更は issue → ブランチ → PR → マージ（`.pi/skills/issue-pr-flow/SKILL.md`）。
 
