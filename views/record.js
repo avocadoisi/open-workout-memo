@@ -1,5 +1,5 @@
 import { getAll, put, remove } from '../db.js';
-import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
+import { byId, collapseRow, el, iconButton, option, setStatus, setTable } from '../dom.js';
 import { groupSets, groupTitle, partSummary, todayString, volumeOf } from '../training.js';
 import { icon } from '../icons.js';
 
@@ -62,8 +62,11 @@ function buildGroup(group) {
     setTable(group.sets, {
       extra: (set) => [el('div', { class: 'set-actions' },
         iconButton('pencil', '編集', () => startEditing(set)),
-        iconButton('trash', '削除', async () => {
+        iconButton('trash', '削除', async (event) => {
+          // currentTarget は await をまたぐと null になるので先に取る
+          const row = event.currentTarget.closest('.set-row');
           await remove('workoutSet', set.id);
+          await collapseRow(row);
           await renderSets();
         }),
       )],
@@ -169,8 +172,9 @@ function wireEvents() {
       return;
     }
 
+    const id = editingId ?? crypto.randomUUID();
     await put('workoutSet', {
-      id: editingId ?? crypto.randomUUID(),
+      id,
       date,
       exerciseId,
       weight,
@@ -180,6 +184,8 @@ function wireEvents() {
     const updated = editingId !== null;
     stopEditing();
     await renderSets();
+    // 保存した行だけ、下から出す動きで示す
+    byId('set-list').querySelector(`[data-id="${CSS.escape(id)}"]`)?.classList.add('is-saved');
     setStatus(updated ? '更新しました' : '記録しました');
   });
 

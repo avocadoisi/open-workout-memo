@@ -55,7 +55,7 @@ export function setHead(weightLabel = '重量') {
 }
 
 export function setRow(set, extra = []) {
-  return el('div', { class: 'set-row' },
+  return el('div', { class: 'set-row', 'data-id': set.id },
     el('div', { class: 'set-main' },
       el('span', { class: 'set-num', text: String(set.weight) }),
       el('span', { class: 'set-times', text: '×' }),
@@ -65,6 +65,17 @@ export function setRow(set, extra = []) {
     ...(set.memo ? [el('small', { text: set.memo })] : []),
     ...extra,
   );
+}
+
+// 行を畳んでから消す（DB を書き換えて再描画する前に呼ぶ。待たずに描き直すと即座に差し替わる）
+// 180ms は styles.css の .set-row.leaving と揃える
+export function collapseRow(row) {
+  if (!row) return Promise.resolve();
+  row.style.maxHeight = `${row.scrollHeight}px`;
+  row.getBoundingClientRect(); // 高さを確定させてから畳む（transition を効かせる）
+  row.classList.add('leaving');
+  row.style.maxHeight = '0px';
+  return new Promise((resolve) => setTimeout(resolve, 180));
 }
 
 export function setTable(sets, { head, extra } = {}) {
