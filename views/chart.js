@@ -60,7 +60,7 @@ function chartOptions(unit, kind) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: 250 },
+      animation: false, // 期間・種目を変えると点数が変わり、線が飛んで見えるため動かさない
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
@@ -179,7 +179,6 @@ async function mount(container) {
     );
 
     const { options } = chartOptions(part.meta.unit, part.meta.kind);
-    options.animation = false;
     const labels = [...source.data.labels];
     const values = [...source.data.datasets[0].data];
     const zoomChart = new Chart(canvas, {
