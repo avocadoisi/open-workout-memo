@@ -22,7 +22,6 @@ const CSS = `
 .zoom-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
 .zoom-head p { margin: 0; font-weight: 700; }
 .zoom-frame { position: relative; overflow: hidden; touch-action: none; cursor: grab; }
-.zoom-box { position: absolute; inset: 0; transform-origin: 0 0; }
 .zoom-hint { margin: 0; color: var(--fg-soft); font-size: 0.75rem; text-align: center; }
 `;
 
@@ -165,89 +164,106 @@ async function mount(container) {
 
   Chart.defaults.font.family = 'system-ui, -apple-system, "Hiragino Sans", sans-serif';
 
-  // タップで全画面に拡大。拡大縮小は CSS transform で行う
-  // shortcut: 6倍まで拡大すると canvas がぼける（必要になったら拡大後に描き直す）
+  // タップで全画面に拡大。拡大は canvas を引き伸ばさず、表示する日付の範囲を狭める
+  // （CSS で拡大すると軸の文字まで暈け、縦軸が読めなくなる）
   function openZoom(part) {
     const source = part.chart;
     if (!source) return;
     const closeButton = el('button', { type: 'button', class: 'icon-btn', 'aria-label': '閉じる', title: '閉じる' }, icon('close'));
     const canvas = el('canvas', {});
-    const zoomBox = el('div', { class: 'zoom-box' }, canvas);
-    const frame = el('div', { class: 'zoom-frame' }, zoomBox);
+    const frame = el('div', { class: 'zoom-frame' }, canvas);
     const overlay = el('div', { class: 'chart-zoom', role: 'dialog', 'aria-label': `${part.title}を拡大` },
       el('div', { class: 'zoom-head' }, el('p', { text: part.title }), closeButton),
       frame,
-      el('p', { class: 'zoom-hint', text: 'ピンチ / ホイールで拡大・縮小、ドラッグで移動、ダブルタップで戻す' }),
+      el('p', { class: 'zoom-hint', text: 'ピンチ / ホイールで時間軸を伸縮、ドラッグで移動、ダブルタップで戻す' }),
     );
 
     const { options } = chartOptions(part.meta.unit, part.meta.kind);
     options.animation = false;
+    const labels = [...source.data.labels];
+    const values = [...source.data.datasets[0].data];
     const zoomChart = new Chart(canvas, {
       type: source.config.type,
       data: {
-        labels: [...source.data.labels],
-        datasets: [{ ...source.data.datasets[0], data: [...source.data.datasets[0].data] }],
+        labels: [...labels],
+        datasets: [{ ...source.data.datasets[0], maxBarThickness: 40, data: [...values] }],
       },
       options,
     });
 
-    let scale = 1;
-    let x = 0;
-    let y = 0;
-    const clamp = (value) => Math.min(6, Math.max(1, value));
-    const apply = () => { zoomBox.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; };
-    // つまんだ位置（またはカーソル位置）を固定したまま拡大率を変える
-    const zoomAt = (nextScale, px, py) => {
-      const ratio = nextScale / scale;
-      scale = nextScale;
-      x = px - (px - x) * ratio;
-      y = py - (py - y) * ratio;
-      apply();
+    // 表示する点の範囲。端数を持たせると、つまんだ指に滑らかに追従する
+    const MIN_POINTS = 4;
+    const last = labels.length - 1;
+    const canZoom = last > MIN_POINTS;
+    let lo = 0;
+    let hi = last;
+    const draw = () => {
+      const start = Math.max(0, Math.floor(lo));
+      const end = Math.min(last, Math.ceil(hi));
+      zoomChart.data.labels = labels.slice(start, end + 1);
+      zoomChart.data.datasets[0].data = values.slice(start, end + 1);
+      zoomChart.update('none');
     };
-    const localPoint = (event) => {
+    // 幅を保ったまま、全体からはみ出さない位置に寄せる
+    const settle = () => {
+      const width = Math.min(last, Math.max(MIN_POINTS, hi - lo));
+      lo = Math.min(Math.max(0, lo), last - width);
+      hi = lo + width;
+    };
+    // ratio（0〜1）の位置の日付を固定したまま、表示幅を factor 倍する
+    const zoomAt = (factor, ratio) => {
+      const r = Math.min(1, Math.max(0, ratio));
+      const anchor = lo + r * (hi - lo);
+      const width = Math.min(last, Math.max(MIN_POINTS, (hi - lo) * factor));
+      lo = anchor - r * width;
+      hi = lo + width;
+      settle();
+      draw();
+    };
+    const ratioOf = (clientX) => {
       const rect = frame.getBoundingClientRect();
-      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      return (clientX - rect.left) / (rect.width || 1);
+    };
+    const panBy = (pixels) => {
+      const rect = frame.getBoundingClientRect();
+      const perPixel = (hi - lo) / (rect.width || 1);
+      lo -= pixels * perPixel;
+      hi -= pixels * perPixel;
+      settle();
+      draw();
     };
 
     const pointers = new Map();
-    let start = null;
     frame.addEventListener('pointerdown', (event) => {
       // すでに離れているポインタだと例外になるので、掴めなくても続行する
       try { frame.setPointerCapture(event.pointerId); } catch { /* 無視 */ }
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-      start = { x: event.clientX, y: event.clientY, scale };
     });
     frame.addEventListener('pointermove', (event) => {
-      if (!pointers.has(event.pointerId)) return;
+      if (!canZoom || !pointers.has(event.pointerId)) return;
       const before = [...pointers.values()];
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       const after = [...pointers.values()];
       if (after.length >= 2) {
         const distance = (list) => Math.hypot(list[0].x - list[1].x, list[0].y - list[1].y) || 1;
-        const center = localPoint({ clientX: (after[0].x + after[1].x) / 2, clientY: (after[0].y + after[1].y) / 2 });
-        zoomAt(clamp(scale * (distance(after) / distance(before))), center.x, center.y);
+        // 指を広げる（距離が増える）ほど、見せる範囲は狭くなる
+        zoomAt(distance(before) / distance(after), ratioOf((after[0].x + after[1].x) / 2));
         return;
       }
-      x += event.clientX - before[0].x;
-      y += event.clientY - before[0].y;
-      apply();
+      panBy(event.clientX - before[0].x);
     });
-    const release = (event) => {
-      pointers.delete(event.pointerId);
-      start = null;
-    };
+    const release = (event) => { pointers.delete(event.pointerId); };
     frame.addEventListener('pointerup', release);
     frame.addEventListener('pointercancel', release);
     frame.addEventListener('wheel', (event) => {
       event.preventDefault();
-      const point = localPoint(event);
-      zoomAt(clamp(scale * (event.deltaY < 0 ? 1.15 : 0.87)), point.x, point.y);
+      if (!canZoom) return;
+      zoomAt(event.deltaY < 0 ? 1 / 1.15 : 1.15, ratioOf(event.clientX));
     }, { passive: false });
     frame.addEventListener('dblclick', () => {
-      scale = 1;
-      x = 0;
-      y = 0;
-      apply();
+      lo = 0;
+      hi = last;
+      draw();
     });
 
     const close = () => {
@@ -263,7 +279,6 @@ async function mount(container) {
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     document.body.append(overlay);
-    apply();
   }
 
   function update(part, points, { unit, kind, empty }) {
