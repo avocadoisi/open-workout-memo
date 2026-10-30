@@ -161,6 +161,12 @@ header .header-actions {
   box-shadow: 0 6px 16px rgb(0 0 0 / 18%);
 }
 
+/* 押した瞬間は沈める（浮いたままより指応えが出る） */
+.tile:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 12%);
+}
+
 .tile-frame {
   position: relative;
   height: 190px;
@@ -248,6 +254,15 @@ main {
 .view {
   display: grid;
   gap: 1rem;
+  /* 画面を開いたことが分かる程度に、短く控えめに動かす */
+  animation: view-in 0.18s ease-out both;
+}
+
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
 }
 
 section {
@@ -304,6 +319,11 @@ button {
   background: var(--accent);
   border-color: transparent;
   cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.12s ease;
+}
+
+button:active {
+  transform: scale(0.97);
 }
 
 .placeholder {
@@ -572,6 +592,16 @@ button.plain {
   color: var(--fg);
   background: transparent;
   border-color: var(--border);
+}
+
+/* 動きを減らす設定の環境では、位置も透明度も動かさない */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* 幅が狭いところは縦4枚だと一覧できないので、田の字に並べる */
