@@ -583,13 +583,6 @@ li button {
   color: var(--danger);
 }
 
-#import-summary {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--fg-soft);
-  overflow-wrap: anywhere;
-}
-
 button.danger {
   color: var(--bg);
   background: var(--danger);
@@ -599,6 +592,18 @@ button.plain {
   color: var(--fg);
   background: transparent;
   border-color: var(--border);
+}
+
+/* 全削除は取り戻せないので、色でほかの操作と分ける */
+.danger-zone {
+  border-color: var(--danger);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--fg-soft);
+  overflow-wrap: anywhere;
 }
 
 /* 動きを減らす設定の環境では、位置も透明度も動かさない */

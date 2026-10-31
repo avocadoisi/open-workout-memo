@@ -38,8 +38,8 @@ export function openDB() {
 function done(tx) {
   return new Promise((resolve, reject) => {
     tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(tx.error);
+    tx.onerror = () => reject(tx.error ?? new Error('トランザクションが中断されました'));
+    tx.onabort = () => reject(tx.error ?? new Error('トランザクションが中断されました'));
   });
 }
 
@@ -135,6 +135,14 @@ export async function replaceAll(data) {
     tx.objectStore(storeName).clear();
     for (const row of rows[storeName]) tx.objectStore(storeName).put(row);
   }
+  await done(tx);
+}
+
+// 何も残さない。初期の種目と指標は次に開いたとき seedIfEmpty が入れる
+export async function clearAll() {
+  const db = await openDB();
+  const tx = db.transaction(STORES, 'readwrite');
+  for (const storeName of STORES) tx.objectStore(storeName).clear();
   await done(tx);
 }
 
