@@ -85,6 +85,7 @@ async function reloadExercises() {
   exercises = await getAll('exercise');
   exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 
+  // 種目は消さずアーカイブする（過去の記録はそのまま残す）
   byId('exercise-list').replaceChildren(...exercises.map((exercise) => {
     const label = el('span', { text: `${exercise.name}（${exercise.bodyPart}）` });
     const item = el('li', {}, label);

@@ -18,6 +18,7 @@ export function formatDate(key) {
   return `${year}年${month}月${day}日(${weekday})`;
 }
 
+// 単位は重さ kg・長さ cm の2つだけ。保存もこの単位のまま（換算はしない）
 export function unitLabel(unit) {
   return unit === 'length' ? 'cm' : 'kg';
 }
