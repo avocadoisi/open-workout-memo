@@ -56,7 +56,7 @@ Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グ
 テストは `node --test`（`training.test.mjs`、依存なし）。
 PWA の挙動（オフライン）は https か localhost でしか試せない。
 
-変更は issue → ブランチ → PR → マージ（`.pi/skills/issue-pr-flow/SKILL.md`）。
+変更は issue → ブランチ → PR → マージ（global の `dev-workflow` skill）。
 
 デプロイは自動化しない。指示があったときだけ `gh workflow run deploy.yml` を実行する
 （マージのたびに CI を走らせないため。Pages の Source は「GitHub Actions」）。
