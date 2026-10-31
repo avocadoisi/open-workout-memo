@@ -583,13 +583,6 @@ li button {
   color: var(--danger);
 }
 
-#import-summary {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--fg-soft);
-  overflow-wrap: anywhere;
-}
-
 button.danger {
   color: var(--bg);
   background: var(--danger);

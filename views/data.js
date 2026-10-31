@@ -10,6 +10,8 @@ let exercises = [];
 let metricDefs = [];
 // 読み込み待ちのインポート内容
 let pending = null;
+// 削除中に二度送信されないようにする
+let clearing = false;
 
 function finishImport() {
   pending = null;
@@ -64,7 +66,7 @@ function buildDataSection() {
     el('label', {}, 'インポート',
       el('input', { type: 'file', id: 'import-file', accept: 'application/json,.json' })),
     el('div', { id: 'import-actions', hidden: '' },
-      el('p', { id: 'import-summary' }),
+      el('p', { id: 'import-summary', class: 'hint' }),
       el('div', { class: 'form-actions' },
         el('button', { type: 'button', id: 'import-merge', text: 'マージ' }),
         el('button', { type: 'button', id: 'import-replace', class: 'danger', text: '全置換' }),
@@ -85,7 +87,7 @@ function buildClearSection() {
         id: 'clear-confirm',
         autocomplete: 'off',
         autocapitalize: 'off',
-        required: '',
+        'aria-describedby': 'clear-hint',
       })),
       el('button', { type: 'submit', class: 'danger', text: 'すべて消す' }),
     ),
@@ -289,15 +291,32 @@ function wireEvents() {
   // 打った文字がタイトルと一致したときだけ消す（全置換の window.confirm とは別の、強い確認）
   byId('clear-form').addEventListener('submit', async (event) => {
     event.preventDefault();
+    // 日本語入力の変換確定 Enter は送信として扱わない（打ち終わる前の値で判定しない）
+    if (event.isComposing || clearing) return;
+
+    const input = byId('clear-confirm');
     const title = currentTitle();
-    if (byId('clear-confirm').value.trim() !== title) {
+    if (normalizeName(input.value) !== normalizeName(title)) {
+      input.setAttribute('aria-invalid', 'true');
+      input.focus();
       setStatus(`タイトルが違います。「${title}」と入力してください`, true);
       return;
     }
-    await clearAll();
-    byId('clear-confirm').value = '';
-    await reloadAll();
-    setStatus('すべてのデータを削除しました');
+    input.removeAttribute('aria-invalid');
+
+    clearing = true;
+    try {
+      await clearAll();
+    } catch (error) {
+      setStatus(`削除に失敗しました: ${error.message}`, true);
+      return;
+    } finally {
+      clearing = false;
+    }
+    // 消す前に選んでいたインポートを、消したあとに流し込まないようにする
+    finishImport();
+    input.value = '';
+    setStatus('すべてのデータを削除しました。開き直すと初期の種目と体重が入ります');
   });
 }
 
