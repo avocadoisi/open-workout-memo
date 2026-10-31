@@ -138,6 +138,14 @@ export async function replaceAll(data) {
   await done(tx);
 }
 
+// 何も残さない。初期の種目と指標は次に開いたとき seedIfEmpty が入れる
+export async function clearAll() {
+  const db = await openDB();
+  const tx = db.transaction(STORES, 'readwrite');
+  for (const storeName of STORES) tx.objectStore(storeName).clear();
+  await done(tx);
+}
+
 // 既存のデータは残したまま、同じ id のものだけ上書きする
 export async function mergeAll(data) {
   const rows = exportRows(data);

@@ -1,5 +1,6 @@
-import { getAll, put, exportAll, mergeAll, replaceAll } from '../db.js';
+import { getAll, put, exportAll, clearAll, mergeAll, replaceAll } from '../db.js';
 import { byId, el, iconButton, option, setStatus } from '../dom.js';
+import { currentTitle } from '../prefs.js';
 import { todayString, unitLabel } from '../training.js';
 import { icon } from '../icons.js';
 
@@ -69,6 +70,24 @@ function buildDataSection() {
         el('button', { type: 'button', id: 'import-replace', class: 'danger', text: '全置換' }),
         el('button', { type: 'button', id: 'import-cancel', class: 'plain', text: 'やめる' }),
       ),
+    ),
+  );
+}
+
+// 消すのは取り戻せないので、消す対象の名前（タイトル）を打たせてから消す
+function buildClearSection() {
+  return el('section', { class: 'danger-zone' },
+    el('h2', { text: '全削除' }),
+    el('p', { class: 'hint', id: 'clear-hint' }),
+    el('form', { id: 'clear-form' },
+      el('label', {}, 'タイトル', el('input', {
+        type: 'text',
+        id: 'clear-confirm',
+        autocomplete: 'off',
+        autocapitalize: 'off',
+        required: '',
+      })),
+      el('button', { type: 'submit', class: 'danger', text: 'すべて消す' }),
     ),
   );
 }
@@ -266,11 +285,32 @@ function wireEvents() {
     finishImport();
     setStatus('インポートをやめました');
   });
+
+  // 打った文字がタイトルと一致したときだけ消す（全置換の window.confirm とは別の、強い確認）
+  byId('clear-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const title = currentTitle();
+    if (byId('clear-confirm').value.trim() !== title) {
+      setStatus(`タイトルが違います。「${title}」と入力してください`, true);
+      return;
+    }
+    await clearAll();
+    byId('clear-confirm').value = '';
+    await reloadAll();
+    setStatus('すべてのデータを削除しました');
+  });
+}
+
+// タイトルは設定で変わるので、画面を開くたびに今のタイトルで案内を組み直す
+function renderClearHint() {
+  byId('clear-hint').textContent =
+    `いまのタイトル「${currentTitle()}」を入力すると、記録・種目・指標をすべて消します。元に戻せません。`;
 }
 
 async function mount(container) {
-  container.append(buildExerciseSection(), buildMetricSection(), buildDataSection());
+  container.append(buildExerciseSection(), buildMetricSection(), buildDataSection(), buildClearSection());
   byId('metric-date').value = todayString();
+  renderClearHint();
   await reloadAll();
   wireEvents();
 }
