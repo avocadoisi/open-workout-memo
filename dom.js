@@ -45,7 +45,7 @@ export function setStatus(message, isError = false) {
 }
 
 // セット表は記録・保存画像・履歴で同じ形にする（列ズレを防ぐ）
-export function setHead(weightLabel = '重量') {
+function setHead(weightLabel = '重量') {
   return el('div', { class: 'set-head' },
     el('span', { text: weightLabel }),
     el('span', {}),
@@ -54,7 +54,7 @@ export function setHead(weightLabel = '重量') {
   );
 }
 
-export function setRow(set, extra = []) {
+function setRow(set, extra = []) {
   return el('div', { class: 'set-row', 'data-id': set.id },
     el('div', { class: 'set-main' },
       el('span', { class: 'set-num', text: String(set.weight) }),
