@@ -12,7 +12,13 @@ import {
   volumeOf,
 } from './training.js';
 
-const set = (weight, reps, exerciseId = 'a') => ({ id: `${exerciseId}-${weight}-${reps}`, exerciseId, weight, reps });
+const set = (weight, reps, exerciseId = 'a', createdAt) => ({
+  id: `${exerciseId}-${weight}-${reps}-${createdAt}`,
+  exerciseId,
+  weight,
+  reps,
+  createdAt,
+});
 
 test('formatDate は曜日つきで日本語にする', () => {
   assert.equal(formatDate('2026-10-30'), '2026年10月30日(金)');
@@ -53,14 +59,30 @@ test('bestSet は推定1RMが一番高いセットを返す', () => {
   assert.equal(bestSet([light, heavy]), heavy);
 });
 
-test('groupSets は種目名でまとめ、セットを重量→回数で並べる', () => {
+test('groupSets は createdAt の順に並べ、セットを重量で並べ替えない', () => {
   const groups = groupSets(
-    [set(100, 5, 'b'), set(60, 10, 'a'), set(60, 5, 'a'), set(100, 3, 'b')],
+    [set(100, 5, 'b', 4), set(60, 10, 'a', 3), set(60, 5, 'a', 2), set(80, 8, 'b', 1)],
     [{ id: 'a', name: 'ベンチプレス', bodyPart: '胸' }, { id: 'b', name: 'スクワット', bodyPart: '脚' }],
   );
-  assert.deepEqual(groups.map((group) => group.name), ['スクワット', 'ベンチプレス']);
-  assert.deepEqual(groups[0].sets.map((item) => [item.weight, item.reps]), [[100, 3], [100, 5]]);
+  assert.deepEqual(groups.map((group) => group.name), ['スクワット', 'ベンチプレス', 'スクワット']);
   assert.deepEqual(groups[1].sets.map((item) => [item.weight, item.reps]), [[60, 5], [60, 10]]);
+});
+
+test('groupSets は同じ種目が再登場したら別グループにする', () => {
+  const groups = groupSets(
+    [set(100, 5, 'a', 1), set(60, 10, 'a', 2), set(80, 5, 'b', 3), set(70, 10, 'a', 4)],
+    [{ id: 'a', name: 'ベンチプレス', bodyPart: '胸' }, { id: 'b', name: 'スクワット', bodyPart: '脚' }],
+  );
+  assert.deepEqual(groups.map((group) => group.name), ['ベンチプレス', 'スクワット', 'ベンチプレス']);
+  assert.deepEqual(groups.map((group) => group.sets.length), [2, 1, 1]);
+});
+
+test('groupSets は createdAt の無い古い行を 0 として元の配列順のまま先頭に置く', () => {
+  const [group] = groupSets(
+    [set(60, 10, 'a'), set(100, 5, 'a'), set(60, 5, 'a', 10)],
+    [{ id: 'a', name: 'ベンチプレス', bodyPart: '胸' }],
+  );
+  assert.deepEqual(group.sets.map((item) => [item.weight, item.reps]), [[60, 10], [100, 5], [60, 5]]);
 });
 
 test('groupSets は種目マスタに無い id を「不明な種目」にする', () => {

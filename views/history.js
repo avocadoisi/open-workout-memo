@@ -155,7 +155,7 @@ function buildExerciseHistory() {
   const name = state.exercises.find((exercise) => exercise.id === state.exerciseId)?.name ?? '種目';
   const sets = state.sets
     .filter((set) => set.exerciseId === state.exerciseId)
-    .sort((a, b) => b.date.localeCompare(a.date) || a.weight - b.weight || a.reps - b.reps);
+    .sort((a, b) => b.date.localeCompare(a.date) || (a.createdAt ?? 0) - (b.createdAt ?? 0));
 
   const section = el('section', { class: 'hist-detail' }, el('h2', { text: `${name} の履歴` }));
   if (sets.length === 0) {
