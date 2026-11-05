@@ -36,6 +36,7 @@ test('unitLabel は kg と cm', () => {
 
 test('estimate1RM は O\'Conner 式を小数1桁で返す', () => {
   assert.equal(estimate1RM(100, 3), 107.5); // 100*(1+3/40) = 107.5
+  assert.equal(estimate1RM(110, 10), 137.5); // 110*(1+10/40) = 137.5
   assert.equal(estimate1RM(50, 8), 60); // 50*(1+8/40) = 60
   assert.equal(estimate1RM(100, 1), 100); // 1回は重量そのもの
   assert.equal(estimate1RM(90, 1), 90); // 1回は推定しない（90 を 92.3 にしない）
