@@ -123,8 +123,8 @@ async function mount(container) {
 
   const rangeSelect = el('select', { 'aria-label': '期間' },
     ...RANGES.map((range) => option(range.value, range.label)));
-  const series = buildSection('種目の推移', ['種目', '表示']);
-  const [exerciseSelect, modeSelect] = series.selects;
+  const series = buildSection('種目の推移', ['部位', '種目', '表示']);
+  const [partSelect, exerciseSelect, modeSelect] = series.selects;
   modeSelect.replaceChildren(option('rm', '推定1RM'), option('volume', 'ボリューム'));
   const metric = buildSection('指標の推移', ['指標']);
   const [metricSelect] = metric.selects;
@@ -135,14 +135,28 @@ async function mount(container) {
     metric.section,
   );
 
-  const exerciseOptions = () => exercises.map((exercise) =>
-    option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
+  // 部位の選択肢は種目から作る（空の部位は除く）
+  const parts = [...new Set(exercises.map((exercise) => exercise.bodyPart).filter(Boolean))];
 
   // アーカイブ済みの種目も過去の記録を見るために残す
-  exerciseSelect.replaceChildren(...exerciseOptions());
+  const exerciseOptions = (part) => exercises
+    .filter((exercise) => !part || exercise.bodyPart === part)
+    .map((exercise) => option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
+
+  // 部位を変えたら種目の選択肢を作り直す。選択中の種目がその部位に無ければ先頭に切り替える
+  function selectPart(part) {
+    const before = exerciseSelect.value;
+    const options = exerciseOptions(part);
+    exerciseSelect.replaceChildren(...options);
+    exerciseSelect.value = options.some((node) => node.value === before) ? before : (options[0]?.value ?? '');
+  }
+
+  partSelect.replaceChildren(option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
+  selectPart('');
   metricSelect.replaceChildren(...metricDefs.map((def) => option(def.id, def.name)));
 
   if (exercises.length === 0) {
+    partSelect.disabled = true;
     exerciseSelect.disabled = true;
     series.message.textContent = '種目がありません';
   }
@@ -364,6 +378,10 @@ async function mount(container) {
     }
   }
 
+  partSelect.addEventListener('change', () => {
+    selectPart(partSelect.value);
+    render();
+  });
   for (const select of [rangeSelect, exerciseSelect, modeSelect, metricSelect]) {
     select.addEventListener('change', render);
   }
