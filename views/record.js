@@ -77,13 +77,17 @@ function buildGroup(group) {
 }
 
 async function renderSets() {
+  const list = byId('set-list');
+  if (!list) return;
   const date = byId('set-date').value;
   const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
+  // 読み込み待ちの間に画面を離れていたら、消えた画面は触らない
+  if (!list.isConnected) return;
 
   byId('set-count').textContent = sets.length
     ? `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg`
     : '合計 0 セット';
-  byId('set-list').replaceChildren(
+  list.replaceChildren(
     ...groupSets(sets, exercises).map((group) => buildGroup(group)),
   );
 }
@@ -149,14 +153,28 @@ async function startEditing(set) {
   byId('set-weight').focus();
 }
 
-// 重量と回数だけをフォームへ移し、新しいセットとして保存できる状態にする
-function copySet(set) {
-  formRevision++;
-  if (editingId !== null) stopEditing();
-  byId('set-weight').value = String(set.weight);
-  byId('set-reps').value = String(set.reps);
-  byId('set-form').scrollIntoView({ block: 'start', behavior: 'smooth' });
-  byId('set-reps').focus();
+// 同じ日付・種目・重量・回数のセットを、その場でもう1行追加する
+async function copySet(set) {
+  const form = byId('set-form');
+  const row = {
+    id: crypto.randomUUID(),
+    date: set.date,
+    exerciseId: set.exerciseId,
+    weight: set.weight,
+    reps: set.reps,
+    memo: '',
+    createdAt: Date.now(),
+  };
+  try {
+    await put('workoutSet', row);
+  } catch (error) {
+    setStatus(`コピーに失敗しました: ${error.message}`, true);
+    return;
+  }
+  // 保存待ちの間に画面を離れていたら、消えた画面は触らない
+  if (!form.isConnected) return;
+  await renderSets();
+  byId('set-list').querySelector(`[data-id="${CSS.escape(row.id)}"]`)?.classList.add('is-saved');
   setStatus(`${set.weight} kg × ${set.reps} 回をコピーしました`);
 }
 
@@ -276,6 +294,9 @@ function wireEvents() {
 
 async function mount(container) {
   container.append(buildForm(), buildList());
+  // 画面を作り直したら編集状態も捨てる。前の画面の編集開始処理も無効にする
+  stopEditing();
+  formRevision++;
   const today = todayString();
   byId('set-date').value = today;
   await reloadExercises();
