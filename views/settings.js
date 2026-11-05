@@ -1,5 +1,21 @@
 import { byId, el, setStatus } from '../dom.js';
-import { THEMES, TITLE_MAX, SET_ORDERS, applyTheme, applyTitle, applySetOrder, currentSetOrder, currentTheme, currentTitle } from '../prefs.js';
+import { THEMES, TITLE_MAX, applyTheme, applyTitle, currentTheme, currentTitle } from '../prefs.js';
+
+// 並び順はこの画面と記録画面だけが使う。Service Worker の部分更新で
+// prefs.js の新旧が混ざっても起動できるよう、依存を増やさずここで完結させる
+const ORDER_KEY = 'owa-set-order';
+const SET_ORDERS = [
+  { id: 'asc', label: '古い順' },
+  { id: 'desc', label: '新しい順' },
+];
+
+function currentSetOrder() {
+  return localStorage.getItem(ORDER_KEY) === 'desc' ? 'desc' : 'asc';
+}
+
+function applySetOrder(order) {
+  localStorage.setItem(ORDER_KEY, order === 'desc' ? 'desc' : 'asc');
+}
 
 // タイルには並べず、ヘッダーの歯車からだけ開く
 export const view = { id: 'settings', label: '設定', tile: false, mount };

@@ -2,7 +2,10 @@ import { getAll, put, remove } from '../db.js';
 import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
 import { groupSets, groupTitle, partSummary, todayString, volumeOf } from '../training.js';
 import { icon } from '../icons.js';
-import { currentSetOrder } from '../prefs.js';
+// 並び順の設定キーは views/settings.js と共有する（prefs.js を介さない）
+function newestFirst() {
+  return localStorage.getItem('owa-set-order') === 'desc';
+}
 
 export const view = { id: 'record', label: '記録', mount };
 
@@ -89,7 +92,7 @@ async function renderSets() {
     ? `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg`
     : '合計 0 セット';
   const groups = groupSets(sets, exercises);
-  if (currentSetOrder() === 'desc') {
+  if (newestFirst()) {
     groups.reverse();
     for (const group of groups) group.sets.reverse();
   }
