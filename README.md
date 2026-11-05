@@ -32,7 +32,7 @@ metricLog:  { id, date, metricDefId, value }
 ```
 
 インポートは全置換（確認あり、未知の `schemaVersion` は拒否）。
-`createdAt` を持たない古い記録は 0 として扱い、読み込んだ順（`getAll` の順）のまま先頭に並ぶ（新しい順では末尾）。
+`createdAt` を持たない古い記録は 0 として扱う。古い順では読み込んだ順（`getAll` の順）で先頭に、新しい順ではその逆順で末尾に並ぶ。
 
 ## 構成
 
