@@ -189,7 +189,8 @@ function wireEvents() {
     // 保存した行だけ、下から出す動きで示す
     byId('set-list').querySelector(`[data-id="${CSS.escape(id)}"]`)?.classList.add('is-saved');
     setStatus(updated ? '更新しました' : '記録しました');
-    byId('set-weight').focus();
+    // 重量は残っているので、そのまま回数を入れられるようにする
+    byId('set-reps').focus();
   });
 
   byId('set-cancel').addEventListener('click', () => {
