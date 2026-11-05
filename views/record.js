@@ -77,13 +77,17 @@ function buildGroup(group) {
 }
 
 async function renderSets() {
+  const list = byId('set-list');
+  if (!list) return;
   const date = byId('set-date').value;
   const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
+  // 読み込み待ちの間に画面を離れていたら、消えた画面は触らない
+  if (!list.isConnected) return;
 
   byId('set-count').textContent = sets.length
     ? `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg`
     : '合計 0 セット';
-  byId('set-list').replaceChildren(
+  list.replaceChildren(
     ...groupSets(sets, exercises).map((group) => buildGroup(group)),
   );
 }
@@ -164,7 +168,7 @@ async function copySet(set) {
   try {
     await put('workoutSet', row);
   } catch (error) {
-    if (form.isConnected) setStatus(`コピーに失敗しました: ${error.message}`, true);
+    setStatus(`コピーに失敗しました: ${error.message}`, true);
     return;
   }
   // 保存待ちの間に画面を離れていたら、消えた画面は触らない
