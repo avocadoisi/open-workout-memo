@@ -62,6 +62,7 @@ function buildGroup(group) {
     setTable(group.sets, {
       extra: (set) => [el('div', { class: 'set-actions' },
         iconButton('pencil', '編集', () => startEditing(set)),
+        iconButton('copy', 'コピー', () => copySet(set)),
         iconButton('trash', '削除', async () => {
           await remove('workoutSet', set.id);
           await renderSets();
@@ -138,6 +139,16 @@ async function startEditing(set) {
   byId('set-cancel').hidden = false;
   byId('set-form').scrollIntoView({ block: 'start', behavior: 'smooth' });
   byId('set-weight').focus();
+}
+
+// 重量と回数だけをフォームへ移し、新しいセットとして保存できる状態にする
+function copySet(set) {
+  if (editingId !== null) stopEditing();
+  byId('set-weight').value = String(set.weight);
+  byId('set-reps').value = String(set.reps);
+  byId('set-form').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  byId('set-reps').focus();
+  setStatus(`${set.weight} kg × ${set.reps} 回をコピーしました`);
 }
 
 function stopEditing() {
