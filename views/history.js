@@ -117,8 +117,13 @@ function buildDetail() {
     return section;
   }
 
+  // 種目で絞っても split が再結合されないよう、日全体でグループを作ってから絞る
+  const dayAll = state.sets.filter((set) => set.date === state.selected);
+  const groups = groupSets(dayAll, state.exercises)
+    .filter((group) => !state.exerciseId || group.sets[0].exerciseId === state.exerciseId);
+
   // 記録画面と同じ構造にして見た目を揃える
-  for (const group of groupSets(sets, state.exercises)) {
+  for (const group of groups) {
     section.append(el('div', { class: 'group' },
       el('h3', {}, ...groupTitle(group)),
       setTable(group.sets),
@@ -186,39 +191,45 @@ function buildExerciseHistory() {
 
 // 選んだ部位のセットを日付の新しい順に、日ごとに種目でまとめる
 function buildPartHistory() {
-  const parts = new Map(state.exercises.map((exercise) => [exercise.id, exercise.bodyPart]));
-  const sets = state.sets
-    .filter((set) => !state.part || parts.get(set.exerciseId) === state.part)
-    .sort((a, b) => b.date.localeCompare(a.date));
-
-  const section = el('section', { class: 'hist-detail' },
-    el('h2', { text: state.part ? `${state.part} の履歴` : 'すべての部位の履歴' }));
-  if (sets.length === 0) {
-    section.append(el('p', { class: 'hist-empty', text: '記録なし' }));
-    return section;
-  }
-
+  const all = [...state.sets].sort((a, b) => b.date.localeCompare(a.date));
   const byDate = new Map();
-  for (const set of sets) {
+  for (const set of all) {
     if (!byDate.has(set.date)) byDate.set(set.date, []);
     byDate.get(set.date).push(set);
   }
 
+  // 部位で絞る前に日ごとのグループ（split の境界）を作る
+  const groupsByDate = new Map();
+  for (const [date, list] of byDate) {
+    const groups = groupSets(list, state.exercises)
+      .filter((group) => !state.part || group.bodyPart === state.part);
+    if (groups.length > 0) groupsByDate.set(date, groups);
+  }
+
+  const section = el('section', { class: 'hist-detail' },
+    el('h2', { text: state.part ? `${state.part} の履歴` : 'すべての部位の履歴' }));
+  if (groupsByDate.size === 0) {
+    section.append(el('p', { class: 'hist-empty', text: '記録なし' }));
+    return section;
+  }
+
+  const sets = [...groupsByDate.values()].flatMap((groups) => groups.flatMap((group) => group.sets));
   section.append(el('p', { class: 'hist-summary' },
-    el('span', { text: `記録 ${byDate.size} 日・合計 ${sets.length} セット` }),
+    el('span', { text: `記録 ${groupsByDate.size} 日・合計 ${sets.length} セット` }),
     el('span', { text: `ボリューム ${volumeOf(sets)} kg` }),
   ));
 
-  for (const [date, list] of recentDays(byDate)) {
+  for (const [date, groups] of recentDays(groupsByDate)) {
+    const list = groups.flatMap((group) => group.sets);
     section.append(el('div', { class: 'group' },
       el('h3', { text: `${formatDate(date)} 合計 ${list.length} セット・ボリューム ${volumeOf(list)} kg` }),
-      ...groupSets(list, state.exercises).map((group) => el('div', {},
+      ...groups.map((group) => el('div', {},
         el('h4', {}, ...groupTitle(group)),
         setTable(group.sets),
       )),
     ));
   }
-  appendMore(section, byDate);
+  appendMore(section, groupsByDate);
   return section;
 }
 

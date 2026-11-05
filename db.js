@@ -101,7 +101,8 @@ const isOptionalText = (value) => value === undefined || typeof value === 'strin
 // 壊れた行を書き込むと画面が読めなくなるので、必須項目と型だけは必ず見る
 const ROW_CHECKS = {
   exercise: (row) => isText(row.name) && isOptionalText(row.bodyPart) && (row.archived === undefined || typeof row.archived === 'boolean'),
-  workoutSet: (row) => isText(row.date) && isText(row.exerciseId) && isNumber(row.weight) && isNumber(row.reps) && isOptionalText(row.memo),
+  workoutSet: (row) => isText(row.date) && isText(row.exerciseId) && isNumber(row.weight) && isNumber(row.reps)
+    && isOptionalText(row.memo) && (row.createdAt === undefined || isNumber(row.createdAt)),
   metricDef: (row) => isText(row.name) && (row.unit === 'weight' || row.unit === 'length'),
   metricLog: (row) => isText(row.date) && isText(row.metricDefId) && isNumber(row.value),
 };
