@@ -32,6 +32,7 @@ test('estimate1RM は O\'Conner 式を小数1桁で返す', () => {
   assert.equal(estimate1RM(100, 3), 107.5); // 100*(1+3/40) = 107.5
   assert.equal(estimate1RM(50, 8), 60); // 50*(1+8/40) = 60
   assert.equal(estimate1RM(100, 1), 102.5); // 100*(1+1/40) = 102.5
+  assert.equal(estimate1RM(90, 1), 92.3); // 92.25 の丸め（浮動小数で 92.2 にしない）
 });
 
 test('estimate1RM は同じ重量なら回数が増えるほど上がる', () => {
