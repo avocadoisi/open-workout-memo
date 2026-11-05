@@ -143,12 +143,11 @@ async function mount(container) {
     .filter((exercise) => !part || exercise.bodyPart === part)
     .map((exercise) => option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
 
-  // 部位を変えたら種目の選択肢を作り直す。選択中の種目がその部位に無ければ先頭に切り替える
+  // 部位を変えたら種目の選択肢を作り直し、その部位の先頭の種目に切り替える
   function selectPart(part) {
-    const before = exerciseSelect.value;
     const options = exerciseOptions(part);
     exerciseSelect.replaceChildren(...options);
-    exerciseSelect.value = options.some((node) => node.value === before) ? before : (options[0]?.value ?? '');
+    exerciseSelect.value = options[0]?.value ?? '';
   }
 
   partSelect.replaceChildren(option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
@@ -173,6 +172,8 @@ async function mount(container) {
       part.message.textContent = 'グラフを描画できませんでした';
       part.box.hidden = true;
     }
+    // 描画できないときは絞り込みも効かないので、操作できないようにする
+    for (const select of [rangeSelect, partSelect, exerciseSelect, modeSelect, metricSelect]) select.disabled = true;
     return;
   }
 
