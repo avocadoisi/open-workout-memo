@@ -7,14 +7,8 @@ export const THEMES = [
 
 const THEME_KEY = 'owa-theme';
 const TITLE_KEY = 'owa-title';
-const ORDER_KEY = 'owa-set-order';
 export const DEFAULT_TITLE = '挙上log';
 export const TITLE_MAX = 12;
-
-export const SET_ORDERS = [
-  { id: 'asc', label: '古い順' },
-  { id: 'desc', label: '新しい順' },
-];
 
 export function currentTheme() {
   const id = document.documentElement.dataset.theme;
@@ -40,13 +34,4 @@ export function applyTitle(value) {
   const brand = document.getElementById('brand-title');
   if (brand) brand.textContent = title;
   return title;
-}
-
-// 記録画面のセット一覧を古い順（入力順）に出すか、新しい順に出すか
-export function currentSetOrder() {
-  return localStorage.getItem(ORDER_KEY) === 'desc' ? 'desc' : 'asc';
-}
-
-export function applySetOrder(order) {
-  localStorage.setItem(ORDER_KEY, order === 'desc' ? 'desc' : 'asc');
 }
