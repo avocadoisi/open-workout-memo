@@ -144,7 +144,10 @@ function stopEditing() {
   editingId = null;
   byId('set-submit').textContent = '保存';
   byId('set-cancel').hidden = true;
-  for (const id of ['set-weight', 'set-reps', 'set-memo']) byId(id).value = '';
+}
+
+function clearFields(ids) {
+  for (const id of ids) byId(id).value = '';
 }
 
 function wireEvents() {
@@ -180,19 +183,32 @@ function wireEvents() {
     });
     const updated = editingId !== null;
     stopEditing();
+    // 同じ重量で続けて記録する導線を優先し、重量だけ残す
+    clearFields(['set-reps', 'set-memo']);
     await renderSets();
     // 保存した行だけ、下から出す動きで示す
     byId('set-list').querySelector(`[data-id="${CSS.escape(id)}"]`)?.classList.add('is-saved');
     setStatus(updated ? '更新しました' : '記録しました');
+    byId('set-weight').focus();
   });
 
   byId('set-cancel').addEventListener('click', () => {
     stopEditing();
+    clearFields(['set-weight', 'set-reps', 'set-memo']);
     setStatus('編集をやめました');
   });
 
   byId('set-date').addEventListener('change', renderSets);
-  byId('set-part').addEventListener('change', () => fillExerciseOptions());
+  byId('set-exercise').addEventListener('change', () => {
+    // 種目が変わると前の種目の重量は意味を持たないので消す
+    clearFields(['set-weight']);
+  });
+  byId('set-part').addEventListener('change', () => {
+    // 部位の変更で種目が切り替わったときも重量を消す
+    const previous = byId('set-exercise').value;
+    fillExerciseOptions();
+    if (byId('set-exercise').value !== previous) clearFields(['set-weight']);
+  });
 
   byId('exercise-history').addEventListener('click', () => {
     const exerciseId = byId('set-exercise').value;
