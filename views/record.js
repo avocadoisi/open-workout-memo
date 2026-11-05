@@ -10,6 +10,8 @@ const MEMO_MAX = 30;
 let exercises = [];
 // 編集中のセット id。null なら新規入力
 let editingId = null;
+// 編集開始や保存の待機中にコピーが入ったら、古い処理の続きを捨てるための番号
+let formRevision = 0;
 
 function buildForm() {
   return el('section', {},
@@ -29,7 +31,7 @@ function buildForm() {
           }, icon('chart')),
         )),
       el('label', {}, '重量 (kg)',
-        el('input', { type: 'number', id: 'set-weight', min: '0', step: '0.5', inputmode: 'decimal', required: '' })),
+        el('input', { type: 'number', id: 'set-weight', min: '0', step: 'any', inputmode: 'decimal', required: '' })),
       el('label', {}, '回数',
         el('input', { type: 'number', id: 'set-reps', min: '1', step: '1', inputmode: 'numeric', required: '' })),
       el('label', {}, 'メモ', el('input', { type: 'text', id: 'set-memo', maxlength: String(MEMO_MAX) })),
@@ -127,9 +129,12 @@ async function reloadExercises() {
 }
 
 async function startEditing(set) {
+  const revision = ++formRevision;
   editingId = set.id;
   byId('set-date').value = set.date;
   await renderSets();
+  // 待っている間にコピーや別の編集が始まったら、こちらの続きは捨てる
+  if (revision !== formRevision) return;
   byId('set-part').value = exercises.find((e) => e.id === set.exerciseId)?.bodyPart ?? '';
   fillExerciseOptions(set.exerciseId);
   byId('set-weight').value = String(set.weight);
@@ -143,6 +148,7 @@ async function startEditing(set) {
 
 // 重量と回数だけをフォームへ移し、新しいセットとして保存できる状態にする
 function copySet(set) {
+  formRevision++;
   if (editingId !== null) stopEditing();
   byId('set-weight').value = String(set.weight);
   byId('set-reps').value = String(set.reps);
@@ -184,6 +190,8 @@ function wireEvents() {
     }
 
     const id = editingId ?? crypto.randomUUID();
+    const revision = formRevision;
+    const updated = editingId !== null;
     await put('workoutSet', {
       id,
       date,
@@ -193,9 +201,12 @@ function wireEvents() {
       memo,
     });
     const updated = editingId !== null;
-    stopEditing();
-    // 同じ重量で続けて記録する導線を優先し、重量だけ残す
-    clearFields(['set-reps', 'set-memo']);
+    // 保存待ちの間にコピーされた入力を消さない
+    if (revision === formRevision) {
+      stopEditing();
+      // 同じ重量で続けて記録する導線を優先し、重量だけ残す
+      clearFields(['set-reps', 'set-memo']);
+    }
     await renderSets();
     // 保存した行だけ、下から出す動きで示す
     byId('set-list').querySelector(`[data-id="${CSS.escape(id)}"]`)?.classList.add('is-saved');
