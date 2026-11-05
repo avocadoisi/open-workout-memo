@@ -8,7 +8,8 @@
 「開いて、書いて、閉じる」。アカウントもサーバーも同期もない。
 データはブラウザの IndexedDB に置き、静的サイトとして配信する。所有はエクスポートで担保する。
 
-- 記録は 1 セット = 1 レコード（日付 / 種目 / 重量 kg / 回数 / メモ）
+- 記録は 1 セット = 1 レコード（日付 / 種目 / 重量 kg / 回数 / メモ / 保存時刻）
+- 記録の並びは入力した順。同じ種目が連続する範囲だけをまとめる（ベンチ→スクワット→ベンチ は 3 グループ）
 - 推定 1RM は O'Conner `weight * (1 + reps / 40)`。10 回超は参考値と注記
 - 種目・部位は UI から追加。削除はアーカイブ（過去の記録は残す）
 - 体重などの指標は筋トレと別トラック（単位は重さ / 長さ）。保存は kg / cm 固定
@@ -24,13 +25,14 @@
 
 ```js
 exercise:   { id, name, bodyPart, archived }        // 初期は Big3
-workoutSet: { id, date, exerciseId, weight, reps, memo }  // date は 'YYYY-MM-DD'、weight は kg
+workoutSet: { id, date, exerciseId, weight, reps, memo, createdAt }  // date は 'YYYY-MM-DD'、weight は kg、createdAt は保存時刻（Date.now()）
 metricDef:  { id, name, unit: 'weight' | 'length' }
 metricLog:  { id, date, metricDefId, value }
 // export/import: { schemaVersion: 1, exportedAt, exercises, workoutSets, metricDefs, metricLogs }
 ```
 
 インポートは全置換（確認あり、未知の `schemaVersion` は拒否）。
+`createdAt` を持たない古い記録は 0 として扱い、読み込んだ順（`getAll` の順）のまま先頭に並ぶ。
 
 ## 構成
 

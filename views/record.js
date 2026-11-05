@@ -10,6 +10,8 @@ const MEMO_MAX = 30;
 let exercises = [];
 // 編集中のセット id。null なら新規入力
 let editingId = null;
+// 編集中のセットの createdAt。古い行は未保存なので undefined のまま引き継ぐ
+let editingCreatedAt;
 // 編集開始や保存の待機中にコピーが入ったら、古い処理の続きを捨てるための番号
 let formRevision = 0;
 
@@ -131,6 +133,7 @@ async function reloadExercises() {
 async function startEditing(set) {
   const revision = ++formRevision;
   editingId = set.id;
+  editingCreatedAt = set.createdAt;
   byId('set-date').value = set.date;
   await renderSets();
   // 待っている間にコピーや別の編集が始まったら、こちらの続きは捨てる
@@ -159,6 +162,7 @@ function copySet(set) {
 
 function stopEditing() {
   editingId = null;
+  editingCreatedAt = undefined;
   byId('set-submit').textContent = '保存';
   byId('set-cancel').hidden = true;
 }
@@ -191,15 +195,11 @@ function wireEvents() {
 
     const id = editingId ?? crypto.randomUUID();
     const revision = formRevision;
-    const updated = editingId !== null;
-    await put('workoutSet', {
-      id,
-      date,
-      exerciseId,
-      weight,
-      reps,
-      memo,
-    });
+    const row = { id, date, exerciseId, weight, reps, memo };
+    // 並び順は保存時刻。編集では元の時刻を引き継ぎ、createdAt の無い古い行には足さない
+    if (editingId === null) row.createdAt = Date.now();
+    else if (editingCreatedAt !== undefined) row.createdAt = editingCreatedAt;
+    await put('workoutSet', row);
     const updated = editingId !== null;
     // 保存待ちの間にコピーされた入力を消さない
     if (revision === formRevision) {

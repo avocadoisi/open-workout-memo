@@ -47,21 +47,25 @@ export function volumeOf(sets) {
 // 部位はこの順で並べる。自由入力の部位は後ろ
 const PART_ORDER = ['腕', '肩', '背中', '胸', '脚'];
 
+// 入力した順に積み上げる。作成時刻（createdAt）の昇順で、古い行は 0 として元の配列順を安定ソートで保つ
+// 同じ種目でも連続していなければ別グループにする（ベンチ→スクワット→ベンチ は3グループ）
 export function groupSets(sets, exercises) {
   const found = new Map(exercises.map((exercise) => [exercise.id, exercise]));
-  const groups = new Map();
-  for (const set of sets) {
-    if (!groups.has(set.exerciseId)) groups.set(set.exerciseId, []);
-    groups.get(set.exerciseId).push(set);
+  const ordered = [...sets].sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
+  const groups = [];
+  for (const set of ordered) {
+    const last = groups[groups.length - 1];
+    if (last && last.sets[0].exerciseId === set.exerciseId) {
+      last.sets.push(set);
+      continue;
+    }
+    groups.push({
+      name: found.get(set.exerciseId)?.name ?? '不明な種目',
+      bodyPart: found.get(set.exerciseId)?.bodyPart ?? '',
+      sets: [set],
+    });
   }
-  return [...groups.entries()]
-    .map(([id, list]) => ({
-      name: found.get(id)?.name ?? '不明な種目',
-      bodyPart: found.get(id)?.bodyPart ?? '',
-      // id はランダムなので表示順は重量と回数で決める
-      sets: list.sort((a, b) => a.weight - b.weight || a.reps - b.reps),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+  return groups;
 }
 
 // ベストかどうかは言葉ではなく強調（strong）で示す
