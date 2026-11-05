@@ -24,8 +24,10 @@ export function unitLabel(unit) {
 }
 
 // O'Conner 式（重量と回数から1RMを推定し、小数1桁に丸める）
+// 1回なら挙げた重量がそのまま1RMなので推定しない
 // 入力の小数桁をそのまま整数にしてから計算する。92.25 を浮動小数のまま丸めると 92.2 になるため
 export function estimate1RM(weight, reps) {
+  if (reps === 1) return weight;
   const scale = 10 ** (String(weight).split('.')[1] ?? '').length;
   return Math.round((Math.round(weight * scale) * (40 + reps)) / (4 * scale)) / 10;
 }
