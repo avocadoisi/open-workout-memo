@@ -2,6 +2,7 @@ import { getAll, put, remove } from '../db.js';
 import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
 import { groupSets, groupTitle, partSummary, todayString, volumeOf } from '../training.js';
 import { icon } from '../icons.js';
+import { currentSetOrder } from '../prefs.js';
 
 export const view = { id: 'record', label: '記録', mount };
 
@@ -87,9 +88,12 @@ async function renderSets() {
   byId('set-count').textContent = sets.length
     ? `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg`
     : '合計 0 セット';
-  list.replaceChildren(
-    ...groupSets(sets, exercises).map((group) => buildGroup(group)),
-  );
+  const groups = groupSets(sets, exercises);
+  if (currentSetOrder() === 'desc') {
+    groups.reverse();
+    for (const group of groups) group.sets.reverse();
+  }
+  list.replaceChildren(...groups.map((group) => buildGroup(group)));
 }
 
 function buildExportCard(date, groups) {
