@@ -33,7 +33,7 @@ function buildForm() {
       el('label', {}, '重量 (kg)',
         el('input', { type: 'number', id: 'set-weight', min: '0', step: 'any', inputmode: 'decimal', required: '' })),
       el('label', {}, '回数',
-        el('input', { type: 'number', id: 'set-reps', min: '1', step: '1', inputmode: 'numeric', required: '' })),
+        el('input', { type: 'number', id: 'set-reps', min: '1', step: 'any', inputmode: 'numeric', required: '' })),
       el('label', {}, 'メモ', el('input', { type: 'text', id: 'set-memo', maxlength: String(MEMO_MAX) })),
       el('div', { class: 'form-actions' },
         el('button', { type: 'submit', id: 'set-submit', text: '保存' }),
