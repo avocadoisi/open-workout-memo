@@ -24,9 +24,9 @@ export function unitLabel(unit) {
 }
 
 // O'Conner 式（重量と回数から1RMを推定し、小数1桁に丸める）
-// 1+reps/40 を掛けると 92.25 が 92.2499… になるため、割り算1回にまとめる
+// 0.1kg 単位の整数にしてから計算する。92.25 を浮動小数のまま丸めると 92.2 になるため
 export function estimate1RM(weight, reps) {
-  return Math.round((weight * (40 + reps)) / 4) / 10;
+  return Math.round((Math.round(weight * 10) * (40 + reps)) / 40) / 10;
 }
 
 // 単位込みの値。表の列に並べる用（10回超は O'Conner 式の誤差が大きいので参考値と添える）
