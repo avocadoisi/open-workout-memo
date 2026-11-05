@@ -155,37 +155,46 @@ function appendMore(section, byDate) {
   }));
 }
 
-// 選んだ種目のセットを日付の新しい順にまとめる
+// 選んだ種目のセットを日付の新しい順に、split の区切りを保ってまとめる
 function buildExerciseHistory() {
   const name = state.exercises.find((exercise) => exercise.id === state.exerciseId)?.name ?? '種目';
-  const sets = state.sets
-    .filter((set) => set.exerciseId === state.exerciseId)
+  const all = [...state.sets]
     .sort((a, b) => b.date.localeCompare(a.date) || (a.createdAt ?? 0) - (b.createdAt ?? 0));
 
-  const section = el('section', { class: 'hist-detail' }, el('h2', { text: `${name} の履歴` }));
-  if (sets.length === 0) {
-    section.append(el('p', { class: 'hist-empty', text: '記録なし' }));
-    return section;
-  }
-
   const byDate = new Map();
-  for (const set of sets) {
+  for (const set of all) {
     if (!byDate.has(set.date)) byDate.set(set.date, []);
     byDate.get(set.date).push(set);
   }
 
+  // 種目で絞る前に日全体で run を作り、split を再結合しない
+  const groupsByDate = new Map();
+  for (const [date, list] of byDate) {
+    const groups = groupSets(list, state.exercises)
+      .filter((group) => group.sets[0].exerciseId === state.exerciseId);
+    if (groups.length > 0) groupsByDate.set(date, groups);
+  }
+
+  const section = el('section', { class: 'hist-detail' }, el('h2', { text: `${name} の履歴` }));
+  if (groupsByDate.size === 0) {
+    section.append(el('p', { class: 'hist-empty', text: '記録なし' }));
+    return section;
+  }
+
+  const sets = [...groupsByDate.values()].flatMap((groups) => groups.flatMap((group) => group.sets));
   section.append(el('p', { class: 'hist-summary' },
-    el('span', { text: `記録 ${byDate.size} 日・合計 ${sets.length} セット` }),
+    el('span', { text: `記録 ${groupsByDate.size} 日・合計 ${sets.length} セット` }),
     el('span', { text: `ベスト ${rmText(bestSet(sets))}` }),
   ));
 
-  for (const [date, list] of recentDays(byDate)) {
+  for (const [date, groups] of recentDays(groupsByDate)) {
+    const list = groups.flatMap((group) => group.sets);
     section.append(el('div', { class: 'group' },
       el('h3', { text: `${formatDate(date)} ベスト ${rmText(bestSet(list))}・ボリューム ${volumeOf(list)} kg` }),
-      setTable(list),
+      ...groups.map((group) => setTable(group.sets)),
     ));
   }
-  appendMore(section, byDate);
+  appendMore(section, groupsByDate);
   return section;
 }
 
