@@ -40,6 +40,7 @@ test('estimate1RM は O\'Conner 式を小数1桁で返す', () => {
   assert.equal(estimate1RM(50, 8), 60); // 50*(1+8/40) = 60
   assert.equal(estimate1RM(100, 1), 100); // 1回は重量そのもの
   assert.equal(estimate1RM(90, 1), 90); // 1回は推定しない（90 を 92.3 にしない）
+  assert.equal(estimate1RM(2.55, 1), 2.6); // 表示の toFixed(1) で 2.5 にならないよう丸める
   assert.equal(estimate1RM(2.8, 5), 3.2); // 3.15 の丸め（0.1kg 単位でも崩れない）
   assert.equal(estimate1RM(10.04, 10), 12.6); // 12.55 の丸め（0.01kg 単位でも崩れない）
 });
@@ -52,6 +53,12 @@ test('estimate1RM は同じ重量なら回数が増えるほど上がる', () =>
 test('volumeOf は重量×回数の合計を四捨五入する', () => {
   assert.equal(volumeOf([set(100, 5), set(50.5, 3)]), 652); // 500 + 151.5
   assert.equal(volumeOf([]), 0);
+});
+
+test('bestSet は丸めた1RMで比べる', () => {
+  const single = set(99.96, 1);
+  const many = set(66.64, 20); // どちらも 100.0
+  assert.equal(bestSet([single, many]), single);
 });
 
 test('bestSet は推定1RMが一番高いセットを返す', () => {
