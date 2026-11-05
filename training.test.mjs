@@ -57,7 +57,7 @@ test('volumeOf は重量×回数の合計を四捨五入する', () => {
 
 test('bestSet は丸めた1RMで比べる', () => {
   const single = set(99.96, 1);
-  const many = set(66.64, 20); // どちらも 100.0
+  const many = set(66.65, 20); // 丸め前は 99.975 で上、丸め後はどちらも 100.0
   assert.equal(bestSet([single, many]), single);
 });
 
