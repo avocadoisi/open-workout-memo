@@ -149,14 +149,20 @@ async function startEditing(set) {
   byId('set-weight').focus();
 }
 
-// 重量と回数だけをフォームへ移し、新しいセットとして保存できる状態にする
-function copySet(set) {
-  formRevision++;
-  if (editingId !== null) stopEditing();
-  byId('set-weight').value = String(set.weight);
-  byId('set-reps').value = String(set.reps);
-  byId('set-form').scrollIntoView({ block: 'start', behavior: 'smooth' });
-  byId('set-reps').focus();
+// 同じ日付・種目・重量・回数のセットを、その場でもう1行追加する
+async function copySet(set) {
+  const row = {
+    id: crypto.randomUUID(),
+    date: set.date,
+    exerciseId: set.exerciseId,
+    weight: set.weight,
+    reps: set.reps,
+    memo: '',
+    createdAt: Date.now(),
+  };
+  await put('workoutSet', row);
+  await renderSets();
+  byId('set-list').querySelector(`[data-id="${CSS.escape(row.id)}"]`)?.classList.add('is-saved');
   setStatus(`${set.weight} kg × ${set.reps} 回をコピーしました`);
 }
 
