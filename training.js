@@ -23,12 +23,14 @@ export function unitLabel(unit) {
   return unit === 'length' ? 'cm' : 'kg';
 }
 
-// Brzycki 式
+// O'Conner 式（重量と回数から1RMを推定し、小数1桁に丸める）
+// 入力の小数桁をそのまま整数にしてから計算する。92.25 を浮動小数のまま丸めると 92.2 になるため
 export function estimate1RM(weight, reps) {
-  return Math.round(((weight * 36) / (37 + reps)) * 10) / 10;
+  const scale = 10 ** (String(weight).split('.')[1] ?? '').length;
+  return Math.round((Math.round(weight * scale) * (40 + reps)) / (4 * scale)) / 10;
 }
 
-// 単位込みの値。表の列に並べる用（10回超は Brzycki 式の誤差が大きいので参考値と添える）
+// 単位込みの値。表の列に並べる用（10回超は O'Conner 式の誤差が大きいので参考値と添える）
 export function rmValue(set) {
   return `${estimate1RM(set.weight, set.reps).toFixed(1)} kg${set.reps > 10 ? '（参考値）' : ''}`;
 }
