@@ -79,9 +79,44 @@ function buildList() {
   );
 }
 
+// アーカイブ済みでも、いま付いている種目は先頭に残して選べるようにする
+function exerciseChoices(currentId) {
+  const current = exercises.find((exercise) => exercise.id === currentId);
+  const list = exercises.filter((exercise) => !exercise.archived && exercise.id !== currentId);
+  return current ? [current, ...list] : [{ id: currentId, name: '不明な種目' }, ...list];
+}
+
+async function changeGroupExercise(sets, select) {
+  const exerciseId = select.value;
+  const exerciseName = select.selectedOptions[0]?.textContent ?? '';
+  const count = sets.length;
+  if (!exerciseId || exerciseId === sets[0].exerciseId) return;
+  select.disabled = true;
+  try {
+    for (const set of sets) await put('workoutSet', { ...set, exerciseId });
+  } catch (error) {
+    select.disabled = false;
+    setStatus(`種目の変更に失敗しました: ${error.message}`, true);
+    await renderSets();
+    return;
+  }
+  await renderSets();
+  setStatus(`${count} セットの種目を「${exerciseName}」に変更しました`);
+}
+
 function buildGroup(group) {
+  const exerciseId = group.sets[0].exerciseId;
+  const select = el('select', {
+    class: 'group-exercise-select',
+    'aria-label': 'このグループの種目を変更',
+    onchange: (event) => {
+      changeGroupExercise(group.sets, event.target);
+    },
+  }, ...exerciseChoices(exerciseId).map(({ id, name }) => option(id, name)));
+  select.value = exerciseId;
+
   return el('div', { class: 'group' },
-    el('h3', {}, ...groupTitle(group)),
+    el('h3', {}, ...groupTitle(group), el('span', { class: 'group-tools' }, select)),
     setTable(group.sets, {
       extra: (set) => [el('div', { class: 'set-actions' },
         iconButton('pencil', '編集', () => startEditing(set)),
@@ -145,6 +180,11 @@ function fillExerciseOptions(exerciseId) {
   const part = byId('set-part').value;
   const previous = exerciseId ?? byId('set-exercise').value;
   const list = exercises.filter((e) => !e.archived && (!part || e.bodyPart === part));
+  const current = exercises.find((e) => e.id === previous);
+  // アーカイブ済みでも、編集中の種目は選択肢から消さない（部位を変えたときは除く）
+  if (current && (!part || current.bodyPart === part) && !list.some((e) => e.id === previous)) {
+    list.unshift(current);
+  }
   byId('set-exercise').replaceChildren(...list.map((exercise) => option(exercise.id, exercise.name)));
   if (list.some((exercise) => exercise.id === previous)) byId('set-exercise').value = previous;
 }
