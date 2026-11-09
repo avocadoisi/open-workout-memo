@@ -1,6 +1,6 @@
 import { getAll } from '../db.js';
 import { el, iconButton, option, setTable } from '../dom.js';
-import { WEEKDAYS, bestSet, formatDate, groupSets, groupTitle, rmText, todayString, volumeOf } from '../training.js';
+import { WEEKDAYS, bestSet, formatDate, groupSets, groupTitle, orderKey, rmText, todayString, volumeOf } from '../training.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -159,7 +159,7 @@ function appendMore(section, byDate) {
 function buildExerciseHistory() {
   const name = state.exercises.find((exercise) => exercise.id === state.exerciseId)?.name ?? '種目';
   const all = [...state.sets]
-    .sort((a, b) => b.date.localeCompare(a.date) || (a.createdAt ?? 0) - (b.createdAt ?? 0));
+    .sort((a, b) => b.date.localeCompare(a.date) || orderKey(a) - orderKey(b));
 
   const byDate = new Map();
   for (const set of all) {
