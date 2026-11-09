@@ -16,6 +16,13 @@ export function flattenGroups(groups) {
   return groups.flatMap((group) => group.sets);
 }
 
+// 画面の表示順のグループを、保存する order（古い順）の1本のセット列に直す
+// 新しい順の画面では、グループとセットの両方を反転して元の向きに戻す
+export function orderForSave(groups, newestFirst) {
+  if (!newestFirst) return flattenGroups(groups);
+  return [...groups].reverse().flatMap((group) => [...group.sets].reverse());
+}
+
 // 配列内で隣と入れ替える。端なら false
 export function moveItem(list, index, delta) {
   const to = index + delta;

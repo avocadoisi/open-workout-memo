@@ -12,7 +12,7 @@ import {
   weightText,
 } from '../training.js';
 import { icon } from '../icons.js';
-import { flattenGroups, moveItem, persistSetOrder } from './order.js';
+import { moveItem, orderForSave, persistSetOrder } from './order.js';
 // 並び順の設定キーは views/settings.js と共有する（prefs.js を介さない）
 function newestFirst() {
   return localStorage.getItem('owa-set-order') === 'desc';
@@ -84,52 +84,10 @@ function buildList() {
   );
 }
 
-// アーカイブ済みでも、いま付いている種目は先頭に残して選べるようにする
-function exerciseChoices(currentId) {
-  const current = exercises.find((exercise) => exercise.id === currentId);
-  const list = exercises.filter((exercise) => !exercise.archived && exercise.id !== currentId);
-  return current ? [current, ...list] : [{ id: currentId, name: '不明な種目' }, ...list];
-}
-
-async function changeGroupExercise(sets, select) {
-  const exerciseId = select.value;
-  const exerciseName = select.selectedOptions[0]?.textContent ?? '';
-  const count = sets.length;
-  if (!exerciseId || exerciseId === sets[0].exerciseId) return;
-  select.disabled = true;
-  try {
-    for (const set of sets) await put('workoutSet', { ...set, exerciseId });
-  } catch (error) {
-    select.disabled = false;
-    setStatus(`種目の変更に失敗しました: ${error.message}`, true);
-    await renderSets();
-    return;
-  }
-  await renderSets();
-  setStatus(`${count} セットの種目を「${exerciseName}」に変更しました`);
-}
-
-function groupMoveButton(name, label, index, delta) {
-  const button = iconButton(name, label, () => moveGroup(index, delta));
-  button.disabled = index + delta < 0 || index + delta >= displayGroups.length;
+function moveButton(name, label, disabled, onClick) {
+  const button = iconButton(name, label, onClick);
+  button.disabled = disabled;
   return button;
-}
-
-// 表示順のまま隣と入れ替え、その日のセットを保存順に直して描き直す
-async function moveGroup(index, delta) {
-  if (movingGroups) return;
-  if (!moveItem(displayGroups, index, delta)) return;
-  // 新しい順の画面は groups も各 sets も逆順なので、保存用の昇順に戻す
-  const ordered = newestFirst()
-    ? [...displayGroups].reverse().flatMap((group) => [...group.sets].reverse())
-    : flattenGroups(displayGroups);
-  movingGroups = true;
-  try {
-    await persistSetOrder(ordered);
-    await renderSets();
-  } finally {
-    movingGroups = false;
-  }
 }
 
 function buildGroup(group, index) {
@@ -152,9 +110,11 @@ function buildGroup(group, index) {
           groupMoveButton('down', '下へ移動', index, 1),
         ))),
     setTable(group.sets, {
-      extra: (set) => [el('div', { class: 'set-actions' },
+      extra: (set, index) => [el('div', { class: 'set-actions' },
         iconButton('pencil', '編集', () => startEditing(set)),
         iconButton('copy', 'コピー', () => copySet(set)),
+        moveButton('up', '上へ移動', index === 0, () => moveSet(group, index, -1)),
+        moveButton('down', '下へ移動', index === group.sets.length - 1, () => moveSet(group, index, 1)),
         iconButton('trash', '削除', async () => {
           await remove('workoutSet', set.id);
           await renderSets();
@@ -164,6 +124,13 @@ function buildGroup(group, index) {
   );
 }
 
+// グループの中だけで隣と入れ替える。グループをまたぐ移動はしない
+async function moveSet(group, index, delta) {
+  if (!moveItem(group.sets, index, delta)) return;
+  await persistSetOrder(orderForSave(displayGroups, newestFirst()));
+  await renderSets();
+}
+
 async function renderSets() {
   const list = byId('set-list');
   if (!list) return;
@@ -171,6 +138,11 @@ async function renderSets() {
   const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
   // 読み込み待ちの間に画面を離れていたら、消えた画面は触らない
   if (!list.isConnected) return;
+  // 並び替えで order が変わっても、編集中のセットは最新の値を引き継ぐ
+  if (editingId !== null) {
+    const editing = sets.find((set) => set.id === editingId);
+    if (editing) editingOrder = editing.order;
+  }
 
   byId('set-count').textContent = sets.length
     ? `合計 ${sets.length} セット・ボリューム ${volumeOf(sets)} kg`
