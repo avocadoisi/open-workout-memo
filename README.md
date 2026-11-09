@@ -46,7 +46,7 @@ Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グ
 各 view は `export const view = { id, label, mount(container) }` を出す。
 配色はヘッダーの丸3つで切り替える（gruvbox light / catppuccin latte / tokyonight night）。色は `styles.css` の `--gb-*` にだけ書き、画面側は参照する。
 
-`manifest.json` / `sw.js` で PWA にしてある。一度開けば機内モードでも記録・履歴・グラフが開く（手元のファイルは network-first、CDN はキャッシュ優先なので、版数を手で上げなくても更新は届く）。
+`manifest.json` / `sw.js` で PWA にしてある。一度開けば機内モードでも記録・履歴・グラフが開く。シェル（HTML / JS / CSS / 画像）は版数付きキャッシュに一式まとめて install し、全ファイルが揃ってから切り替えるので、更新途中の新旧混在は起きない。シェルを変更したら `sw.js` の `CACHE` を上げる（上げないと配信中の版は切り替わらない）。CDN は別キャッシュでキャッシュ優先。
 
 ## テストデータ
 
@@ -70,3 +70,4 @@ PWA の挙動（オフライン）は https か localhost でしか試せない�
 
 マージではデプロイしない。指示があったときだけ `gh workflow run deploy.yml` を実行する
 （マージのたびに CI を走らせないため。Pages の Source は「GitHub Actions」）。
+シェルを変更したデプロイでは、`sw.js` の `CACHE` を上げてから実行する。
