@@ -337,6 +337,49 @@ button:active {
   color: var(--fg-soft);
 }
 
+/* 種目ごとの履歴の上部に出す、1RM換算のベストセット */
+.hist-best {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--gb-bg0-hard);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.hist-best-label {
+  margin: 0 0 0.25rem;
+  color: var(--fg-soft);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.hist-best-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.75rem;
+  margin: 0;
+}
+
+.hist-best-set,
+.hist-best-rm {
+  font-variant-numeric: tabular-nums;
+}
+
+.hist-best-set {
+  font-weight: 700;
+}
+
+.hist-best-rm {
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+.hist-best-date {
+  color: var(--fg-soft);
+  font-size: 0.8rem;
+}
+
 /* ベストの 1RM は言葉ではなく強調で示す */
 .group strong {
   font-weight: 700;

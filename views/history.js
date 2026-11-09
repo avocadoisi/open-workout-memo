@@ -1,6 +1,6 @@
 import { getAll } from '../db.js';
 import { el, iconButton, option, setTable } from '../dom.js';
-import { WEEKDAYS, bestSet, formatDate, groupSets, groupTitle, orderKey, rmText, todayString, volumeOf } from '../training.js';
+import { WEEKDAYS, bestSet, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, todayString, volumeOf } from '../training.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -182,9 +182,19 @@ function buildExerciseHistory() {
   }
 
   const sets = [...groupsByDate.values()].flatMap((groups) => groups.flatMap((group) => group.sets));
+  const best = bestSet(sets);
   section.append(el('p', { class: 'hist-summary' },
     el('span', { text: `記録 ${groupsByDate.size} 日・合計 ${sets.length} セット` }),
-    el('span', { text: `ベスト ${rmText(bestSet(sets))}` }),
+    el('span', { text: `ベスト ${rmText(best)}` }),
+  ));
+
+  section.append(el('div', { class: 'hist-best' },
+    el('h3', { class: 'hist-best-label', text: '1RM換算のベスト' }),
+    el('p', { class: 'hist-best-row' },
+      el('strong', { class: 'hist-best-set', text: setSummary(best) }),
+      el('span', { class: 'hist-best-rm', text: rmText(best) }),
+      el('span', { class: 'hist-best-date', text: formatDate(best.date) }),
+    ),
   ));
 
   for (const [date, groups] of recentDays(groupsByDate)) {
