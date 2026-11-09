@@ -507,6 +507,18 @@ button:active {
   color: var(--fg);
 }
 
+/* 自重の切り替えは1行に収める（label の grid を打ち消す） */
+.set-bodyweight {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.set-bodyweight input {
+  width: auto;
+  margin: 0;
+}
+
 .form-actions {
   display: flex;
   gap: 0.5rem;

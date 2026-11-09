@@ -1,7 +1,7 @@
 import { getAll } from '../db.js';
 import { el, option } from '../dom.js';
 import { icon } from '../icons.js';
-import { estimate1RM } from '../training.js';
+import { estimate1RM, loadOf } from '../training.js';
 
 export const view = { id: 'chart', label: 'グラフ', mount };
 
@@ -352,9 +352,11 @@ async function mount(container) {
       const points = new Map();
       for (const set of sets) {
         if (set.exerciseId !== exerciseSelect.value || !inRange(set.date)) continue;
+        // 体重の分からない自重セットは1RMを出せないのでグラフから外す（ボリュームは 0 として数える）
+        if (mode === 'rm' && set.bodyweight && !Number.isFinite(set.bodyweightKg)) continue;
         const value = mode === 'rm'
-          ? Math.max(points.get(set.date) ?? 0, estimate1RM(set.weight, set.reps))
-          : (points.get(set.date) ?? 0) + set.weight * set.reps;
+          ? Math.max(points.get(set.date) ?? 0, estimate1RM(loadOf(set), set.reps))
+          : (points.get(set.date) ?? 0) + loadOf(set) * set.reps;
         points.set(set.date, value);
       }
       update(series, toPoints(points), {

@@ -8,11 +8,11 @@
 「開いて、書いて、閉じる」。アカウントもサーバーも同期もない。
 データはブラウザの IndexedDB に置き、静的サイトとして配信する。所有はエクスポートで担保する。
 
-- 記録は 1 セット = 1 レコード（日付 / 種目 / 重量 kg / 回数 / メモ / 保存時刻）
+- 記録は 1 セット = 1 レコード（日付 / 種目 / 重量 kg か「自重」 / 回数 / メモ / 保存時刻）
 - 記録の並びは既定で入力した順（設定で新しい順にもできる）。同じ種目が連続する範囲だけをまとめる（ベンチ→スクワット→ベンチ は 3 グループ）。手動で並べ替えた順は `order` に保存する
 - 重量と 1RM は整数部3桁・小数1桁で右揃え（5 は 5.0、ゼロ埋めはしない）。kg と「（参考値）」は数値の外に置き、記録・履歴・保存画像で同じ見た目にする
 - 推定 1RM は O'Conner `weight * (1 + reps / 40)`。1 回は挙上重量を小数1桁に丸めた値、10 回超は参考値と注記
-- 重量は「自重」も選べる。記録日から1ヶ月以内に体重の計測があれば、最新値をメモに「体重 72.5kg」と書く。1RM は体重が分かるときだけ参考値で出す
+- 重量は「自重」も選べる（重量は 0 として保存）。記録日から1ヶ月以内（記録日以前の直近30日）に体重の計測があれば、最新値をメモの先頭に「体重 72.5kg」と書く。メモは注記込みで30文字、編集で保存し直しても注記は重複しない。1RM は体重が分かるときだけ参考値で出し、ボリュームとグラフも体重で換算する（体重不明の自重は 1RM を出さず、ボリュームは 0）
 - 種目・部位は UI から追加。削除はアーカイブ（過去の記録は残す）
 - 体重などの指標は筋トレと別トラック（単位は重さ / 長さ）。保存は kg / cm 固定
 - エクスポートは JSON（インポートで復元）と画像
@@ -29,7 +29,7 @@
 exercise:   { id, name, bodyPart, archived }        // 初期は Big3
 workoutSet: { id, date, exerciseId, weight, reps, memo, createdAt, order?, bodyweight?, bodyweightKg? }
             // date は 'YYYY-MM-DD'、weight は kg（自重は 0）、createdAt は保存時刻（Date.now()）
-            // order は手動の並び（無ければ createdAt）、bodyweight は自重、bodyweightKg は 1RM 換算用の体重
+            // order は手動の並び（無ければ createdAt）、bodyweight は自重、bodyweightKg は記録日までの直近30日の体重（メモ・1RM・ボリューム用）
 metricDef:  { id, name, unit: 'weight' | 'length' }
 metricLog:  { id, date, metricDefId, value }
 // export/import: { schemaVersion: 1, exportedAt, exercises, workoutSets, metricDefs, metricLogs }
