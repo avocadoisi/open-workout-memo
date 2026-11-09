@@ -84,6 +84,51 @@ function buildList() {
   );
 }
 
+// アーカイブ済みでも、いま付いている種目は先頭に残して選べるようにする
+function exerciseChoices(currentId) {
+  const current = exercises.find((exercise) => exercise.id === currentId);
+  const list = exercises.filter((exercise) => !exercise.archived && exercise.id !== currentId);
+  return current ? [current, ...list] : [{ id: currentId, name: '不明な種目' }, ...list];
+}
+
+async function changeGroupExercise(sets, select) {
+  const exerciseId = select.value;
+  const exerciseName = select.selectedOptions[0]?.textContent ?? '';
+  const count = sets.length;
+  if (!exerciseId || exerciseId === sets[0].exerciseId) return;
+  select.disabled = true;
+  try {
+    for (const set of sets) await put('workoutSet', { ...set, exerciseId });
+  } catch (error) {
+    select.disabled = false;
+    setStatus(`種目の変更に失敗しました: ${error.message}`, true);
+    await renderSets();
+    return;
+  }
+  await renderSets();
+  setStatus(`${count} セットの種目を「${exerciseName}」に変更しました`);
+}
+
+function groupMoveButton(name, label, index, delta) {
+  const button = iconButton(name, label, () => moveGroup(index, delta));
+  button.disabled = index + delta < 0 || index + delta >= displayGroups.length;
+  return button;
+}
+
+// 表示順のまま隣と入れ替え、その日のセットを保存順に直して描き直す
+async function moveGroup(index, delta) {
+  if (movingGroups) return;
+  if (!moveItem(displayGroups, index, delta)) return;
+  const ordered = orderForSave(displayGroups, newestFirst());
+  movingGroups = true;
+  try {
+    await persistSetOrder(ordered);
+    await renderSets();
+  } finally {
+    movingGroups = false;
+  }
+}
+
 function moveButton(name, label, disabled, onClick) {
   const button = iconButton(name, label, onClick);
   button.disabled = disabled;
