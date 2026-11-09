@@ -102,7 +102,10 @@ const isOptionalText = (value) => value === undefined || typeof value === 'strin
 const ROW_CHECKS = {
   exercise: (row) => isText(row.name) && isOptionalText(row.bodyPart) && (row.archived === undefined || typeof row.archived === 'boolean'),
   workoutSet: (row) => isText(row.date) && isText(row.exerciseId) && isNumber(row.weight) && isNumber(row.reps)
-    && isOptionalText(row.memo) && (row.createdAt === undefined || isNumber(row.createdAt)),
+    && isOptionalText(row.memo) && (row.createdAt === undefined || isNumber(row.createdAt))
+    && (row.order === undefined || isNumber(row.order))
+    && (row.bodyweight === undefined || typeof row.bodyweight === 'boolean')
+    && (row.bodyweightKg === undefined || isNumber(row.bodyweightKg)),
   metricDef: (row) => isText(row.name) && (row.unit === 'weight' || row.unit === 'length'),
   metricLog: (row) => isText(row.date) && isText(row.metricDefId) && isNumber(row.value),
 };

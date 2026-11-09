@@ -5,11 +5,17 @@ import {
   bestSet,
   estimate1RM,
   formatDate,
+  formatWeight,
   groupSets,
+  loadOf,
+  orderKey,
   partSummary,
+  rmValue,
+  sortSets,
   todayString,
   unitLabel,
   volumeOf,
+  weightText,
 } from './training.js';
 
 const set = (weight, reps, exerciseId = 'a', createdAt) => ({
@@ -103,4 +109,48 @@ test('partSummary は 腕→肩→背中→胸→脚 の順になり、未知の
   assert.equal(partSummary([{ bodyPart: '脚' }, { bodyPart: '腕' }, { bodyPart: 'その他' }]), '腕・脚・その他');
   assert.equal(partSummary([{ bodyPart: '' }, { bodyPart: '胸' }]), '胸');
   assert.equal(partSummary([]), '');
+});
+
+test('formatWeight は常に小数1桁にし、2桁目を丸める', () => {
+  assert.equal(formatWeight(5), '5.0');
+  assert.equal(formatWeight(62.5), '62.5');
+  assert.equal(formatWeight(123), '123.0');
+  assert.equal(formatWeight(2.55), '2.6');
+  assert.equal(formatWeight(123.44), '123.4');
+});
+
+test('自重は loadOf が体重、無ければ 0 になる', () => {
+  assert.equal(loadOf(set(100, 5)), 100);
+  assert.equal(loadOf({ ...set(0, 5), bodyweight: true, bodyweightKg: 72.5 }), 72.5);
+  assert.equal(loadOf({ ...set(0, 5), bodyweight: true }), 0);
+});
+
+test('weightText は自重を「自重」にする', () => {
+  assert.equal(weightText(set(62.5, 5)), '62.5');
+  assert.equal(weightText({ ...set(0, 5), bodyweight: true }), '自重');
+});
+
+test('自重セットの1RMは体重が分かるときだけ参考値で出す', () => {
+  assert.equal(rmValue({ ...set(0, 10), bodyweight: true }), '—');
+  assert.equal(rmValue({ ...set(0, 10), bodyweight: true, bodyweightKg: 70 }), '87.5 kg（参考値）');
+});
+
+test('volumeOf は自重セットを体重×回数で数える', () => {
+  assert.equal(volumeOf([{ ...set(0, 10), bodyweight: true, bodyweightKg: 72 }]), 720);
+  assert.equal(volumeOf([{ ...set(0, 10), bodyweight: true }]), 0);
+});
+
+test('order は createdAt より優先され、無い行は createdAt で並ぶ', () => {
+  const ordered = sortSets([set(60, 10, 'a', 30), { ...set(100, 5, 'a', 10), order: 0 }, set(80, 8, 'a', 20)]);
+  assert.deepEqual(ordered.map((item) => item.weight), [100, 80, 60]);
+  assert.equal(orderKey({ order: 0, createdAt: 99 }), 0);
+});
+
+test('groupSets は order の順でグループを作る', () => {
+  const groups = groupSets(
+    [{ ...set(100, 5, 'a', 1), order: 2 }, { ...set(60, 10, 'b', 2), order: 0 }, { ...set(80, 8, 'a', 3), order: 1 }],
+    [{ id: 'a', name: 'ベンチプレス', bodyPart: '胸' }, { id: 'b', name: 'スクワット', bodyPart: '脚' }],
+  );
+  assert.deepEqual(groups.map((group) => group.name), ['スクワット', 'ベンチプレス']);
+  assert.deepEqual(groups.map((group) => group.sets.length), [1, 2]);
 });
