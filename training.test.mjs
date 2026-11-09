@@ -11,6 +11,7 @@ import {
   orderKey,
   partSummary,
   rmValue,
+  setSummary,
   sortSets,
   todayString,
   unitLabel,
@@ -128,6 +129,11 @@ test('自重は loadOf が体重、無ければ 0 になる', () => {
 test('weightText は自重を「自重」にする', () => {
   assert.equal(weightText(set(62.5, 5)), '62.5');
   assert.equal(weightText({ ...set(0, 5), bodyweight: true }), '自重');
+});
+
+test('setSummary は重量×回数、自重は「自重 × 回数」にする', () => {
+  assert.equal(setSummary(set(62.5, 5)), '62.5 kg × 5 回');
+  assert.equal(setSummary({ ...set(0, 8), bodyweight: true }), '自重 × 8 回');
 });
 
 test('自重セットの1RMは体重が分かるときだけ参考値で出す', () => {

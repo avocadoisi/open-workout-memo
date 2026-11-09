@@ -63,6 +63,13 @@ export function rmText(set) {
   return `1RM ${rmValue(set)}`;
 }
 
+// 1セットの表示。自重は数値の代わりに「自重」
+export function setSummary(set) {
+  return set.bodyweight
+    ? `自重 × ${set.reps} 回`
+    : `${formatWeight(set.weight)} kg × ${set.reps} 回`;
+}
+
 // 総ボリューム（重量 × 回数の合計）。自重は体重が分かる場合だけ数える
 export function volumeOf(sets) {
   return Math.round(sets.reduce((sum, set) => sum + loadOf(set) * set.reps, 0));
