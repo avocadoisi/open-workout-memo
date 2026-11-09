@@ -380,7 +380,7 @@ button:active {
   font-size: 0.8rem;
 }
 
-/* 見出しの右に種目変更の select を置く。狭い画面では折り返す */
+/* 見出しの文字・種目変更・並び替えを同じ行に置く。狭い画面では折り返す */
 .group h3 {
   display: flex;
   flex-wrap: wrap;
@@ -391,6 +391,7 @@ button:active {
 .group-tools {
   display: flex;
   align-items: center;
+  gap: 0.25rem;
   margin-left: auto;
 }
 
@@ -401,8 +402,15 @@ button:active {
   color: var(--fg);
   background: var(--bg);
 }
+
+.group-actions {
+  display: flex;
+  gap: 0.25rem;
 }
 
+.group-actions button:disabled {
+  opacity: 0.35;
+}
 /* ベストの 1RM は言葉ではなく強調で示す */
 .group strong {
   font-weight: 700;
