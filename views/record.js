@@ -1,6 +1,6 @@
 import { getAll, put, remove } from '../db.js';
 import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
-import { groupSets, groupTitle, partSummary, todayString, volumeOf } from '../training.js';
+import { groupSets, groupTitle, partSummary, todayString, volumeOf, weightText } from '../training.js';
 import { icon } from '../icons.js';
 // 並び順の設定キーは views/settings.js と共有する（prefs.js を介さない）
 function newestFirst() {
@@ -182,7 +182,7 @@ async function copySet(set) {
   if (!form.isConnected) return;
   await renderSets();
   byId('set-list').querySelector(`[data-id="${CSS.escape(row.id)}"]`)?.classList.add('is-saved');
-  setStatus(`${set.weight} kg × ${set.reps} 回をコピーしました`);
+  setStatus(`${weightText(set)}${set.bodyweight ? '' : ' kg'} × ${set.reps} 回をコピーしました`);
 }
 
 function stopEditing() {
