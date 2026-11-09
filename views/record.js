@@ -12,6 +12,7 @@ import {
   weightText,
 } from '../training.js';
 import { icon } from '../icons.js';
+import { flattenGroups, moveItem, persistSetOrder } from './order.js';
 // 並び順の設定キーは views/settings.js と共有する（prefs.js を介さない）
 function newestFirst() {
   return localStorage.getItem('owa-set-order') === 'desc';
@@ -28,6 +29,10 @@ let editingId = null;
 let editingCreatedAt;
 // 編集中のセットの order。手動で並べ替えた行は編集しても位置を変えない
 let editingOrder;
+// 画面に出している表示順のグループ。↑↓はこの配列を動かす
+let displayGroups = [];
+// 保存と描き直しの間に続けて押されても、古い順序で上書きしない
+let movingGroups = false;
 // 編集開始や保存の待機中にコピーが入ったら、古い処理の続きを捨てるための番号
 let formRevision = 0;
 
@@ -104,7 +109,30 @@ async function changeGroupExercise(sets, select) {
   setStatus(`${count} セットの種目を「${exerciseName}」に変更しました`);
 }
 
-function buildGroup(group) {
+function groupMoveButton(name, label, index, delta) {
+  const button = iconButton(name, label, () => moveGroup(index, delta));
+  button.disabled = index + delta < 0 || index + delta >= displayGroups.length;
+  return button;
+}
+
+// 表示順のまま隣と入れ替え、その日のセットを保存順に直して描き直す
+async function moveGroup(index, delta) {
+  if (movingGroups) return;
+  if (!moveItem(displayGroups, index, delta)) return;
+  // 新しい順の画面は groups も各 sets も逆順なので、保存用の昇順に戻す
+  const ordered = newestFirst()
+    ? [...displayGroups].reverse().flatMap((group) => [...group.sets].reverse())
+    : flattenGroups(displayGroups);
+  movingGroups = true;
+  try {
+    await persistSetOrder(ordered);
+    await renderSets();
+  } finally {
+    movingGroups = false;
+  }
+}
+
+function buildGroup(group, index) {
   const exerciseId = group.sets[0].exerciseId;
   const select = el('select', {
     class: 'group-exercise-select',
@@ -116,7 +144,13 @@ function buildGroup(group) {
   select.value = exerciseId;
 
   return el('div', { class: 'group' },
-    el('h3', {}, ...groupTitle(group), el('span', { class: 'group-tools' }, select)),
+    el('h3', {}, ...groupTitle(group),
+      el('div', { class: 'group-tools' },
+        select,
+        el('div', { class: 'group-actions' },
+          groupMoveButton('up', '上へ移動', index, -1),
+          groupMoveButton('down', '下へ移動', index, 1),
+        ))),
     setTable(group.sets, {
       extra: (set) => [el('div', { class: 'set-actions' },
         iconButton('pencil', '編集', () => startEditing(set)),
@@ -146,7 +180,8 @@ async function renderSets() {
     groups.reverse();
     for (const group of groups) group.sets.reverse();
   }
-  list.replaceChildren(...groups.map((group) => buildGroup(group)));
+  displayGroups = groups;
+  list.replaceChildren(...groups.map((group, index) => buildGroup(group, index)));
 }
 
 function buildExportCard(date, groups) {
@@ -319,8 +354,10 @@ function wireEvents() {
     }
     // 並び順は保存時刻。編集では元の時刻と手動の並びを引き継ぎ、無い古い行には足さない
     if (!updated) row.createdAt = Date.now();
-    else if (createdAt !== undefined) row.createdAt = createdAt;
-    if (order !== undefined) row.order = order;
+    else {
+      if (createdAt !== undefined) row.createdAt = createdAt;
+      if (order !== undefined) row.order = order;
+    }
     await put('workoutSet', row);
     // 保存待ちの間にコピーされた入力を消さない
     if (revision === formRevision) {
