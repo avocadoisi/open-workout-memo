@@ -106,7 +106,10 @@ async function init() {
   }
 }
 
-// オフライン用のキャッシュを用意する（sw.js）。file:// では登録できないので失敗は無視する
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+// オフライン用のキャッシュを用意する（sw.js）。file:// では登録できないので失敗は無視する。
+// sw.js 自体が HTTP キャッシュされると更新に気づけないので、更新確認は常にネットワークへ行く
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});
+}
 
 init();
