@@ -380,6 +380,29 @@ button:active {
   font-size: 0.8rem;
 }
 
+/* 見出しの右に種目変更の select を置く。狭い画面では折り返す */
+.group h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+}
+
+.group-tools {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.group-exercise-select {
+  max-width: 9rem;
+  padding: 0.15rem 0.25rem;
+  font-size: 0.8rem;
+  color: var(--fg);
+  background: var(--bg);
+}
+}
+
 /* ベストの 1RM は言葉ではなく強調で示す */
 .group strong {
   font-weight: 700;
