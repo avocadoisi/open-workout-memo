@@ -7,12 +7,15 @@ import {
   formatDate,
   formatWeight,
   groupSets,
+  latestBodyweight,
   loadOf,
+  memoWithBodyweight,
   orderKey,
   partSummary,
   rmParts,
   rmValue,
   sortSets,
+  stripBodyweightNote,
   todayString,
   unitLabel,
   volumeOf,
@@ -161,6 +164,58 @@ test('rmParts は体重の分からない自重セットを「—」にする', 
 test('volumeOf は自重セットを体重×回数で数える', () => {
   assert.equal(volumeOf([{ ...set(0, 10), bodyweight: true, bodyweightKg: 72 }]), 720);
   assert.equal(volumeOf([{ ...set(0, 10), bodyweight: true }]), 0);
+});
+
+const log = (date, value, metricDefId = 'weight') => ({ id: `${metricDefId}-${date}-${value}`, date, metricDefId, value });
+
+test('latestBodyweight は記録日以前の直近30日で一番新しい体重を返す', () => {
+  const logs = [
+    log('2026-09-01', 70),
+    log('2026-09-30', 71.5),
+    log('2026-10-10', 72.5),
+    log('2026-10-30', 73),
+  ];
+  assert.equal(latestBodyweight(logs, ['weight'], '2026-10-30'), 73);
+  // 記録日を含む30日前までは使い、31日前は使わない
+  assert.equal(latestBodyweight([log('2026-09-29', 70), log('2026-09-30', 71)], ['weight'], '2026-10-30'), 71);
+  assert.equal(latestBodyweight([log('2026-09-29', 70)], ['weight'], '2026-10-30'), undefined);
+  assert.equal(latestBodyweight([], ['weight'], '2026-10-30'), undefined);
+});
+
+test('latestBodyweight は記録日より後の体重と、体重以外の指標を使わない', () => {
+  const logs = [
+    log('2026-10-31', 99),
+    log('2026-10-20', 70),
+    log('2026-10-25', 80, 'waist'),
+  ];
+  assert.equal(latestBodyweight(logs, ['weight'], '2026-10-30'), 70);
+  assert.equal(latestBodyweight(logs, ['waist'], '2026-10-30'), 80);
+  assert.equal(latestBodyweight(logs, ['weight', 'waist'], '2026-10-30'), 80);
+});
+
+test('latestBodyweight は days を変えると期間も変わる', () => {
+  const logs = [log('2026-10-01', 68), log('2026-10-26', 71)];
+  assert.equal(latestBodyweight(logs, ['weight'], '2026-10-30', 7), 71);
+  assert.equal(latestBodyweight(logs, ['weight'], '2026-10-30', 3), undefined);
+});
+
+test('memoWithBodyweight は体重の注記を先頭に付け、既存の注記を重複させない', () => {
+  assert.equal(memoWithBodyweight('', 72.5, 30), '体重 72.5kg');
+  assert.equal(memoWithBodyweight('調子よい', 72.5, 30), '体重 72.5kg 調子よい');
+  assert.equal(memoWithBodyweight('体重 70kg 調子よい', 72.5, 30), '体重 72.5kg 調子よい');
+  assert.equal(memoWithBodyweight('メモ', undefined, 30), 'メモ');
+});
+
+test('memoWithBodyweight は長さで切っても体重の注記を残す', () => {
+  const memo = memoWithBodyweight('あ'.repeat(30), 72.5, 30);
+  assert.equal(memo, `体重 72.5kg ${'あ'.repeat(20)}`);
+  assert.equal(memo.length, 30);
+});
+
+test('stripBodyweightNote は注記だけを取り除く', () => {
+  assert.equal(stripBodyweightNote('体重 72.5kg 調子よい'), '調子よい');
+  assert.equal(stripBodyweightNote('体重72.5kg'), '');
+  assert.equal(stripBodyweightNote(''), '');
 });
 
 test('order は createdAt より優先され、無い行は createdAt で並ぶ', () => {

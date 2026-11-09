@@ -75,6 +75,44 @@ export function volumeOf(sets) {
   return Math.round(sets.reduce((sum, set) => sum + loadOf(set) * set.reps, 0));
 }
 
+const pad2 = (value) => String(value).padStart(2, '0');
+
+// 日付文字列の days 日前。UTC で計算し、時刻やタイムゾーンに依存させない
+function dateBefore(dateKey, days) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() - days);
+  return `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
+}
+
+// 記録日までの直近 days 日（記録日を含む）で一番新しい体重。無ければ undefined
+// 未来の記録は使わない。同じ日付が複数あれば後から読んだ行を採る
+export function latestBodyweight(logs, weightDefIds, date, days = 30) {
+  const ids = new Set(weightDefIds);
+  const cutoff = dateBefore(date, days);
+  let latest;
+  for (const log of logs) {
+    if (!ids.has(log.metricDefId) || log.date > date || log.date < cutoff) continue;
+    if (!latest || log.date >= latest.date) latest = log;
+  }
+  return latest?.value;
+}
+
+// メモに自動で入れる体重の注記。編集で読み込むときに取り除き、保存時に付け直す
+const BODYWEIGHT_NOTE = /体重\s*[\d.]+kg/g;
+
+export function stripBodyweightNote(memo) {
+  return (memo ?? '').replace(BODYWEIGHT_NOTE, '').trim();
+}
+
+// 体重の注記を先頭に置き、ユーザーのメモを続ける。長さで切るときも注記は残す
+export function memoWithBodyweight(memo, bodyweightKg, maxLength) {
+  const text = stripBodyweightNote(memo);
+  if (!Number.isFinite(bodyweightKg)) return text.slice(0, maxLength);
+  const note = `体重 ${formatWeight(bodyweightKg)}kg`;
+  return (text ? `${note} ${text}` : note).slice(0, maxLength);
+}
+
 // 手動の並び（order）を優先し、無ければ保存時刻。古い行は 0 として元の配列順を安定ソートで保つ
 export function orderKey(set) {
   return set.order ?? set.createdAt ?? 0;

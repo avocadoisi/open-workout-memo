@@ -1,6 +1,16 @@
 import { getAll, put, remove } from '../db.js';
 import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
-import { groupSets, groupTitle, partSummary, todayString, volumeOf, weightText } from '../training.js';
+import {
+  groupSets,
+  groupTitle,
+  latestBodyweight,
+  memoWithBodyweight,
+  partSummary,
+  stripBodyweightNote,
+  todayString,
+  volumeOf,
+  weightText,
+} from '../training.js';
 import { icon } from '../icons.js';
 // 並び順の設定キーは views/settings.js と共有する（prefs.js を介さない）
 function newestFirst() {
@@ -16,6 +26,8 @@ let exercises = [];
 let editingId = null;
 // 編集中のセットの createdAt。古い行は未保存なので undefined のまま引き継ぐ
 let editingCreatedAt;
+// 編集中のセットの order。手動で並べ替えた行は編集しても位置を変えない
+let editingOrder;
 // 編集開始や保存の待機中にコピーが入ったら、古い処理の続きを捨てるための番号
 let formRevision = 0;
 
@@ -38,6 +50,9 @@ function buildForm() {
         )),
       el('label', {}, '重量 (kg)',
         el('input', { type: 'number', id: 'set-weight', min: '0', step: 'any', inputmode: 'decimal', required: '' })),
+      el('label', { class: 'set-bodyweight' },
+        el('input', { type: 'checkbox', id: 'set-bodyweight' }),
+        '自重'),
       el('label', {}, '回数',
         el('input', { type: 'number', id: 'set-reps', min: '1', step: 'any', inputmode: 'numeric', required: '' })),
       el('label', {}, 'メモ', el('input', { type: 'text', id: 'set-memo', maxlength: String(MEMO_MAX) })),
@@ -109,7 +124,7 @@ function buildExportCard(date, groups) {
   for (const group of groups) {
     card.append(
       el('h3', {}, ...groupTitle(group)),
-      el('div', { class: 'export-table' }, setTable(group.sets, { head: '重量(kg)' })),
+      el('div', { class: 'export-table' }, setTable(group.sets, { head: '重量' })),
     );
     total += group.sets.length;
   }
@@ -145,19 +160,36 @@ async function startEditing(set) {
   const revision = ++formRevision;
   editingId = set.id;
   editingCreatedAt = set.createdAt;
+  editingOrder = set.order;
   byId('set-date').value = set.date;
   await renderSets();
   // 待っている間にコピーや別の編集が始まったら、こちらの続きは捨てる
   if (revision !== formRevision) return;
   byId('set-part').value = exercises.find((e) => e.id === set.exerciseId)?.bodyPart ?? '';
   fillExerciseOptions(set.exerciseId);
-  byId('set-weight').value = String(set.weight);
+  byId('set-bodyweight').checked = Boolean(set.bodyweight);
+  applyBodyweight();
+  if (!set.bodyweight) byId('set-weight').value = String(set.weight);
   byId('set-reps').value = String(set.reps);
-  byId('set-memo').value = set.memo ?? '';
+  // 体重の注記は保存時に付け直すので、ユーザーのメモだけを見せる
+  byId('set-memo').value = stripBodyweightNote(set.memo);
   byId('set-submit').textContent = '更新';
   byId('set-cancel').hidden = false;
   byId('set-form').scrollIntoView({ block: 'start', behavior: 'smooth' });
-  byId('set-weight').focus();
+  (set.bodyweight ? byId('set-reps') : byId('set-weight')).focus();
+}
+
+// 自重のときは重量を入力させない（required も外す）
+function applyBodyweight() {
+  const bodyweight = byId('set-bodyweight').checked;
+  const weight = byId('set-weight');
+  weight.disabled = bodyweight;
+  if (bodyweight) {
+    weight.removeAttribute('required');
+    weight.value = '';
+  } else {
+    weight.setAttribute('required', '');
+  }
 }
 
 // 同じ日付・種目・重量・回数のセットを、その場でもう1行追加する
@@ -172,6 +204,11 @@ async function copySet(set) {
     memo: '',
     createdAt: Date.now(),
   };
+  // 自重は体重の記録も引き継ぐ（無い行には足さない）
+  if (set.bodyweight) {
+    row.bodyweight = true;
+    if (Number.isFinite(set.bodyweightKg)) row.bodyweightKg = set.bodyweightKg;
+  }
   try {
     await put('workoutSet', row);
   } catch (error) {
@@ -188,6 +225,7 @@ async function copySet(set) {
 function stopEditing() {
   editingId = null;
   editingCreatedAt = undefined;
+  editingOrder = undefined;
   byId('set-submit').textContent = '保存';
   byId('set-cancel').hidden = true;
 }
@@ -201,15 +239,22 @@ function wireEvents() {
     event.preventDefault();
     const date = byId('set-date').value;
     const exerciseId = byId('set-exercise').value;
-    const weight = byId('set-weight').valueAsNumber;
+    const bodyweight = byId('set-bodyweight').checked;
+    const weight = bodyweight ? 0 : byId('set-weight').valueAsNumber;
     const reps = byId('set-reps').valueAsNumber;
-    const memo = byId('set-memo').value.trim().slice(0, MEMO_MAX);
+    const typedMemo = byId('set-memo').value;
+    // 後の await 中に編集が始まったかを、この番号で見分ける
+    const revision = formRevision;
+    const id = editingId ?? crypto.randomUUID();
+    const updated = editingId !== null;
+    const createdAt = editingCreatedAt;
+    const order = editingOrder;
 
     if (!date || !exerciseId) {
       setStatus('日付と種目を入力してください', true);
       return;
     }
-    if (!Number.isFinite(weight) || weight <= 0) {
+    if (!bodyweight && (!Number.isFinite(weight) || weight <= 0)) {
       setStatus('重量は0より大きい数値で入力してください', true);
       return;
     }
@@ -218,18 +263,29 @@ function wireEvents() {
       return;
     }
 
-    const id = editingId ?? crypto.randomUUID();
-    const revision = formRevision;
+    // 自重は記録日までの直近30日の体重を、メモの注記と1RM換算に使う
+    let bodyweightKg;
+    if (bodyweight) {
+      const [defs, logs] = await Promise.all([getAll('metricDef'), getAll('metricLog')]);
+      const weightDefIds = defs.filter((def) => def.name === '体重' && def.unit === 'weight').map((def) => def.id);
+      bodyweightKg = latestBodyweight(logs, weightDefIds, date);
+    }
+    const memo = memoWithBodyweight(typedMemo, bodyweightKg, MEMO_MAX);
+
     const row = { id, date, exerciseId, weight, reps, memo };
-    // 並び順は保存時刻。編集では元の時刻を引き継ぎ、createdAt の無い古い行には足さない
-    if (editingId === null) row.createdAt = Date.now();
-    else if (editingCreatedAt !== undefined) row.createdAt = editingCreatedAt;
+    if (bodyweight) {
+      row.bodyweight = true;
+      if (bodyweightKg !== undefined) row.bodyweightKg = bodyweightKg;
+    }
+    // 並び順は保存時刻。編集では元の時刻と手動の並びを引き継ぎ、無い古い行には足さない
+    if (!updated) row.createdAt = Date.now();
+    else if (createdAt !== undefined) row.createdAt = createdAt;
+    if (order !== undefined) row.order = order;
     await put('workoutSet', row);
-    const updated = editingId !== null;
     // 保存待ちの間にコピーされた入力を消さない
     if (revision === formRevision) {
       stopEditing();
-      // 同じ重量で続けて記録する導線を優先し、重量だけ残す
+      // 同じ重量・同じ自重で続けて記録する導線を優先し、回数とメモだけ消す
       clearFields(['set-reps', 'set-memo']);
     }
     await renderSets();
@@ -242,9 +298,13 @@ function wireEvents() {
 
   byId('set-cancel').addEventListener('click', () => {
     stopEditing();
+    byId('set-bodyweight').checked = false;
+    applyBodyweight();
     clearFields(['set-weight', 'set-reps', 'set-memo']);
     setStatus('編集をやめました');
   });
+
+  byId('set-bodyweight').addEventListener('change', applyBodyweight);
 
   byId('set-date').addEventListener('change', renderSets);
   byId('set-exercise').addEventListener('change', () => {
@@ -306,6 +366,8 @@ async function mount(container) {
   formRevision++;
   const today = todayString();
   byId('set-date').value = today;
+  byId('set-bodyweight').checked = false;
+  applyBodyweight();
   await reloadExercises();
   wireEvents();
   await renderSets();
