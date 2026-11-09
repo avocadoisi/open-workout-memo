@@ -411,6 +411,7 @@ button:active {
 .group-actions button:disabled {
   opacity: 0.35;
 }
+
 /* ベストの 1RM は言葉ではなく強調で示す */
 .group strong {
   font-weight: 700;
@@ -574,6 +575,16 @@ button:active {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.25rem;
+}
+
+/* 移動ボタンが増えても横幅を圧迫しないよう、アイコンの余白を詰める */
+.set-actions .icon-btn {
+  padding: 0.25rem;
+}
+
+.set-actions button:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 /* 編集ボタンは危険な操作ではないので色を変える */

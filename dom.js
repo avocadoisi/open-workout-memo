@@ -78,6 +78,6 @@ function setRow(set, extra = []) {
 export function setTable(sets, { head, extra } = {}) {
   return el('div', {},
     setHead(head),
-    ...sets.map((set) => setRow(set, extra ? extra(set) : [])),
+    ...sets.map((set, index) => setRow(set, extra ? extra(set, index) : [])),
   );
 }
