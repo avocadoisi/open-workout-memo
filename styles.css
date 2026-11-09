@@ -326,6 +326,7 @@ button:active {
 #set-list {
   display: grid;
   gap: 1rem;
+  min-width: 0;
 }
 
 .group h3,
@@ -386,17 +387,25 @@ button:active {
   justify-self: end;
 }
 
+/* 重量・回数・1RM を桁で揃える。整数部3桁・小数1桁が入る 5ch を重量に、回数は 2.5ch を確保する */
 .set-main {
   display: grid;
-  grid-template-columns: 2.75rem 0.75rem 1.5rem 5rem;
+  grid-template-columns: 5ch 0.75rem 2.5ch minmax(0, 1fr);
   align-items: baseline;
   gap: 0.25rem 0.4rem;
+  min-width: 0;
 }
 
 /* 数字の桁を揃えたいので、重量・回数・1RM は表の列に並べる */
 .set-num {
+  min-width: 5ch;
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+
+/* 回数の列は 2.5ch なので、重量用の 5ch を引き継がない */
+.set-reps {
+  min-width: 2.5ch;
 }
 
 .set-times {
@@ -406,25 +415,44 @@ button:active {
 
 .set-head {
   display: grid;
-  grid-template-columns: 2.75rem 0.75rem 1.5rem 5rem;
+  grid-template-columns: 5ch 0.75rem 2.5ch minmax(0, 1fr);
   gap: 0.25rem 0.4rem;
   margin-bottom: 0.15rem;
   padding-bottom: 0.15rem;
   border-bottom: 1px solid var(--border);
   color: var(--fg-soft);
-  font-size: 0.75rem;
   text-align: right;
   white-space: nowrap;
 }
 
-/* 1RM の値は左揃えなので、見出しも左に寄せる（右寄せのままだと列の中でズレて見える） */
+/* 列幅は ch で決めるので、グリッド自体の文字サイズは body と同じままにし、字だけ小さくする（見出しと数値の桁を揃える） */
+.set-head > span {
+  font-size: 0.75rem;
+}
+
+/* 1RM の値は数値の左端から始まるので、見出しも左に寄せる */
 .set-head span:last-child {
   text-align: left;
 }
 
 .set-rm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  min-width: 0;
   font-size: 0.8rem;
   opacity: 0.7;
+}
+
+.set-rm-num {
+  min-width: 5ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* kg と（参考値）は数字の外に置き、数字の桁には数えない */
+.set-rm-unit {
+  font-size: 0.8em;
 }
 
 .with-action {
@@ -549,7 +577,7 @@ li button {
 
 .export-card .export-table .set-main,
 .export-card .export-table .set-head {
-  grid-template-columns: 5em 1.5em 3em 8em;
+  grid-template-columns: 5ch 1.5em 3ch minmax(8ch, 1fr);
   gap: 0.2em 0.5em;
 }
 

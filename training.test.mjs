@@ -10,6 +10,7 @@ import {
   loadOf,
   orderKey,
   partSummary,
+  rmParts,
   rmValue,
   sortSets,
   todayString,
@@ -133,6 +134,28 @@ test('weightText は自重を「自重」にする', () => {
 test('自重セットの1RMは体重が分かるときだけ参考値で出す', () => {
   assert.equal(rmValue({ ...set(0, 10), bodyweight: true }), '—');
   assert.equal(rmValue({ ...set(0, 10), bodyweight: true, bodyweightKg: 70 }), '87.5 kg（参考値）');
+});
+
+test('rmParts は数値と注記を分け、常に小数1桁にする', () => {
+  assert.deepEqual(rmParts(set(100, 3)), { value: '107.5', note: '' });
+  assert.deepEqual(rmParts(set(5, 5)), { value: '5.6', note: '' });
+  assert.deepEqual(rmParts(set(100, 10)), { value: '125.0', note: '' });
+  assert.deepEqual(rmParts(set(100, 11)), { value: '127.5', note: '（参考値）' });
+  assert.deepEqual(rmParts({ ...set(0, 10), bodyweight: true, bodyweightKg: 70 }), {
+    value: '87.5',
+    note: '（参考値）',
+  });
+});
+
+test('rmParts は端数を小数1桁に丸める', () => {
+  assert.deepEqual(rmParts(set(2.55, 1)), { value: '2.6', note: '' });
+  assert.deepEqual(rmParts(set(123.44, 1)), { value: '123.4', note: '' });
+  assert.deepEqual(rmParts(set(10.04, 10)), { value: '12.6', note: '' }); // 12.55 の丸め
+});
+
+test('rmParts は体重の分からない自重セットを「—」にする', () => {
+  assert.deepEqual(rmParts({ ...set(0, 10), bodyweight: true }), { value: '—', note: '' });
+  assert.equal(rmValue({ ...set(0, 10), bodyweight: true }), '—');
 });
 
 test('volumeOf は自重セットを体重×回数で数える', () => {

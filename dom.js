@@ -1,6 +1,6 @@
 // DOM の組み立て道具。HTML 文字列は使わない（innerHTML 禁止）
 import { icon } from './icons.js';
-import { rmValue } from './training.js';
+import { rmParts, weightText } from './training.js';
 
 export const byId = (id) => document.getElementById(id);
 
@@ -54,13 +54,21 @@ function setHead(weightLabel = '重量') {
   );
 }
 
+function rmCell(set) {
+  const { value, note } = rmParts(set);
+  return el('span', { class: 'set-rm' },
+    el('span', { class: 'set-rm-num', text: value }),
+    ...(value === '—' ? [] : [el('span', { class: 'set-rm-unit', text: ` kg${note}` })]),
+  );
+}
+
 function setRow(set, extra = []) {
   return el('div', { class: 'set-row', 'data-id': set.id },
     el('div', { class: 'set-main' },
-      el('span', { class: 'set-num', text: String(set.weight) }),
+      el('span', { class: 'set-num set-weight', text: weightText(set) }),
       el('span', { class: 'set-times', text: '×' }),
-      el('span', { class: 'set-num', text: String(set.reps) }),
-      el('span', { class: 'set-rm', text: rmValue(set) }),
+      el('span', { class: 'set-num set-reps', text: String(set.reps) }),
+      rmCell(set),
     ),
     ...(set.memo ? [el('small', { text: set.memo })] : []),
     ...extra,

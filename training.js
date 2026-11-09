@@ -51,12 +51,19 @@ export function weightText(set) {
   return set.bodyweight ? '自重' : formatWeight(set.weight);
 }
 
-// 単位込みの値。表の列に並べる用（10回超・自重は O'Conner 式の誤差が大きいので参考値と添える）
+// 1RM の表示部品。値と注記を分け、数字だけ桁を揃えられるようにする
+// 10回超・自重は O'Conner 式の誤差が大きいので参考値と添える
 // 体重が分からない自重セットは 1RM を出さない
-export function rmValue(set) {
-  if (set.bodyweight && !Number.isFinite(set.bodyweightKg)) return '—';
+export function rmParts(set) {
+  if (set.bodyweight && !Number.isFinite(set.bodyweightKg)) return { value: '—', note: '' };
   const note = set.bodyweight || set.reps > 10 ? '（参考値）' : '';
-  return `${estimate1RM(loadOf(set), set.reps).toFixed(1)} kg${note}`;
+  return { value: estimate1RM(loadOf(set), set.reps).toFixed(1), note };
+}
+
+// 単位込みの値。表の列に並べる用
+export function rmValue(set) {
+  const { value, note } = rmParts(set);
+  return value === '—' ? '—' : `${value} kg${note}`;
 }
 
 export function rmText(set) {
