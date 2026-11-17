@@ -132,6 +132,18 @@ export function sortSets(sets) {
 // 部位はこの順で並べる。自由入力の部位は後ろ
 const PART_ORDER = ['腕', '肩', '背中', '胸', '脚'];
 
+// 種目ごと履歴の種目セレクトの選択肢。部位が絞られていれば、その部位の未アーカイブ種目だけ
+export function exercisesForPart(exercises, part) {
+  return exercises.filter((exercise) => !exercise.archived && (!part || exercise.bodyPart === part));
+}
+
+// 部位を変えたとき、選択中の種目がその部位に無ければ「すべての種目」（''）に戻す
+export function exerciseKeptInPart(exerciseId, exercises, part) {
+  if (!exerciseId) return '';
+  const found = exercises.find((exercise) => exercise.id === exerciseId);
+  return found && (!part || found.bodyPart === part) ? exerciseId : '';
+}
+
 // 部位の並び順。一覧のソートと partSummary の順序を同じに保つ（未知の部位は最後）
 export function partRank(part) {
   const index = PART_ORDER.indexOf(part);
