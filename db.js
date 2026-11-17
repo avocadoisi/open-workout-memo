@@ -1,3 +1,5 @@
+import { planMerge } from './merge.js';
+
 const DB_NAME = 'open-workout-memo';
 const DB_VERSION = 1;
 
@@ -125,7 +127,7 @@ function exportRows(data) {
         throw new Error(`${key}[${index}] の内容が正しくありません`);
       }
     });
-    rows[storeName] = list;
+    rows[key] = list;
   }
   return rows;
 }
@@ -137,7 +139,7 @@ export async function replaceAll(data) {
   const tx = db.transaction(STORES, 'readwrite');
   for (const storeName of STORES) {
     tx.objectStore(storeName).clear();
-    for (const row of rows[storeName]) tx.objectStore(storeName).put(row);
+    for (const row of rows[EXPORT_KEYS[storeName]]) tx.objectStore(storeName).put(row);
   }
   await done(tx);
 }
@@ -150,14 +152,19 @@ export async function clearAll() {
   await done(tx);
 }
 
-// 既存のデータは残したまま、同じ id のものだけ上書きする
+// 既存のデータは残したまま、同名の種目・指標は手元の id に寄せ、同じ内容のセットは件数の多い方に揃える
 export async function mergeAll(data) {
   const rows = exportRows(data);
+
+  const local = {};
+  for (const storeName of STORES) local[EXPORT_KEYS[storeName]] = await getAll(storeName);
+  const { write, counts } = planMerge(local, rows);
 
   const db = await openDB();
   const tx = db.transaction(STORES, 'readwrite');
   for (const storeName of STORES) {
-    for (const row of rows[storeName]) tx.objectStore(storeName).put(row);
+    for (const row of write[EXPORT_KEYS[storeName]]) tx.objectStore(storeName).put(row);
   }
   await done(tx);
+  return counts;
 }

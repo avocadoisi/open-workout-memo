@@ -21,7 +21,7 @@
 - メモは重量・回数と列を揃える（数値の左端に合わせる）
 - 保存画像ボタンは「記録」見出しの右
 - 体重などの指標は筋トレと別トラック（単位は重さ / 長さ）。保存は kg / cm 固定
-- エクスポートは JSON（インポートで復元）と画像
+- エクスポートは JSON（インポートはマージか全置換で復元）と画像
 - 演出より速度。画面切替や配色変更のフェードはしない。動きは操作の手応え（押した・保存できた）にだけ使い、待たせない
 - やらないこと: ログイン、複数端末同期、サーバー処理、SNS 連携
 
@@ -41,13 +41,13 @@ metricLog:  { id, date, metricDefId, value }
 // export/import: { schemaVersion: 1, exportedAt, exercises, workoutSets, metricDefs, metricLogs }
 ```
 
-インポートは全置換（確認あり、未知の `schemaVersion` は拒否）。
+インポートはマージ（確認なし）と全置換（確認あり）の2つ。マージは id が同じ行を上書きし、id が違っても「日付・種目・重量・回数・メモ」が同じセットは既存とインポートの件数の多い方に揃える（同じファイルを何度入れても増えず、同日 80kg×5 の3セットは3セットのまま、インポートが4セットなら1セットだけ足す）。メモは体重の自動注記を外して比べる。種目は名前、指標は名前＋単位が同じなら手元の id に読み替えて同名を増やさない。マージ結果は「追加 / 更新 / 据え置き」の件数で出す。未知の `schemaVersion` はどちらも拒否。
 `createdAt` を持たない古い記録は 0 として扱う。古い順では読み込んだ順（`getAll` の順）で先頭に、新しい順ではその逆順で末尾に並ぶ。
 
 ## 構成
 
 Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グラフの Chart.js、見出しフォントの Dela Gothic One だけ CDN から読む）。
-`index.html` / `app.js`（ハッシュルーティング）/ `dom.js` / `db.js` / `prefs.js` / `training.js` / `views/*.js`（各画面）/ `styles.css`。
+`index.html` / `app.js`（ハッシュルーティング）/ `dom.js` / `db.js` / `merge.js`（インポートのマージ規則）/ `prefs.js` / `training.js` / `views/*.js`（各画面）/ `styles.css`。
 各 view は `export const view = { id, label, mount(container) }` を出す。
 配色はヘッダーの丸3つで切り替える（gruvbox light / catppuccin latte / tokyonight night）。色は `styles.css` の `--gb-*` にだけ書き、画面側は参照する。
 
@@ -60,13 +60,13 @@ Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グ
 - `sample/test-data.json` — 3ヶ月・週2回・300セット（体重・ウエストも）
 - `sample/test-data-3years.json` — 3年・週2回・3,630セット（体重 192件）。動作の重さを見るとき用
 
-インポートは全置換なので、既存データは先にエクスポートすること。
+インポートはマージなので、テストデータは既存の記録に足される。戻すときは先に自分のデータをエクスポートしておき、あとで全置換する。
 試したあとはデータ画面の一番下の「全削除」で戻せる（タイトルを入力すると消え、次にページを開き直すと Big3 と体重だけの初期状態になる）。
 
 ## 開発
 
 ローカルは `python3 -m http.server 8000` → http://localhost:8000/（`file://` では ESM が動かない）。
-テストは `node --test`（`training.test.mjs`、依存なし）。
+テストは `node --test`（`training.test.mjs` / `merge.test.mjs` / `order.test.mjs` / `sw.test.mjs`、依存なし）。
 PWA の挙動（オフライン）は https か localhost でしか試せない。
 
 変更は issue → ブランチ → PR → マージ（global の `dev-workflow` skill）。
