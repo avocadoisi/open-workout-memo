@@ -4,6 +4,17 @@ import { el } from './dom.js';
 
 export const WEEKDAYS = ['月', '火', '水', '木', '金', '土', '日'];
 
+// カレンダーの曜日行。start は週の始まり（'mon' 既定 / 'sun' 日曜はじまり）
+export function calendarWeekdays(start) {
+  return start === 'sun' ? [WEEKDAYS[WEEKDAYS.length - 1], ...WEEKDAYS.slice(0, -1)] : WEEKDAYS;
+}
+
+// 1日より前の空きマス数。month は 0 起点で new Date にそのまま渡す
+export function firstDayOffset(year, month, start) {
+  const weekday = new Date(year, month, 1).getDay(); // 0=日
+  return start === 'sun' ? weekday : (weekday + 6) % 7;
+}
+
 export function todayString() {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, '0');

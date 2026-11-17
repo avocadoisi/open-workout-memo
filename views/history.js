@@ -1,6 +1,6 @@
 import { getAll } from '../db.js';
 import { el, iconButton, option, setTable } from '../dom.js';
-import { WEEKDAYS, bestSet, exerciseKeptInPart, exercisesForPart, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, todayString, volumeOf } from '../training.js';
+import { bestSet, calendarWeekdays, exerciseKeptInPart, exercisesForPart, firstDayOffset, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, todayString, volumeOf } from '../training.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -44,6 +44,10 @@ const CSS = `
 .hist-more { margin: 1rem 0 0; padding: 0.5rem 0.75rem; font-size: 0.875rem; }
 `;
 
+// 週の始まりは設定画面と同じキー。設定画面が prefs.js の新旧混在に耐えるよう、
+// キーと読み書きは view ごとに完結させる（ORDER_KEY と同じ方針）
+const WEEK_START_KEY = 'owa-week-start';
+
 const pad = (n) => String(n).padStart(2, '0');
 const dateKey = (year, month, day) => `${year}-${pad(month + 1)}-${pad(day)}`;
 const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
@@ -86,10 +90,10 @@ function daySets() {
 function buildCalendar() {
   const marked = new Set(monthSets().map((set) => set.date));
   const today = todayString();
-  grid.replaceChildren(...WEEKDAYS.map((wd) => el('span', { class: 'hist-wd', text: wd })));
+  const start = localStorage.getItem(WEEK_START_KEY) === 'sun' ? 'sun' : 'mon';
+  grid.replaceChildren(...calendarWeekdays(start).map((wd) => el('span', { class: 'hist-wd', text: wd })));
 
-  // 月曜始まりなので日曜(0)を6として扱う
-  const offset = (new Date(state.year, state.month, 1).getDay() + 6) % 7;
+  const offset = firstDayOffset(state.year, state.month, start);
   for (let i = 0; i < offset; i++) grid.append(el('span', { class: 'hist-blank' }));
 
   for (let day = 1; day <= daysInMonth(state.year, state.month); day++) {
