@@ -132,6 +132,12 @@ export function sortSets(sets) {
 // 部位はこの順で並べる。自由入力の部位は後ろ
 const PART_ORDER = ['腕', '肩', '背中', '胸', '脚'];
 
+// 部位の並び順。一覧のソートと partSummary の順序を同じに保つ（未知の部位は最後）
+export function partRank(part) {
+  const index = PART_ORDER.indexOf(part);
+  return index === -1 ? PART_ORDER.length : index;
+}
+
 // 入力した順に積み上げる。手動の並び（order）、無ければ作成時刻（createdAt）の昇順
 // 同じ種目でも連続していなければ別グループにする（ベンチ→スクワット→ベンチ は3グループ）
 export function groupSets(sets, exercises) {
@@ -153,21 +159,23 @@ export function groupSets(sets, exercises) {
   return groups;
 }
 
-// ベストかどうかは言葉ではなく強調（strong）で示す
-export function groupTitle(group) {
-  const part = group.bodyPart ? `（${group.bodyPart}）` : '';
+// 見出しの数値の部分。種目名をセレクトに任せる記録画面でも同じ部品を使う
+export function groupStats(group) {
   return [
-    el('span', { text: `${group.name}${part} ` }),
     el('strong', { text: rmText(bestSet(group.sets)) }),
     el('span', { text: `・ボリューム ${volumeOf(group.sets)} kg` }),
   ];
 }
 
+// ベストかどうかは言葉ではなく強調（strong）で示す
+export function groupTitle(group) {
+  const part = group.bodyPart ? `（${group.bodyPart}）` : '';
+  return [el('span', { text: `${group.name}${part} ` }), ...groupStats(group)];
+}
+
 export function partSummary(groups) {
   const parts = [...new Set(groups.map((group) => group.bodyPart).filter(Boolean))];
-  return parts
-    .sort((a, b) => (PART_ORDER.indexOf(a) + 1 || 99) - (PART_ORDER.indexOf(b) + 1 || 99))
-    .join('・');
+  return parts.sort((a, b) => partRank(a) - partRank(b)).join('・');
 }
 
 export function bestSet(sets) {

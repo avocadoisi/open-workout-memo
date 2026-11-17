@@ -1,7 +1,7 @@
 import { getAll, put, exportAll, clearAll, mergeAll, replaceAll } from '../db.js';
 import { byId, el, iconButton, option, setStatus } from '../dom.js';
 import { currentTitle } from '../prefs.js';
-import { todayString, unitLabel } from '../training.js';
+import { partRank, todayString, unitLabel } from '../training.js';
 import { icon } from '../icons.js';
 
 export const view = { id: 'data', label: 'データ', mount };
@@ -102,14 +102,50 @@ function hasSameName(list, name) {
   return list.some((item) => normalizeName(item.name) === target);
 }
 
+// 名前と部位をその場で編集する。保存したら一覧を描き直す
+function exerciseEditor(exercise) {
+  const nameInput = el('input', { type: 'text', maxlength: '50', value: exercise.name, required: '', autocomplete: 'off' });
+  const partInput = el('input', { type: 'text', maxlength: '50', value: exercise.bodyPart, required: '', autocomplete: 'off' });
+  const form = el('form', { class: 'exercise-edit' },
+    nameInput,
+    partInput,
+    el('div', { class: 'form-actions' },
+      el('button', { type: 'submit', text: '保存' }),
+      // やめるときは編集前の一覧に戻す
+      el('button', { type: 'button', class: 'plain', text: 'やめる', onclick: () => reloadExercises() }),
+    ),
+  );
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const name = nameInput.value.trim();
+    const bodyPart = partInput.value.trim();
+    if (!name || !bodyPart) {
+      setStatus('名前と部位を入力してください', true);
+      return;
+    }
+    if (exercises.some((other) => other.id !== exercise.id && hasSameName([other], name))) {
+      setStatus(`「${name}」はもう登録されています`, true);
+      return;
+    }
+    await put('exercise', { ...exercise, name, bodyPart });
+    await reloadExercises();
+    setStatus('種目を変更しました');
+  });
+  return form;
+}
+
 async function reloadExercises() {
   exercises = await getAll('exercise');
-  exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+  // 部位の並び（腕→肩→背中→胸→脚、自由入力は後ろ）を優先し、同じ部位の中では名前順
+  exercises.sort((a, b) => partRank(a.bodyPart) - partRank(b.bodyPart) || a.name.localeCompare(b.name, 'ja'));
 
   // 種目は消さずアーカイブする（過去の記録はそのまま残す）
   byId('exercise-list').replaceChildren(...exercises.map((exercise) => {
     const label = el('span', { text: `${exercise.name}（${exercise.bodyPart}）` });
     const item = el('li', {}, label);
+    item.append(iconButton('pencil', '名前と部位を変更', () => {
+      item.replaceChildren(exerciseEditor(exercise));
+    }));
     if (exercise.archived) {
       item.classList.add('archived');
       label.textContent += ' アーカイブ済み';

@@ -11,6 +11,7 @@ import {
   loadOf,
   memoWithBodyweight,
   orderKey,
+  partRank,
   partSummary,
   rmParts,
   rmValue,
@@ -108,6 +109,11 @@ test('groupSets は種目マスタに無い id を「不明な種目」にする
   const [group] = groupSets([set(50, 10, 'gone')], []);
   assert.equal(group.name, '不明な種目');
   assert.equal(group.bodyPart, '');
+});
+
+test('partRank は部位の並び順。未知の部位は最後', () => {
+  assert.equal(partRank('胸'), 3);
+  assert.equal(partRank('ふくらはぎ'), 5);
 });
 
 test('partSummary は 腕→肩→背中→胸→脚 の順になり、未知の部位は後ろ', () => {
