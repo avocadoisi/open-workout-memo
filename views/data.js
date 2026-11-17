@@ -1,4 +1,5 @@
 import { getAll, put, exportAll, clearAll, mergeAll, replaceAll } from '../db.js';
+import { normalizeName } from '../merge.js';
 import { byId, el, iconButton, option, setStatus } from '../dom.js';
 import { currentTitle } from '../prefs.js';
 import { partRank, todayString, unitLabel } from '../training.js';
@@ -94,9 +95,7 @@ function buildClearSection() {
   );
 }
 
-// 表記ゆれ（前後の空白・全角半角・大文字小文字）を同じ名前として扱う
-const normalizeName = (name) => name.normalize('NFKC').trim().toLowerCase();
-
+// 種目を名前で追加するとき、表記ゆれを別の種目として増やさない
 function hasSameName(list, name) {
   const target = normalizeName(name);
   return list.some((item) => normalizeName(item.name) === target);
@@ -296,14 +295,17 @@ function wireEvents() {
 
   byId('import-merge').addEventListener('click', async () => {
     if (!pending) return;
+    let counts;
     try {
-      await mergeAll(pending);
+      counts = await mergeAll(pending);
     } catch (error) {
       setStatus(`インポートに失敗しました: ${error.message}`, true);
       return;
     }
     finishImport();
-    setStatus('マージしました');
+    // 同じ内容で捨てた行があれば分かるようにする
+    const text = (list) => `追加 ${list.added}・更新 ${list.updated}・据え置き ${list.skipped}`;
+    setStatus(`マージしました（セット ${text(counts.workoutSets)}、指標 ${text(counts.metricLogs)}）`);
   });
 
   byId('import-replace').addEventListener('click', async () => {
