@@ -4,6 +4,8 @@ import test from 'node:test';
 import {
   bestSet,
   estimate1RM,
+  exerciseKeptInPart,
+  exercisesForPart,
   formatDate,
   formatWeight,
   groupSets,
@@ -243,4 +245,23 @@ test('groupSets は order の順でグループを作る', () => {
   );
   assert.deepEqual(groups.map((group) => group.name), ['スクワット', 'ベンチプレス']);
   assert.deepEqual(groups.map((group) => group.sets.length), [1, 2]);
+});
+
+test('exercisesForPart は未アーカイブだけを、部位で絞って返す', () => {
+  const exercises = [
+    { id: 'a', name: 'ベンチプレス', bodyPart: '胸' },
+    { id: 'b', name: 'スクワット', bodyPart: '脚', archived: true },
+    { id: 'c', name: 'デッドリフト', bodyPart: '背中' },
+  ];
+  assert.deepEqual(exercisesForPart(exercises, '').map((item) => item.id), ['a', 'c']);
+  assert.deepEqual(exercisesForPart(exercises, '胸').map((item) => item.id), ['a']);
+  assert.deepEqual(exercisesForPart(exercises, '脚'), []);
+});
+
+test('exerciseKeptInPart は部位に無い種目を「すべての種目」に戻す', () => {
+  const exercises = [{ id: 'a', bodyPart: '胸' }, { id: 'b', bodyPart: '脚' }];
+  assert.equal(exerciseKeptInPart('a', exercises, '胸'), 'a');
+  assert.equal(exerciseKeptInPart('a', exercises, '脚'), '');
+  assert.equal(exerciseKeptInPart('a', exercises, ''), 'a');
+  assert.equal(exerciseKeptInPart('', exercises, '胸'), '');
 });

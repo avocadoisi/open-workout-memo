@@ -1,6 +1,6 @@
 import { getAll } from '../db.js';
 import { el, iconButton, option, setTable } from '../dom.js';
-import { WEEKDAYS, bestSet, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, todayString, volumeOf } from '../training.js';
+import { WEEKDAYS, bestSet, exerciseKeptInPart, exercisesForPart, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, todayString, volumeOf } from '../training.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -10,6 +10,8 @@ const state = {
   selected: '',
   exerciseId: '',
   part: '',
+  // 種目ごとモードの種目セレクトを絞る部位（部位ごとモードの state.part とは別に持つ）
+  exPart: '',
   mode: 'calendar',
   // 種目ごと・部位ごとは直近この日数だけ描く（「もっと見る」で増やす）
   days: 30,
@@ -55,6 +57,8 @@ let filter;
 let filterLabel;
 let partLabel;
 let partSelect;
+let exPartLabel;
+let exPartSelect;
 let navRow;
 let modeSelect;
 let detailSection;
@@ -262,10 +266,12 @@ function render() {
   for (let year = earliest; year <= Math.max(currentYear, state.year); year += 1) years.push(year);
   yearSelect.replaceChildren(...years.map((year) => option(String(year), `${year}年`)));
   yearSelect.value = String(state.year);
-  if (state.mode === 'exercise' && !state.exerciseId) {
-    state.exerciseId = state.exercises.find((exercise) => !exercise.archived)?.id ?? '';
-  }
+  // 種目セレクトの選択肢は部位の絞り込みに追従させる
+  filter.replaceChildren(option('', 'すべての種目'),
+    ...exercisesForPart(state.exercises, state.exPart).map((exercise) => option(exercise.id, exercise.name)));
   filter.value = state.exerciseId;
+  exPartSelect.value = state.exPart;
+  exPartLabel.hidden = state.mode !== 'exercise';
   partSelect.value = state.part;
   modeSelect.value = state.mode;
   navRow.hidden = state.mode !== 'calendar';
@@ -329,6 +335,11 @@ async function mount(container) {
 
   await load();
 
+  // URL で種目ごとモードに入ったとき、種目指定が無ければ先頭の種目を選んでおく
+  if (state.mode === 'exercise' && !state.exerciseId) {
+    state.exerciseId = state.exercises.find((exercise) => !exercise.archived)?.id ?? '';
+  }
+
   navLabel = el('div', { class: 'hist-month' });
   yearSelect = el('select', {
     class: 'hist-year',
@@ -342,6 +353,10 @@ async function mount(container) {
     'aria-label': '表示',
     onchange: (event) => {
       state.mode = event.target.value;
+      // 種目ごとに入ったばかりで種目が未選択なら、先頭の種目を選んでおく
+      if (state.mode === 'exercise' && !state.exerciseId) {
+        state.exerciseId = state.exercises.find((exercise) => !exercise.archived)?.id ?? '';
+      }
       state.days = 30;
       render();
     },
@@ -366,6 +381,17 @@ async function mount(container) {
     },
   }, option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
 
+  // 種目ごとモード用の部位セレクト。変えたら種目の選択肢を絞り、選択中の種目がその部位に無ければ「すべての種目」に戻す
+  exPartSelect = el('select', {
+    'aria-label': '部位（種目の絞り込み）',
+    onchange: (event) => {
+      state.exPart = event.target.value;
+      state.exerciseId = exerciseKeptInPart(state.exerciseId, state.exercises, state.exPart);
+      state.days = 30;
+      render();
+    },
+  }, option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
+
   navRow = el('div', { class: 'hist-nav' },
     iconButton('left', '前月', () => changeMonth(-1)),
     navLabel,
@@ -373,6 +399,7 @@ async function mount(container) {
     iconButton('calendar', '今日', goToday),
   );
   filterLabel = el('label', { class: 'hist-filter' }, '種目', filter);
+  exPartLabel = el('label', { class: 'hist-filter' }, '部位', exPartSelect);
   partLabel = el('label', { class: 'hist-filter' }, '部位', partSelect);
 
   container.append(
@@ -383,6 +410,7 @@ async function mount(container) {
       ),
       navRow,
       filterLabel,
+      exPartLabel,
       partLabel,
       grid,
     ),
