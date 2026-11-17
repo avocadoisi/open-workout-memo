@@ -9,12 +9,27 @@ const SET_ORDERS = [
   { id: 'desc', label: '新しい順' },
 ];
 
+// 履歴カレンダーの週の始まり。履歴画面も同じキーと既定値（月曜）を持つ
+const WEEK_START_KEY = 'owa-week-start';
+const WEEK_STARTS = [
+  { id: 'mon', label: '月曜' },
+  { id: 'sun', label: '日曜' },
+];
+
 function currentSetOrder() {
   return localStorage.getItem(ORDER_KEY) === 'desc' ? 'desc' : 'asc';
 }
 
 function applySetOrder(order) {
   localStorage.setItem(ORDER_KEY, order === 'desc' ? 'desc' : 'asc');
+}
+
+function currentWeekStart() {
+  return localStorage.getItem(WEEK_START_KEY) === 'sun' ? 'sun' : 'mon';
+}
+
+function applyWeekStart(start) {
+  localStorage.setItem(WEEK_START_KEY, start === 'sun' ? 'sun' : 'mon');
 }
 
 // タイルには並べず、ヘッダーの歯車からだけ開く
@@ -63,6 +78,20 @@ function orderChoice(order) {
   return button;
 }
 
+function weekStartChoice(start) {
+  const button = el('button', {
+    type: 'button',
+    class: 'pref-choice pref-order',
+    text: start.label,
+    'aria-pressed': String(start.id === currentWeekStart()),
+  });
+  button.addEventListener('click', () => {
+    applyWeekStart(start.id);
+    for (const other of button.parentElement.children) other.setAttribute('aria-pressed', String(other === button));
+  });
+  return button;
+}
+
 function mount(container) {
   const style = el('style');
   style.textContent = CSS;
@@ -98,6 +127,11 @@ function mount(container) {
       el('h2', { text: '記録の並び' }),
       el('div', { class: 'pref-choices', role: 'group', 'aria-label': '記録の並び' }, ...SET_ORDERS.map(orderChoice)),
       el('p', { class: 'pref-hint', text: '記録画面のセット一覧に適用します。既定は古い順（入力順）です。' }),
+    ),
+    el('section', { class: 'pref' },
+      el('h2', { text: 'カレンダーの週の始まり' }),
+      el('div', { class: 'pref-choices', role: 'group', 'aria-label': 'カレンダーの週の始まり' }, ...WEEK_STARTS.map(weekStartChoice)),
+      el('p', { class: 'pref-hint', text: '履歴のカレンダーに適用します。既定は月曜はじまりです。' }),
     ),
     el('p', { class: 'pref-hint', text: '設定はこの端末のブラウザに保存されます。' }),
   );

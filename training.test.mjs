@@ -3,10 +3,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   bestSet,
+  calendarWeekdays,
   estimate1RM,
   exerciseKeptInPart,
   exercisesForPart,
   formatDate,
+  firstDayOffset,
   formatWeight,
   groupSets,
   latestBodyweight,
@@ -264,4 +266,16 @@ test('exerciseKeptInPart は部位に無い種目を「すべての種目」に�
   assert.equal(exerciseKeptInPart('a', exercises, '脚'), '');
   assert.equal(exerciseKeptInPart('a', exercises, ''), 'a');
   assert.equal(exerciseKeptInPart('', exercises, '胸'), '');
+});
+
+test('calendarWeekdays は週の始まりに応じて曜日行を並べ替える', () => {
+  assert.deepEqual(calendarWeekdays('mon'), ['月', '火', '水', '木', '金', '土', '日']);
+  assert.deepEqual(calendarWeekdays('sun'), ['日', '月', '火', '水', '木', '金', '土']);
+  assert.deepEqual(calendarWeekdays(''), ['月', '火', '水', '木', '金', '土', '日']);
+});
+
+test('firstDayOffset は 2026年11月（1日=日曜）で日曜はじまり0・月曜はじまり6', () => {
+  assert.equal(firstDayOffset(2026, 10, 'mon'), 6);
+  assert.equal(firstDayOffset(2026, 10, 'sun'), 0);
+  assert.equal(firstDayOffset(2026, 10, ''), 6);
 });
