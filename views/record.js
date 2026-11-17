@@ -2,6 +2,7 @@ import { getAll, put, remove } from '../db.js';
 import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
 import {
   groupSets,
+  groupStats,
   groupTitle,
   latestBodyweight,
   memoWithBodyweight,
@@ -71,14 +72,16 @@ function buildForm() {
 
 function buildList() {
   return el('section', {},
-    el('h2', { text: '記録' }),
-    el('button', {
-      type: 'button',
-      id: 'image-btn',
-      class: 'icon-btn',
-      'aria-label': '画像を保存',
-      title: '画像を保存',
-    }, icon('camera')),
+    // 画像ボタンは見出しの横に置く（浮いた1行を増やさない）
+    el('h2', { class: 'sec-head' },
+      el('span', { text: '記録' }),
+      el('button', {
+        type: 'button',
+        id: 'image-btn',
+        class: 'icon-btn',
+        'aria-label': '画像を保存',
+        title: '画像を保存',
+      }, icon('camera'))),
     el('div', { id: 'set-list' }),
     el('p', { id: 'set-count' }),
   );
@@ -137,9 +140,10 @@ function moveButton(name, label, disabled, onClick) {
 
 function buildGroup(group, index) {
   const exerciseId = group.sets[0].exerciseId;
+  // 見出しの種目名をこのセレクトで兼ねる（見えているのが種目名、変えれば種目変更）
   const select = el('select', {
     class: 'group-exercise-select',
-    'aria-label': 'このグループの種目を変更',
+    'aria-label': 'このグループの種目（変更もできます）',
     onchange: (event) => {
       changeGroupExercise(group.sets, event.target);
     },
@@ -147,9 +151,12 @@ function buildGroup(group, index) {
   select.value = exerciseId;
 
   return el('div', { class: 'group' },
-    el('h3', {}, ...groupTitle(group),
-      el('div', { class: 'group-tools' },
+    el('h3', {},
+      // 名前・1RM・ボリュームは1行に固める。狭い画面では統計ごと折り返す
+      el('div', { class: 'group-headline' },
         select,
+        el('div', { class: 'group-stats' }, ...groupStats(group))),
+      el('div', { class: 'group-tools' },
         el('div', { class: 'group-actions' },
           groupMoveButton('up', '上へ移動', index, -1),
           groupMoveButton('down', '下へ移動', index, 1),
@@ -293,7 +300,7 @@ async function copySet(set) {
     exerciseId: set.exerciseId,
     weight: set.weight,
     reps: set.reps,
-    memo: '',
+    memo: set.memo,
     createdAt: Date.now(),
   };
   // 自重は体重の記録も引き継ぐ（無い行には足さない）

@@ -277,6 +277,14 @@ h2 {
   font-size: 1rem;
 }
 
+/* 見出しと補助ボタン（画像保存など）を同じ行に置く */
+.sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 form {
   display: grid;
   gap: 0.5rem;
@@ -388,6 +396,22 @@ button:active {
   gap: 0.25rem 0.5rem;
 }
 
+/* 見出しの名前・1RM・ボリュームは1行に固める。狭い画面では統計ごと折り返す */
+.group-headline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  min-width: 0;
+}
+
+.group-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
 .group-tools {
   display: flex;
   align-items: center;
@@ -395,12 +419,14 @@ button:active {
   margin-left: auto;
 }
 
+/* 見出しの種目名を兼ねるので、枠と余白を消して見出しの文字に寄せる */
 .group-exercise-select {
-  max-width: 9rem;
-  padding: 0.15rem 0.25rem;
-  font-size: 0.8rem;
-  color: var(--fg);
-  background: var(--bg);
+  max-width: 11rem;
+  padding: 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--fg-soft);
+  background: transparent;
+  border-color: transparent;
 }
 
 .group-actions {
@@ -453,7 +479,16 @@ button:active {
 .set-row > small {
   grid-row: 2;
   grid-column: 1 / -1;
+  /* 重量の数字は右揃えの 5ch 列に収まるので、数字の左端に合わせて1字分だけ下げる */
+  padding-left: 1ch;
   opacity: 0.7;
+}
+
+/* 一覧の中で種目の名前と部位をその場で編集する */
+.exercise-edit {
+  display: grid;
+  flex: 1;
+  gap: 0.5rem;
 }
 
 .set-row > .set-actions {
