@@ -35,3 +35,25 @@ export function applyTitle(value) {
   if (brand) brand.textContent = title;
   return title;
 }
+
+// 画面ごとに最後に選んだ部位と種目。開き直したときに既定へ戻さない
+// 種目を選んで過去を見てから戻る行き来で、選択が毎回デフォルトに戻るのを防ぐ
+const SELECTED_PREFIX = 'owa-selected-';
+
+export function lastSelection(view) {
+  try {
+    const value = JSON.parse(localStorage.getItem(SELECTED_PREFIX + view) ?? '{}');
+    return value && typeof value === 'object' ? value : {};
+  } catch {
+    // 壊れた値は無いものとして扱う（既定の選び方に戻すだけ）
+    return {};
+  }
+}
+
+export function rememberSelection(view, selection) {
+  try {
+    localStorage.setItem(SELECTED_PREFIX + view, JSON.stringify(selection));
+  } catch {
+    // 保存できなくても画面は使えるので、選択の記憶だけあきらめる
+  }
+}

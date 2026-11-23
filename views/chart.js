@@ -1,6 +1,7 @@
 import { getAll } from '../db.js';
 import { el, option } from '../dom.js';
 import { icon } from '../icons.js';
+import { lastSelection, rememberSelection } from '../prefs.js';
 import { estimate1RM, loadOf, mostTrainedExercise } from '../training.js';
 
 export const view = { id: 'chart', label: 'グラフ', mount };
@@ -143,14 +144,21 @@ async function mount(container) {
   const exerciseOptions = (part) => exercisesIn(part)
     .map((exercise) => option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
 
-  // 部位を変えたら種目の選択肢を作り直し、その部位でもっとも多くの日に行っている種目に切り替える
-  function selectPart(part) {
+  // 部位を変えたら種目の選択肢を作り直す。前回選んだ種目（その部位にあれば）か、
+  // その部位でもっとも多くの日に行っている種目に切り替える
+  function selectPart(part, preferredId) {
     exerciseSelect.replaceChildren(...exerciseOptions(part));
-    exerciseSelect.value = mostTrainedExercise(exercisesIn(part), sets);
+    const list = exercisesIn(part);
+    exerciseSelect.value = list.some((exercise) => exercise.id === preferredId)
+      ? preferredId
+      : mostTrainedExercise(list, sets);
   }
 
+  // 画面を開き直しても、前回見ていた部位と種目に戻す（無ければ既定に任せる）
+  const selected = lastSelection('chart');
   partSelect.replaceChildren(option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
-  selectPart('');
+  partSelect.value = parts.includes(selected.part) ? selected.part : '';
+  selectPart(partSelect.value, selected.exerciseId);
   metricSelect.replaceChildren(...metricDefs.map((def) => option(def.id, def.name)));
 
   if (exercises.length === 0) {
@@ -382,11 +390,16 @@ async function mount(container) {
 
   partSelect.addEventListener('change', () => {
     selectPart(partSelect.value);
+    rememberSelection('chart', { part: partSelect.value, exerciseId: exerciseSelect.value });
     render();
   });
-  for (const select of [rangeSelect, exerciseSelect, modeSelect, metricSelect]) {
+  for (const select of [rangeSelect, modeSelect, metricSelect]) {
     select.addEventListener('change', render);
   }
+  exerciseSelect.addEventListener('change', () => {
+    rememberSelection('chart', { part: partSelect.value, exerciseId: exerciseSelect.value });
+    render();
+  });
   for (const part of [series, metric]) {
     part.canvas.addEventListener('click', () => openZoom(part));
   }
