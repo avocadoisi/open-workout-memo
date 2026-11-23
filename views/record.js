@@ -6,6 +6,7 @@ import {
   groupTitle,
   latestBodyweight,
   memoWithBodyweight,
+  mostTrainedExercise,
   partSummary,
   stripBodyweightNote,
   todayString,
@@ -24,6 +25,8 @@ export const view = { id: 'record', label: '記録', mount };
 const MEMO_MAX = 30;
 
 let exercises = [];
+// 既定の種目（記録した日がもっとも多い種目）を決めるための全記録
+let allSets = [];
 // 編集中のセット id。null なら新規入力
 let editingId = null;
 // 編集中のセットの createdAt。古い行は未保存なので undefined のまま引き継ぐ
@@ -187,7 +190,10 @@ async function renderSets() {
   const list = byId('set-list');
   if (!list) return;
   const date = byId('set-date').value;
-  const sets = (await getAll('workoutSet')).filter((set) => set.date === date);
+  const all = await getAll('workoutSet');
+  // 既定の種目は全記録から決めるので、保存のたびに数え直せるよう持っておく
+  allSets = all;
+  const sets = all.filter((set) => set.date === date);
   // 読み込み待ちの間に画面を離れていたら、消えた画面は触らない
   if (!list.isConnected) return;
   // 並び替えで order が変わっても、編集中のセットは最新の値を引き継ぐ
@@ -245,11 +251,13 @@ function fillExerciseOptions(exerciseId) {
     list.unshift(current);
   }
   byId('set-exercise').replaceChildren(...list.map((exercise) => option(exercise.id, exercise.name)));
+  // 前の種目が選べないときは、その部位でもっとも多くの日に行っている種目を既定にする
   if (list.some((exercise) => exercise.id === previous)) byId('set-exercise').value = previous;
+  else byId('set-exercise').value = mostTrainedExercise(list, allSets);
 }
 
 async function reloadExercises() {
-  exercises = await getAll('exercise');
+  [exercises, allSets] = await Promise.all([getAll('exercise'), getAll('workoutSet')]);
   exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
   fillPartOptions();
   fillExerciseOptions();
