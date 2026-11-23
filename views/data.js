@@ -1,5 +1,5 @@
 import { getAll, put, exportAll, clearAll, mergeAll, replaceAll } from '../db.js';
-import { normalizeName } from '../merge.js';
+import { normalizeName, parseImport } from '../merge.js';
 import { byId, el, iconButton, option, setStatus } from '../dom.js';
 import { currentTitle } from '../prefs.js';
 import { partRank, todayString, unitLabel } from '../training.js';
@@ -57,13 +57,16 @@ function buildMetricSection() {
 function buildDataSection() {
   return el('section', {},
     el('h2', { text: 'データ' }),
-    el('button', {
-      type: 'button',
-      id: 'export-btn',
-      class: 'icon-btn',
-      'aria-label': 'エクスポート',
-      title: 'エクスポート',
-    }, icon('download')),
+    el('div', { class: 'form-actions' },
+      el('button', {
+        type: 'button',
+        id: 'export-btn',
+        class: 'icon-btn',
+        'aria-label': 'エクスポート',
+        title: 'エクスポート',
+      }, icon('download')),
+      el('button', { type: 'button', id: 'import-clipboard', class: 'plain', text: 'クリップボードからインポート' }),
+    ),
     el('label', {}, 'インポート',
       el('input', { type: 'file', id: 'import-file', accept: 'application/json,.json' })),
     el('div', { id: 'import-actions', hidden: '' },
@@ -194,6 +197,14 @@ async function renderMetricLogs() {
   }));
 }
 
+// ファイルでもクリップボードでも、読み込んだ内容は同じ確認（マージ / 全置換）に進む
+function showImport(data, label) {
+  pending = data;
+  byId('import-summary').textContent = `${label}: 種目 ${data.exercises.length}・セット ${data.workoutSets.length}・指標 ${data.metricDefs.length}・記録 ${data.metricLogs.length}`;
+  byId('import-actions').hidden = false;
+  setStatus('マージか全置換かを選んでください');
+}
+
 async function reloadAll() {
   await reloadExercises();
   await reloadMetricDefs();
@@ -279,15 +290,23 @@ function wireEvents() {
     if (!file) return;
 
     try {
-      const data = JSON.parse(await file.text());
-      if (data?.schemaVersion !== 1) {
-        setStatus('schemaVersion が 1 ではないためインポートできません', true);
-        return;
-      }
-      pending = data;
-      byId('import-summary').textContent = `${file.name}: 種目 ${data.exercises.length}・セット ${data.workoutSets.length}・指標 ${data.metricDefs.length}・記録 ${data.metricLogs.length}`;
-      byId('import-actions').hidden = false;
-      setStatus('マージか全置換かを選んでください');
+      showImport(parseImport(await file.text()), file.name);
+    } catch (error) {
+      setStatus(`インポートに失敗しました: ${error.message}`, true);
+    }
+  });
+
+  // big3-tracker の計画など、クリップボードにコピーした JSON を取り込む
+  byId('import-clipboard').addEventListener('click', async () => {
+    let text;
+    try {
+      text = await navigator.clipboard.readText();
+    } catch {
+      setStatus('クリップボードを読めませんでした。ブラウザの許可を確認してください', true);
+      return;
+    }
+    try {
+      showImport(parseImport(text), 'クリップボード');
     } catch (error) {
       setStatus(`インポートに失敗しました: ${error.message}`, true);
     }

@@ -6,6 +6,7 @@ import {
   exerciseKey,
   mergeRows,
   metricDefKey,
+  parseImport,
   planMerge,
   remapIds,
   setKey,
@@ -151,4 +152,21 @@ test('planMerge は読み替えた種目の id で記録を足す', () => {
   assert.deepEqual(write.workoutSets, [set('b1', { exerciseId: 'ex-squat' })]);
   assert.equal(counts.workoutSets.added, 1);
   assert.equal(counts.exercises.added, 0);
+});
+
+test('parseImport は正しい JSON をそのまま返す', () => {
+  const data = { schemaVersion: 1, exercises: [], workoutSets: [], metricDefs: [], metricLogs: [] };
+  assert.deepEqual(parseImport(JSON.stringify(data)), data);
+});
+
+test('parseImport は読めない・版が違う・配列でないものを拒否する', () => {
+  assert.throws(() => parseImport('{'), /JSON として読めません/);
+  assert.throws(
+    () => parseImport(JSON.stringify({ schemaVersion: 2, exercises: [] })),
+    /schemaVersion が 1 ではありません/,
+  );
+  assert.throws(
+    () => parseImport(JSON.stringify({ schemaVersion: 1, exercises: [], workoutSets: {}, metricDefs: [], metricLogs: [] })),
+    /workoutSets が配列ではありません/,
+  );
 });
