@@ -14,6 +14,7 @@ import {
   weightText,
 } from '../training.js';
 import { icon } from '../icons.js';
+import { lastSelection, rememberSelection } from '../prefs.js';
 import { moveItem, orderForSave, persistSetOrder } from './order.js';
 // 並び順の設定キーは views/settings.js と共有する（prefs.js を介さない）
 function newestFirst() {
@@ -27,6 +28,8 @@ const MEMO_MAX = 30;
 let exercises = [];
 // 既定の種目（記録した日がもっとも多い種目）を決めるための全記録
 let allSets = [];
+// 前回の画面で選んでいた（または記録した）種目。まだ選べるならこれを既定にする
+let rememberedExerciseId = '';
 // 編集中のセット id。null なら新規入力
 let editingId = null;
 // 編集中のセットの createdAt。古い行は未保存なので undefined のまま引き継ぐ
@@ -251,14 +254,17 @@ function fillExerciseOptions(exerciseId) {
     list.unshift(current);
   }
   byId('set-exercise').replaceChildren(...list.map((exercise) => option(exercise.id, exercise.name)));
-  // 前の種目が選べないときは、その部位でもっとも多くの日に行っている種目を既定にする
+  // 選んでいた種目が選べるときはそのまま。選べないときは、前回の種目か、
+  // その部位でもっとも多くの日に行っている種目を既定にする
   if (list.some((exercise) => exercise.id === previous)) byId('set-exercise').value = previous;
+  else if (list.some((exercise) => exercise.id === rememberedExerciseId)) byId('set-exercise').value = rememberedExerciseId;
   else byId('set-exercise').value = mostTrainedExercise(list, allSets);
 }
 
 async function reloadExercises() {
   [exercises, allSets] = await Promise.all([getAll('exercise'), getAll('workoutSet')]);
   exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+  rememberedExerciseId = lastSelection('record').exerciseId ?? '';
   fillPartOptions();
   fillExerciseOptions();
 }
@@ -391,6 +397,7 @@ function wireEvents() {
       if (order !== undefined) row.order = order;
     }
     await put('workoutSet', row);
+    rememberSelection('record', { exerciseId });
     // 保存待ちの間にコピーされた入力を消さない
     if (revision === formRevision) {
       stopEditing();
@@ -419,6 +426,7 @@ function wireEvents() {
   byId('set-exercise').addEventListener('change', () => {
     // 種目が変わると前の種目の重量は意味を持たないので消す
     clearFields(['set-weight']);
+    rememberSelection('record', { exerciseId: byId('set-exercise').value });
   });
   byId('set-part').addEventListener('change', () => {
     // 部位の変更で種目が切り替わったときも重量を消す
