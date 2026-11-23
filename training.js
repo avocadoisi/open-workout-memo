@@ -148,6 +148,27 @@ export function exercisesForPart(exercises, part) {
   return exercises.filter((exercise) => !exercise.archived && (!part || exercise.bodyPart === part));
 }
 
+// グラフの種目セレクトの既定。記録した日がもっとも多い種目を選ぶ（同じ日に複数セットあっても1日）
+// 同じ日数なら並び順の先頭。アーカイブ済みは、ほかに記録のある種目が無いときだけ選ぶ
+export function mostTrainedExercise(exercises, sets) {
+  const days = new Map();
+  for (const set of sets) {
+    const dates = days.get(set.exerciseId) ?? new Set();
+    dates.add(set.date);
+    days.set(set.exerciseId, dates);
+  }
+  let best = '';
+  let bestKey;
+  for (const exercise of exercises) {
+    const key = [exercise.archived ? 0 : 1, days.get(exercise.id)?.size ?? 0];
+    if (!bestKey || key[0] > bestKey[0] || (key[0] === bestKey[0] && key[1] > bestKey[1])) {
+      best = exercise.id;
+      bestKey = key;
+    }
+  }
+  return best;
+}
+
 // 部位を変えたとき、選択中の種目がその部位に無ければ「すべての種目」（''）に戻す
 export function exerciseKeptInPart(exerciseId, exercises, part) {
   if (!exerciseId) return '';

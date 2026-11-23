@@ -14,6 +14,7 @@ import {
   latestBodyweight,
   loadOf,
   memoWithBodyweight,
+  mostTrainedExercise,
   orderKey,
   partRank,
   partSummary,
@@ -266,6 +267,42 @@ test('exerciseKeptInPart は部位に無い種目を「すべての種目」に�
   assert.equal(exerciseKeptInPart('a', exercises, '脚'), '');
   assert.equal(exerciseKeptInPart('a', exercises, ''), 'a');
   assert.equal(exerciseKeptInPart('', exercises, '胸'), '');
+});
+
+const daySet = (exerciseId, date) => ({ id: `${exerciseId}-${date}`, exerciseId, date, weight: 100, reps: 5 });
+
+test('mostTrainedExercise は記録した日がもっとも多い種目を返す（同じ日の複数セットは1日）', () => {
+  const exercises = [
+    { id: 'a', name: 'ベンチプレス' },
+    { id: 'b', name: 'スクワット' },
+    { id: 'c', name: 'デッドリフト' },
+  ];
+  const sets = [
+    daySet('a', '2026-11-01'),
+    daySet('b', '2026-11-02'),
+    daySet('b', '2026-11-03'),
+    daySet('b', '2026-11-03'),
+    daySet('c', '2026-11-04'),
+  ];
+  assert.equal(mostTrainedExercise(exercises, sets), 'b');
+});
+
+test('mostTrainedExercise は日数が同じなら並び順の先頭を返す', () => {
+  const exercises = [{ id: 'a' }, { id: 'b' }];
+  const sets = [daySet('b', '2026-11-02'), daySet('a', '2026-11-03')];
+  assert.equal(mostTrainedExercise(exercises, sets), 'a');
+  assert.equal(mostTrainedExercise(exercises, []), 'a');
+});
+
+test('mostTrainedExercise はアーカイブ済みを、ほかに記録のある種目が無いときだけ返す', () => {
+  const sets = [
+    daySet('old', '2026-11-01'),
+    daySet('old', '2026-11-02'),
+    daySet('new', '2026-11-03'),
+  ];
+  assert.equal(mostTrainedExercise([{ id: 'new' }, { id: 'old', archived: true }], sets), 'new');
+  assert.equal(mostTrainedExercise([{ id: 'old', archived: true }], sets), 'old');
+  assert.equal(mostTrainedExercise([], sets), '');
 });
 
 test('calendarWeekdays は週の始まりに応じて曜日行を並べ替える', () => {

@@ -1,7 +1,7 @@
 import { getAll } from '../db.js';
 import { el, option } from '../dom.js';
 import { icon } from '../icons.js';
-import { estimate1RM, loadOf } from '../training.js';
+import { estimate1RM, loadOf, mostTrainedExercise } from '../training.js';
 
 export const view = { id: 'chart', label: 'グラフ', mount };
 
@@ -139,15 +139,14 @@ async function mount(container) {
   const parts = [...new Set(exercises.map((exercise) => exercise.bodyPart).filter(Boolean))];
 
   // アーカイブ済みの種目も過去の記録を見るために残す
-  const exerciseOptions = (part) => exercises
-    .filter((exercise) => !part || exercise.bodyPart === part)
+  const exercisesIn = (part) => exercises.filter((exercise) => !part || exercise.bodyPart === part);
+  const exerciseOptions = (part) => exercisesIn(part)
     .map((exercise) => option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
 
-  // 部位を変えたら種目の選択肢を作り直し、その部位の先頭の種目に切り替える
+  // 部位を変えたら種目の選択肢を作り直し、その部位でもっとも多くの日に行っている種目に切り替える
   function selectPart(part) {
-    const options = exerciseOptions(part);
-    exerciseSelect.replaceChildren(...options);
-    exerciseSelect.value = options[0]?.value ?? '';
+    exerciseSelect.replaceChildren(...exerciseOptions(part));
+    exerciseSelect.value = mostTrainedExercise(exercisesIn(part), sets);
   }
 
   partSelect.replaceChildren(option('', 'すべての部位'), ...parts.map((part) => option(part, part)));
