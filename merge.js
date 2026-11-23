@@ -5,6 +5,21 @@ import { stripBodyweightNote } from './training.js';
 // 表記ゆれ（前後の空白・全角半角・大文字小文字）を同じ名前として扱う
 export const normalizeName = (name) => name.normalize('NFKC').trim().toLowerCase();
 
+// ファイルやクリップボードの JSON をインポート用の形にする。形が違えば理由を投げる
+export function parseImport(text) {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error('JSON として読めません');
+  }
+  if (data?.schemaVersion !== 1) throw new Error('schemaVersion が 1 ではありません');
+  for (const key of ['exercises', 'workoutSets', 'metricDefs', 'metricLogs']) {
+    if (!Array.isArray(data[key])) throw new Error(`${key} が配列ではありません`);
+  }
+  return data;
+}
+
 export const exerciseKey = (row) => normalizeName(row.name);
 export const metricDefKey = (row) => [normalizeName(row.name), row.unit].join('\u0000');
 export const metricLogKey = (row) => [row.date, row.metricDefId].join('\u0000');
