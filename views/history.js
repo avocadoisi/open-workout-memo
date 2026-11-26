@@ -1,6 +1,6 @@
 import { getAll } from '../db.js';
 import { el, iconButton, option, setTable } from '../dom.js';
-import { bestSet, calendarWeekdays, exerciseKeptInPart, exercisesForPart, firstDayOffset, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, sortByLastTrained, sortParts, todayString, volumeOf } from '../training.js';
+import { bestSet, calendarWeekdays, exerciseKeptInPart, exercisesForPart, firstDayOffset, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, sortByTrainingDays, sortParts, todayString, volumeOf } from '../training.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -70,8 +70,8 @@ let detailSection;
 async function load() {
   const [sets, exercises] = await Promise.all([getAll('workoutSet'), getAll('exercise')]);
   state.sets = sets;
-  // 種目セレクトは最後にやった日付が新しい順（部位で絞っても同じ順）
-  state.exercises = sortByLastTrained(exercises, sets);
+  // 種目セレクトはトレーニングした日数が多い順（部位で絞っても同じ順）
+  state.exercises = sortByTrainingDays(exercises, sets);
 }
 
 function matchesFilter(set) {

@@ -8,7 +8,7 @@ import {
   memoWithBodyweight,
   mostTrainedExercise,
   partSummary,
-  sortByLastTrained,
+  sortByTrainingDays,
   sortParts,
   stripBodyweightNote,
   todayString,
@@ -265,8 +265,8 @@ function fillExerciseOptions(exerciseId) {
 
 async function reloadExercises() {
   [exercises, allSets] = await Promise.all([getAll('exercise'), getAll('workoutSet')]);
-  // 種目セレクトは最後にやった日付が新しい順。まだ記録の無い種目は名前順で後ろ
-  exercises = sortByLastTrained(exercises, allSets);
+  // 種目セレクトはトレーニングした日数が多い順。まだ記録の無い種目は名前順で後ろ
+  exercises = sortByTrainingDays(exercises, allSets);
   rememberedExerciseId = lastSelection('record').exerciseId ?? '';
   fillPartOptions();
   fillExerciseOptions();
