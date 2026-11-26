@@ -151,12 +151,7 @@ export function exercisesForPart(exercises, part) {
 // グラフの種目セレクトの既定。記録した日がもっとも多い種目を選ぶ（同じ日に複数セットあっても1日）
 // 同じ日数なら並び順の先頭。アーカイブ済みは、ほかに記録のある種目が無いときだけ選ぶ
 export function mostTrainedExercise(exercises, sets) {
-  const days = new Map();
-  for (const set of sets) {
-    const dates = days.get(set.exerciseId) ?? new Set();
-    dates.add(set.date);
-    days.set(set.exerciseId, dates);
-  }
+  const days = trainedDays(sets);
   let best = '';
   let bestKey;
   for (const exercise of exercises) {
@@ -167,6 +162,18 @@ export function mostTrainedExercise(exercises, sets) {
     }
   }
   return best;
+}
+
+// 種目ごとにトレーニングした日。同じ日に何セットやっても1日と数える
+// まだ記録が無い種目は Map に無い
+export function trainedDays(sets) {
+  const days = new Map();
+  for (const set of sets) {
+    const dates = days.get(set.exerciseId) ?? new Set();
+    dates.add(set.date);
+    days.set(set.exerciseId, dates);
+  }
+  return days;
 }
 
 // 種目ごとの最終実施日。まだ記録が無い種目は Map に無い
@@ -180,20 +187,25 @@ export function lastTrainedDates(sets) {
   return last;
 }
 
-// 種目セレクトの並び。最後に記録した日が新しい順、まだ記録が無い種目は名前順で後ろ
-// 記録した日が同じなら名前順（並びが日付だけで揺れないように）
-export function sortByLastTrained(exercises, sets) {
+// 種目セレクトの並び。トレーニングした日数が多い順（習慣で回している種目を上に置く）
+// 同じ日数なら最終実施日が新しい順、それも同じなら名前順（並びが記録のたびに揺れないように）
+// まだ記録の無い種目は名前順で後ろ
+export function sortByTrainingDays(exercises, sets) {
+  const days = trainedDays(sets);
   const last = lastTrainedDates(sets);
   return [...exercises].sort((a, b) => {
-    const left = last.get(a.id) ?? '';
-    const right = last.get(b.id) ?? '';
-    if (left !== right) return left > right ? -1 : 1;
+    const daysLeft = days.get(a.id)?.size ?? 0;
+    const daysRight = days.get(b.id)?.size ?? 0;
+    if (daysLeft !== daysRight) return daysRight - daysLeft;
+    const lastLeft = last.get(a.id) ?? '';
+    const lastRight = last.get(b.id) ?? '';
+    if (lastLeft !== lastRight) return lastLeft > lastRight ? -1 : 1;
     return a.name.localeCompare(b.name, 'ja');
   });
 }
 
 // 部位セレクトの並び。決まった順（未知の部位は末尾、同じ位置なら名前順）
-// 種目を最終実施日で並べ替えても、部位の並びがそれに引きずられないよう独立させる
+// 種目をトレーニングした日数で並べ替えても、部位の並びがそれに引きずられないよう独立させる
 export function sortParts(parts) {
   return [...parts].sort((a, b) => partRank(a) - partRank(b) || a.localeCompare(b, 'ja'));
 }

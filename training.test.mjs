@@ -21,7 +21,8 @@ import {
   rmParts,
   rmValue,
   setSummary,
-  sortByLastTrained,
+  sortByTrainingDays,
+  trainedDays,
   sortParts,
   sortSets,
   stripBodyweightNote,
@@ -312,7 +313,20 @@ test('mostTrainedExercise はアーカイブ済みを、ほかに記録のある
   assert.equal(mostTrainedExercise([], sets), '');
 });
 
-test('sortByLastTrained は最後に記録した日が新しい順に、その日が同じなら名前順に並べる', () => {
+test('trainedDays は種目ごとのトレーニングした日を集める（同じ日の複数セットは1日）', () => {
+  const days = trainedDays([
+    daySet('a', '2026-11-01'),
+    daySet('a', '2026-11-01'),
+    daySet('a', '2026-11-03'),
+    daySet('b', '2026-11-02'),
+  ]);
+  assert.equal(days.get('a').size, 2);
+  assert.equal(days.get('b').size, 1);
+  assert.equal(days.get('c'), undefined);
+  assert.deepEqual(trainedDays([]), new Map());
+});
+
+test('sortByTrainingDays はトレーニングした日数が多い順。最終実施日が新しくても日数が少なければ後ろ', () => {
   const exercises = [
     { id: 'a', name: 'あ' },
     { id: 'b', name: 'い' },
@@ -322,24 +336,43 @@ test('sortByLastTrained は最後に記録した日が新しい順に、その�
     daySet('a', '2026-11-01'),
     daySet('b', '2026-11-05'),
     daySet('a', '2026-11-03'),
-    daySet('c', '2026-11-03'),
+    daySet('c', '2026-11-06'),
   ];
   assert.deepEqual(
-    sortByLastTrained(exercises, sets).map((exercise) => exercise.id),
-    ['b', 'a', 'c'],
+    sortByTrainingDays(exercises, sets).map((exercise) => exercise.id),
+    ['a', 'c', 'b'],
   );
 });
 
-test('sortByLastTrained はまだ記録の無い種目を名前順で後ろに置き、元の配列を変えない', () => {
+test('sortByTrainingDays は日数が同じなら最終実施日が新しい順、それも同じなら名前順', () => {
+  const exercises = [
+    { id: 'a', name: 'あ' },
+    { id: 'b', name: 'い' },
+    { id: 'c', name: 'う' },
+    { id: 'd', name: 'え' },
+  ];
+  const sets = [
+    daySet('a', '2026-11-04'),
+    daySet('b', '2026-11-06'),
+    daySet('c', '2026-11-06'),
+    daySet('d', '2026-11-02'),
+  ];
+  assert.deepEqual(
+    sortByTrainingDays(exercises, sets).map((exercise) => exercise.id),
+    ['b', 'c', 'a', 'd'],
+  );
+});
+
+test('sortByTrainingDays はまだ記録の無い種目を名前順で後ろに置き、元の配列を変えない', () => {
   const exercises = [
     { id: 'c', name: 'さ' },
     { id: 'b', name: 'か' },
     { id: 'a', name: 'あ' },
   ];
-  const sorted = sortByLastTrained(exercises, [daySet('c', '2026-11-01')]);
+  const sorted = sortByTrainingDays(exercises, [daySet('c', '2026-11-01')]);
   assert.deepEqual(sorted.map((exercise) => exercise.id), ['c', 'a', 'b']);
   assert.deepEqual(exercises.map((exercise) => exercise.id), ['c', 'b', 'a']);
-  assert.deepEqual(sortByLastTrained([], []), []);
+  assert.deepEqual(sortByTrainingDays([], []), []);
 });
 
 test('calendarWeekdays は週の始まりに応じて曜日行を並べ替える', () => {

@@ -2,7 +2,7 @@ import { getAll } from '../db.js';
 import { el, option } from '../dom.js';
 import { icon } from '../icons.js';
 import { lastSelection, rememberSelection } from '../prefs.js';
-import { estimate1RM, loadOf, mostTrainedExercise, sortByLastTrained, sortParts } from '../training.js';
+import { estimate1RM, loadOf, mostTrainedExercise, sortByTrainingDays, sortParts } from '../training.js';
 
 export const view = { id: 'chart', label: 'グラフ', mount };
 
@@ -120,7 +120,7 @@ async function mount(container) {
     getAll('metricLog'),
   ]);
   // 種目は最後にやった日付が新しい順。部位で絞ったときも同じ順で並ぶ
-  const byRecency = sortByLastTrained(exercises, sets);
+  const byDays = sortByTrainingDays(exercises, sets);
   metricDefs.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 
   const rangeSelect = el('select', { 'aria-label': '期間' },
@@ -141,7 +141,7 @@ async function mount(container) {
   const parts = sortParts([...new Set(exercises.map((exercise) => exercise.bodyPart).filter(Boolean))]);
 
   // アーカイブ済みの種目も過去の記録を見るために残す
-  const exercisesIn = (part) => byRecency.filter((exercise) => !part || exercise.bodyPart === part);
+  const exercisesIn = (part) => byDays.filter((exercise) => !part || exercise.bodyPart === part);
   const exerciseOptions = (part) => exercisesIn(part)
     .map((exercise) => option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
 
