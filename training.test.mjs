@@ -21,6 +21,8 @@ import {
   rmParts,
   rmValue,
   setSummary,
+  sortByLastTrained,
+  sortParts,
   sortSets,
   stripBodyweightNote,
   todayString,
@@ -119,6 +121,11 @@ test('groupSets は種目マスタに無い id を「不明な種目」にする
 test('partRank は部位の並び順。未知の部位は最後', () => {
   assert.equal(partRank('胸'), 3);
   assert.equal(partRank('ふくらはぎ'), 5);
+});
+
+test('sortParts は 腕→肩→背中→胸→脚、未知の部位は後ろに名前順', () => {
+  assert.deepEqual(sortParts(['脚', '胸', 'ふくらはぎ', '腕']), ['腕', '胸', '脚', 'ふくらはぎ']);
+  assert.deepEqual(sortParts([]), []);
 });
 
 test('partSummary は 腕→肩→背中→胸→脚 の順になり、未知の部位は後ろ', () => {
@@ -303,6 +310,36 @@ test('mostTrainedExercise はアーカイブ済みを、ほかに記録のある
   assert.equal(mostTrainedExercise([{ id: 'new' }, { id: 'old', archived: true }], sets), 'new');
   assert.equal(mostTrainedExercise([{ id: 'old', archived: true }], sets), 'old');
   assert.equal(mostTrainedExercise([], sets), '');
+});
+
+test('sortByLastTrained は最後に記録した日が新しい順に、その日が同じなら名前順に並べる', () => {
+  const exercises = [
+    { id: 'a', name: 'あ' },
+    { id: 'b', name: 'い' },
+    { id: 'c', name: 'う' },
+  ];
+  const sets = [
+    daySet('a', '2026-11-01'),
+    daySet('b', '2026-11-05'),
+    daySet('a', '2026-11-03'),
+    daySet('c', '2026-11-03'),
+  ];
+  assert.deepEqual(
+    sortByLastTrained(exercises, sets).map((exercise) => exercise.id),
+    ['b', 'a', 'c'],
+  );
+});
+
+test('sortByLastTrained はまだ記録の無い種目を名前順で後ろに置き、元の配列を変えない', () => {
+  const exercises = [
+    { id: 'c', name: 'さ' },
+    { id: 'b', name: 'か' },
+    { id: 'a', name: 'あ' },
+  ];
+  const sorted = sortByLastTrained(exercises, [daySet('c', '2026-11-01')]);
+  assert.deepEqual(sorted.map((exercise) => exercise.id), ['c', 'a', 'b']);
+  assert.deepEqual(exercises.map((exercise) => exercise.id), ['c', 'b', 'a']);
+  assert.deepEqual(sortByLastTrained([], []), []);
 });
 
 test('calendarWeekdays は週の始まりに応じて曜日行を並べ替える', () => {

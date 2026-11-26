@@ -1,6 +1,6 @@
 import { getAll } from '../db.js';
 import { el, iconButton, option, setTable } from '../dom.js';
-import { bestSet, calendarWeekdays, exerciseKeptInPart, exercisesForPart, firstDayOffset, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, todayString, volumeOf } from '../training.js';
+import { bestSet, calendarWeekdays, exerciseKeptInPart, exercisesForPart, firstDayOffset, formatDate, groupSets, groupTitle, orderKey, rmText, setSummary, sortByLastTrained, sortParts, todayString, volumeOf } from '../training.js';
 
 export const view = { id: 'history', label: '履歴', mount };
 
@@ -69,9 +69,9 @@ let detailSection;
 
 async function load() {
   const [sets, exercises] = await Promise.all([getAll('workoutSet'), getAll('exercise')]);
-  exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
   state.sets = sets;
-  state.exercises = exercises;
+  // 種目セレクトは最後にやった日付が新しい順（部位で絞っても同じ順）
+  state.exercises = sortByLastTrained(exercises, sets);
 }
 
 function matchesFilter(set) {
@@ -375,7 +375,7 @@ async function mount(container) {
     .filter((exercise) => !exercise.archived)
     .map((exercise) => option(exercise.id, exercise.name)));
 
-  const parts = [...new Set(state.exercises.map((exercise) => exercise.bodyPart).filter(Boolean))];
+  const parts = sortParts([...new Set(state.exercises.map((exercise) => exercise.bodyPart).filter(Boolean))]);
   partSelect = el('select', {
     'aria-label': '部位',
     onchange: (event) => {

@@ -8,6 +8,8 @@ import {
   memoWithBodyweight,
   mostTrainedExercise,
   partSummary,
+  sortByLastTrained,
+  sortParts,
   stripBodyweightNote,
   todayString,
   volumeOf,
@@ -237,7 +239,7 @@ function buildExportCard(date, groups) {
 }
 
 function fillPartOptions() {
-  const parts = [...new Set(exercises.filter((e) => !e.archived).map((e) => e.bodyPart).filter(Boolean))];
+  const parts = sortParts([...new Set(exercises.filter((e) => !e.archived).map((e) => e.bodyPart).filter(Boolean))]);
   const select = byId('set-part');
   const previous = select.value;
   select.replaceChildren(option('', 'すべて'), ...parts.map((part) => option(part, part)));
@@ -263,7 +265,8 @@ function fillExerciseOptions(exerciseId) {
 
 async function reloadExercises() {
   [exercises, allSets] = await Promise.all([getAll('exercise'), getAll('workoutSet')]);
-  exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+  // 種目セレクトは最後にやった日付が新しい順。まだ記録の無い種目は名前順で後ろ
+  exercises = sortByLastTrained(exercises, allSets);
   rememberedExerciseId = lastSelection('record').exerciseId ?? '';
   fillPartOptions();
   fillExerciseOptions();
