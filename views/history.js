@@ -70,7 +70,7 @@ let detailSection;
 async function load() {
   const [sets, exercises] = await Promise.all([getAll('workoutSet'), getAll('exercise')]);
   state.sets = sets;
-  // 種目セレクトは最後にやった日付が新しい順（部位で絞っても同じ順）
+  // 種目セレクトはトレーニングした日数が多い順（部位で絞っても同じ順）
   state.exercises = sortByTrainingDays(exercises, sets);
 }
 

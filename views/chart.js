@@ -119,7 +119,7 @@ async function mount(container) {
     getAll('metricDef'),
     getAll('metricLog'),
   ]);
-  // 種目は最後にやった日付が新しい順。部位で絞ったときも同じ順で並ぶ
+  // 種目はトレーニングした日数が多い順。部位で絞ったときも同じ順で並ぶ
   const byDays = sortByTrainingDays(exercises, sets);
   metricDefs.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 
