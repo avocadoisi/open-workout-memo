@@ -11,6 +11,16 @@ export async function persistSetOrder(sets) {
   }
 }
 
+// コピーした行をコピー元の直後に差し込む。sets は古い順に並んでいる前提
+// コピー元が無ければ末尾。item が sets に含まれていても、戻り値では1行だけになる
+export function insertAfter(sets, sourceId, item) {
+  const rest = sets.filter((set) => set.id !== item.id);
+  const index = rest.findIndex((set) => set.id === sourceId);
+  if (index === -1) return [...rest, item];
+  rest.splice(index + 1, 0, item);
+  return rest;
+}
+
 // グループを表示順に並べた1本のセット列にする
 export function flattenGroups(groups) {
   return groups.flatMap((group) => group.sets);

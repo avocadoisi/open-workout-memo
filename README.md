@@ -18,7 +18,7 @@
 - 種目のセレクト（記録・グラフ・履歴）は、トレーニングした日数が多い順（同じ日に何セットあっても1日）。日数が同じなら最終実施日が新しい順、次に名前順。まだ記録の無い種目は名前順で後ろ。部位で絞っても同じ順で、部位の並びは腕・肩・背中・胸・脚（ほかは末尾）の固定
 - 記録の種目は、グループの見出しのセレクトからまとめて、各行の鉛筆から1セットずつ変えられる（アーカイブ済みでも、いま付いている種目は選べる）。見出しのセレクトが種目名表示を兼ねる
 - 記録フォームの種目の既定は、前回選んだ（または記録した）種目。まだ無ければ記録した日がもっとも多い種目（同じ日に複数セットあっても1日。部位を絞ればその部位の中で）。編集で開いたときはそのセットの種目のまま
-- セットの複製（コピーボタン）は重量・回数・メモを引き継ぐ
+- セットの複製（コピーボタン）は重量・回数・メモを引き継ぎ、コピー元の直後にやったものとして並ぶ（同じ種目のグループが分かれない）
 - グループ見出しには 1RM とボリュームを出す。1RM とボリュームは同じ行に置き、幅が足りない画面では名前の次の行にまとめて折り返す
 - メモは重量・回数と列を揃える（数値の左端に合わせる）
 - 保存画像ボタンは「記録」見出しの右
@@ -37,7 +37,7 @@
 exercise:   { id, name, bodyPart, archived }        // 初期は Big3
 workoutSet: { id, date, exerciseId, weight, reps, memo, createdAt, order?, bodyweight?, bodyweightKg? }
             // date は 'YYYY-MM-DD'、weight は kg（自重は 0）、createdAt は保存時刻（Date.now()）
-            // order は手動の並び（無ければ createdAt）、bodyweight は自重、bodyweightKg は記録日までの直近30日の体重（メモ・1RM・ボリューム用）
+            // order は手動の並び（無ければ createdAt、コピーした行はコピー元の直後）、bodyweight は自重、bodyweightKg は記録日までの直近30日の体重（メモ・1RM・ボリューム用）
 metricDef:  { id, name, unit: 'weight' | 'length' }
 metricLog:  { id, date, metricDefId, value }
 // export/import: { schemaVersion: 1, exportedAt, exercises, workoutSets, metricDefs, metricLogs }
