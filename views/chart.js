@@ -2,7 +2,7 @@ import { getAll } from '../db.js';
 import { el, option } from '../dom.js';
 import { icon } from '../icons.js';
 import { lastSelection, rememberSelection } from '../prefs.js';
-import { estimate1RM, loadOf, mostTrainedExercise } from '../training.js';
+import { estimate1RM, loadOf, mostTrainedExercise, sortByLastTrained, sortParts } from '../training.js';
 
 export const view = { id: 'chart', label: 'グラフ', mount };
 
@@ -119,7 +119,8 @@ async function mount(container) {
     getAll('metricDef'),
     getAll('metricLog'),
   ]);
-  exercises.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+  // 種目は最後にやった日付が新しい順。部位で絞ったときも同じ順で並ぶ
+  const byRecency = sortByLastTrained(exercises, sets);
   metricDefs.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 
   const rangeSelect = el('select', { 'aria-label': '期間' },
@@ -136,11 +137,11 @@ async function mount(container) {
     metric.section,
   );
 
-  // 部位の選択肢は種目から作る（空の部位は除く）
-  const parts = [...new Set(exercises.map((exercise) => exercise.bodyPart).filter(Boolean))];
+  // 部位の選択肢は種目から作る（空の部位は除く）。並びは種目の順に引きずられない
+  const parts = sortParts([...new Set(exercises.map((exercise) => exercise.bodyPart).filter(Boolean))]);
 
   // アーカイブ済みの種目も過去の記録を見るために残す
-  const exercisesIn = (part) => exercises.filter((exercise) => !part || exercise.bodyPart === part);
+  const exercisesIn = (part) => byRecency.filter((exercise) => !part || exercise.bodyPart === part);
   const exerciseOptions = (part) => exercisesIn(part)
     .map((exercise) => option(exercise.id, exercise.archived ? `${exercise.name}（アーカイブ）` : exercise.name));
 

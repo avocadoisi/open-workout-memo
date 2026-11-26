@@ -169,6 +169,35 @@ export function mostTrainedExercise(exercises, sets) {
   return best;
 }
 
+// 種目ごとの最終実施日。まだ記録が無い種目は Map に無い
+// 日付は 'YYYY-MM-DD' なので、文字列の比較がそのまま日付の比較になる
+export function lastTrainedDates(sets) {
+  const last = new Map();
+  for (const set of sets) {
+    const current = last.get(set.exerciseId);
+    if (!current || set.date > current) last.set(set.exerciseId, set.date);
+  }
+  return last;
+}
+
+// 種目セレクトの並び。最後に記録した日が新しい順、まだ記録が無い種目は名前順で後ろ
+// 記録した日が同じなら名前順（並びが日付だけで揺れないように）
+export function sortByLastTrained(exercises, sets) {
+  const last = lastTrainedDates(sets);
+  return [...exercises].sort((a, b) => {
+    const left = last.get(a.id) ?? '';
+    const right = last.get(b.id) ?? '';
+    if (left !== right) return left > right ? -1 : 1;
+    return a.name.localeCompare(b.name, 'ja');
+  });
+}
+
+// 部位セレクトの並び。決まった順（未知の部位は末尾、同じ位置なら名前順）
+// 種目を最終実施日で並べ替えても、部位の並びがそれに引きずられないよう独立させる
+export function sortParts(parts) {
+  return [...parts].sort((a, b) => partRank(a) - partRank(b) || a.localeCompare(b, 'ja'));
+}
+
 // 部位を変えたとき、選択中の種目がその部位に無ければ「すべての種目」（''）に戻す
 export function exerciseKeptInPart(exerciseId, exercises, part) {
   if (!exerciseId) return '';
