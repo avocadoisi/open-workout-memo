@@ -10,6 +10,7 @@ import {
   partSummary,
   sortByTrainingDays,
   sortParts,
+  sortSets,
   stripBodyweightNote,
   todayString,
   volumeOf,
@@ -17,7 +18,7 @@ import {
 } from '../training.js';
 import { icon } from '../icons.js';
 import { lastSelection, rememberSelection } from '../prefs.js';
-import { moveItem, orderForSave, persistSetOrder } from './order.js';
+import { insertAfter, moveItem, orderForSave, persistSetOrder } from './order.js';
 // 並び順の設定キーは views/settings.js と共有する（prefs.js を介さない）
 function newestFirst() {
   return localStorage.getItem('owa-set-order') === 'desc';
@@ -327,6 +328,9 @@ async function copySet(set) {
   }
   try {
     await put('workoutSet', row);
+    // コピーはコピー元の直後にやったものとして並べる（同じ種目のグループを分けない）
+    const daySets = sortSets((await getAll('workoutSet')).filter((set) => set.date === row.date));
+    await persistSetOrder(insertAfter(daySets, set.id, row));
   } catch (error) {
     setStatus(`コピーに失敗しました: ${error.message}`, true);
     return;

@@ -1,7 +1,7 @@
 // 並び替えの操作だけのテスト。`node --test` で実行する（package.json も依存も要らない）
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { flattenGroups, moveItem, orderForSave } from './views/order.js';
+import { flattenGroups, insertAfter, moveItem, orderForSave } from './views/order.js';
 
 const ids = (list) => list.map((item) => item.id);
 
@@ -33,4 +33,16 @@ test('orderForSave は古い順の画面なら表示順のまま保存する', (
 test('orderForSave は新しい順の画面ならグループとセットを反転して保存する', () => {
   const groups = [{ sets: [{ id: 'c' }] }, { sets: [{ id: 'b' }, { id: 'a' }] }];
   assert.deepEqual(ids(orderForSave(groups, true)), ['a', 'b', 'c']);
+});
+
+test('insertAfter はコピー元の直後に差し込み、その日の並びを崩さない', () => {
+  const sets = [{ id: 'a' }, { id: 'b' }, { id: 'c' }];
+  assert.deepEqual(ids(insertAfter(sets, 'b', { id: 'copy' })), ['a', 'b', 'copy', 'c']);
+});
+
+test('insertAfter はコピー元が無ければ末尾に置き、同じ id を二重にしない', () => {
+  const sets = [{ id: 'a' }, { id: 'b' }];
+  const row = { id: 'copy' };
+  assert.deepEqual(ids(insertAfter(sets, 'missing', row)), ['a', 'b', 'copy']);
+  assert.deepEqual(ids(insertAfter([...sets, row], 'a', row)), ['a', 'copy', 'b']);
 });
