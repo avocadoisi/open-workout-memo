@@ -78,5 +78,6 @@ UI・集計・描画は最新のストア形だけを読む。版を見て分岐
 
 ## いまの状態
 
-- `DB_VERSION` は 1、ファイルの `schemaVersion` は 1。マイグレーションの連鎖はまだ無い
-- 次の候補は、セットを「日付 × 種目」のレコードにまとめるスキーマ変更（容量とインデックスの削減）。実施するときは上記の手順で v2 を足す
+- `DB_VERSION` は 2、ファイルの `schemaVersion` は 1。v1 → v2 のステップは `db.js` の `onupgradeneeded` にあり、旧 `workoutSet`（1行1セット）を `workoutDay`（1日1レコード）へ畳んでから旧ストアを消す
+- v2 で未使用の索引（`exercise.archived`、`metricLog.date`、`metricLog.metricDefId`）も落とした
+- ファイルの形は変えていないので、`schemaVersion` は 1 のまま

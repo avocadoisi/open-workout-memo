@@ -1,14 +1,24 @@
-import { put } from '../db.js';
+import { saveSetOrder } from '../db.js';
 
-// 表示順に並べたセットへ order を 0..n-1 で振り直す。値が変わった行だけ保存する
+// 表示順に並べたセットを、その順で保存する。順が変わったときだけ、日ごとに1回書く
 export async function persistSetOrder(sets) {
-  for (let index = 0; index < sets.length; index += 1) {
-    const set = sets[index];
-    if (set.order === index) continue;
-    const next = { ...set, order: index };
-    await put('workoutSet', next);
-    set.order = index;
+  if (sets.length === 0) return sets;
+  if (sets.every((set, index) => set.order === index)) return sets;
+  const rows = [...sets];
+  const byDate = new Map();
+  sets.forEach((set, index) => {
+    const list = byDate.get(set.date) ?? [];
+    list.push(index);
+    byDate.set(set.date, list);
+  });
+  for (const [date, indexes] of byDate) {
+    const saved = await saveSetOrder(date, indexes.map((index) => sets[index]));
+    indexes.forEach((index, position) => {
+      rows[index] = saved[position] ?? sets[index];
+      sets[index].order = position;
+    });
   }
+  return rows;
 }
 
 // コピーした行をコピー元の直後に差し込む。sets は古い順に並んでいる前提

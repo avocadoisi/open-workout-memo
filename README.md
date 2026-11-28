@@ -34,26 +34,34 @@
 ## データモデル
 
 ```js
+// 画面とファイル（schemaVersion 1）が見る形
 exercise:   { id, name, bodyPart, archived }        // 初期は Big3
-workoutSet: { id, date, exerciseId, weight, reps, memo, createdAt, order?, bodyweight?, bodyweightKg? }
-            // date は 'YYYY-MM-DD'、weight は kg（自重は 0）、createdAt は保存時刻（Date.now()）
-            // order は手動の並び（無ければ createdAt、コピーした行はコピー元の直後）、bodyweight は自重、bodyweightKg は記録日までの直近30日の体重（メモ・1RM・ボリューム用）
+workoutSet: { id, date, exerciseId, weight, reps, memo, order, bodyweight?, bodyweightKg? }
+            // date は 'YYYY-MM-DD'、weight は kg（自重は 0）
+            // id は保存時に決まる `${date}~${salt}~${order}`、order は 0..n-1（古い順）
+            // bodyweight は自重、bodyweightKg は記録日までの直近30日の体重（メモ・1RM・ボリューム用）
 metricDef:  { id, name, unit: 'weight' | 'length' }
 metricLog:  { id, date, metricDefId, value }
 // export/import: { schemaVersion: 1, exportedAt, exercises, workoutSets, metricDefs, metricLogs }
+
+// 保存（IndexedDB v2）の形。1日1レコード
+workoutDay: { date, salt, blocks: [{ e: exerciseId, s: [run, ...] }] }
+// run は [重量, 回数]。同じセットが続くときは [重量, 回数, セット数] に畳み、
+// メモ・自重は末尾のオブジェクトに置く（[80, 5, 3, { m: 'メモ', b: true, k: 70 }]）
+// ブロックの並びがそのまま記録順なので、種目が a, b, a と戻っても3ブロックで残る
 ```
 
 スキーマ（`DB_VERSION`）とデータファイル（`schemaVersion`）の版を上げるときは、連鎖マイグレーションで最新まで上げる。手順と書き方は `docs/migration.md`。
 
 インポートはマージ（確認なし）と全置換（確認あり）の2つ。マージは id が同じ行を上書きし、id が違っても「日付・種目・重量・回数・メモ」が同じセットは既存とインポートの件数の多い方に揃える（同じファイルを何度入れても増えず、同日 80kg×5 の3セットは3セットのまま、インポートが4セットなら1セットだけ足す）。メモは体重の自動注記を外して比べる。種目は名前、指標は名前＋単位が同じなら手元の id に読み替えて同名を増やさない。マージ結果は「追加 / 更新 / 据え置き」の件数で出す。未知の `schemaVersion` はどちらも拒否。
-`createdAt` を持たない古い記録は 0 として扱う。古い順では読み込んだ順（`getAll` の順）で先頭に、新しい順ではその逆順で末尾に並ぶ。
+古いファイルの `createdAt` は並びの手がかりとしてだけ読み、保存はしない。`order` が無い行は末尾に足す。
 
 big3-tracker の計画画面からコピーした JSON も、「クリップボードからインポート」で同じ確認に進める。種目名が同じなら手元の種目に寄せ、セットは計画上の日付で入る（同じ計画を何度取り込んでも増えない）。
 
 ## 構成
 
 Vanilla JS、ビルドなし、npm 依存なし（画像化の html2canvas、グラフの Chart.js、見出しフォントの Dela Gothic One だけ CDN から読む）。
-`index.html` / `app.js`（ハッシュルーティング）/ `dom.js` / `db.js` / `merge.js`（インポートの読み込み検証とマージ規則）/ `prefs.js` / `training.js` / `views/*.js`（各画面）/ `styles.css`。
+`index.html` / `app.js`（ハッシュルーティング）/ `dom.js` / `db.js`（IndexedDB）/ `day.js`（保存形と行の変換）/ `merge.js`（インポートの読み込み検証とマージ規則）/ `prefs.js` / `training.js` / `views/*.js`（各画面）/ `styles.css`。
 各 view は `export const view = { id, label, mount(container) }` を出す。
 配色はヘッダーの丸3つで切り替える（gruvbox light / catppuccin latte / tokyonight night）。色は `styles.css` の `--gb-*` にだけ書き、画面側は参照する。
 
