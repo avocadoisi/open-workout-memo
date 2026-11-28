@@ -63,11 +63,11 @@ export function weightText(set) {
 }
 
 // 1RM の表示部品。値と注記を分け、数字だけ桁を揃えられるようにする
-// 10回超・自重は O'Conner 式の誤差が大きいので参考値と添える
+// 15回超・自重は O'Conner 式の誤差が大きいので参考値と添える
 // 体重が分からない自重セットは 1RM を出さない
 export function rmParts(set) {
   if (set.bodyweight && !Number.isFinite(set.bodyweightKg)) return { value: '—', note: '' };
-  const note = set.bodyweight || set.reps > 10 ? '（参考値）' : '';
+  const note = set.bodyweight || set.reps > 15 ? '（参考値）' : '';
   return { value: estimate1RM(loadOf(set), set.reps).toFixed(1), note };
 }
 

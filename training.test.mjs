@@ -168,7 +168,8 @@ test('rmParts は数値と注記を分け、常に小数1桁にする', () => {
   assert.deepEqual(rmParts(set(100, 3)), { value: '107.5', note: '' });
   assert.deepEqual(rmParts(set(5, 5)), { value: '5.6', note: '' });
   assert.deepEqual(rmParts(set(100, 10)), { value: '125.0', note: '' });
-  assert.deepEqual(rmParts(set(100, 11)), { value: '127.5', note: '（参考値）' });
+  assert.deepEqual(rmParts(set(100, 15)), { value: '137.5', note: '' });
+  assert.deepEqual(rmParts(set(100, 16)), { value: '140.0', note: '（参考値）' });
   assert.deepEqual(rmParts({ ...set(0, 10), bodyweight: true, bodyweightKg: 70 }), {
     value: '87.5',
     note: '（参考値）',
