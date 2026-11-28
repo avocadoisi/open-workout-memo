@@ -3,7 +3,6 @@ import { normalizeName, parseImport } from '../merge.js';
 import { byId, el, iconButton, option, setStatus } from '../dom.js';
 import { currentTitle } from '../prefs.js';
 import { partRank, todayString, unitLabel } from '../training.js';
-import { icon } from '../icons.js';
 
 export const view = { id: 'data', label: 'データ', mount };
 
@@ -57,14 +56,9 @@ function buildMetricSection() {
 function buildDataSection() {
   return el('section', {},
     el('h2', { text: 'データ' }),
-    el('div', { class: 'form-actions' },
-      el('button', {
-        type: 'button',
-        id: 'export-btn',
-        class: 'icon-btn',
-        'aria-label': 'エクスポート',
-        title: 'エクスポート',
-      }, icon('download')),
+    el('div', { class: 'form-actions export-actions' },
+      // 書き出しは記号から中身が読みにくいので、ここだけ文字で出す
+      el('button', { type: 'button', id: 'export-btn', text: 'エクスポート' }),
       el('button', { type: 'button', id: 'import-clipboard', class: 'plain', text: 'クリップボードからインポート' }),
     ),
     el('label', {}, 'インポート',

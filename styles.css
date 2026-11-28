@@ -648,6 +648,15 @@ button:active {
   flex: 1;
 }
 
+/* 書き出しの文字は途中で折らず、入りきらなければ行を分ける */
+.export-actions {
+  flex-wrap: wrap;
+}
+
+.export-actions button {
+  white-space: nowrap;
+}
+
 ul {
   display: grid;
   gap: 0.5rem;
