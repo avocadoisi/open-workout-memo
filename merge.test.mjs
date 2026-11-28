@@ -154,16 +154,27 @@ test('planMerge は読み替えた種目の id で記録を足す', () => {
   assert.equal(counts.exercises.added, 0);
 });
 
-test('parseImport は正しい JSON をそのまま返す', () => {
+test('parseImport は v1 のファイルを最新の形に上げて返す', () => {
   const data = { schemaVersion: 1, exercises: [], workoutSets: [], metricDefs: [], metricLogs: [] };
-  assert.deepEqual(parseImport(JSON.stringify(data)), data);
+  assert.deepEqual(parseImport(JSON.stringify(data)), {
+    schemaVersion: 2,
+    exercises: [],
+    workoutDays: [],
+    metricDefs: [],
+    metricLogs: [],
+    workoutSets: [],
+  });
 });
 
 test('parseImport は読めない・版が違う・配列でないものを拒否する', () => {
   assert.throws(() => parseImport('{'), /JSON として読めません/);
   assert.throws(
+    () => parseImport(JSON.stringify({ schemaVersion: 3, exercises: [] })),
+    /schemaVersion 3 のファイルはこの版では読めません/,
+  );
+  assert.throws(
     () => parseImport(JSON.stringify({ schemaVersion: 2, exercises: [] })),
-    /schemaVersion が 1 ではありません/,
+    /workoutDays が配列ではありません/,
   );
   assert.throws(
     () => parseImport(JSON.stringify({ schemaVersion: 1, exercises: [], workoutSets: {}, metricDefs: [], metricLogs: [] })),
