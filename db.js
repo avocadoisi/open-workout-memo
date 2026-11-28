@@ -199,7 +199,6 @@ export async function seedIfEmpty() {
   await done(tx);
 }
 
-// ファイルには行の形（schemaVersion 1）で出す。保存形を外に出さない
 // ファイルは保存形（日ごとのツリー）と同じ形で出す。取り込みは古い版も受ける
 export async function exportAll() {
   const db = await openDB();
