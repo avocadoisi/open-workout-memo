@@ -1,7 +1,7 @@
 // オフラインでも開けるようにする。データは端末の IndexedDB にあるので、本体さえ読めれば動く
 // シェルは版数付きキャッシュに一式まとめて install し、全ファイルが揃ってから activate する。
 // 途中のファイルだけ新しくなる混在を避けるため、配信中のファイルはキャッシュからだけ返す。
-const CACHE = 'owm-shell-12';
+const CACHE = 'owm-shell-13';
 // CDN (Chart.js / html2canvas / フォント) はシェルとは別にキャッシュする
 const RUNTIME = 'owm-runtime-1';
 
@@ -11,6 +11,7 @@ const SHELL = [
   './styles.css',
   './app.js',
   './dom.js',
+  './day.js',
   './db.js',
   './merge.js',
   './icons.js',

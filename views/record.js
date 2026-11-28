@@ -1,4 +1,4 @@
-import { getAll, put, remove } from '../db.js';
+import { getAll, put, putMany, remove } from '../db.js';
 import { byId, el, iconButton, option, setStatus, setTable } from '../dom.js';
 import {
   groupSets,
@@ -35,8 +35,6 @@ let allSets = [];
 let rememberedExerciseId = '';
 // 編集中のセット id。null なら新規入力
 let editingId = null;
-// 編集中のセットの createdAt。古い行は未保存なので undefined のまま引き継ぐ
-let editingCreatedAt;
 // 編集中のセットの order。手動で並べ替えた行は編集しても位置を変えない
 let editingOrder;
 // 画面に出している表示順のグループ。↑↓はこの配列を動かす
@@ -110,7 +108,7 @@ async function changeGroupExercise(sets, select) {
   if (!exerciseId || exerciseId === sets[0].exerciseId) return;
   select.disabled = true;
   try {
-    for (const set of sets) await put('workoutSet', { ...set, exerciseId });
+    await putMany('workoutSet', sets.map((set) => ({ ...set, exerciseId })));
   } catch (error) {
     select.disabled = false;
     setStatus(`種目の変更に失敗しました: ${error.message}`, true);
@@ -276,7 +274,6 @@ async function reloadExercises() {
 async function startEditing(set) {
   const revision = ++formRevision;
   editingId = set.id;
-  editingCreatedAt = set.createdAt;
   editingOrder = set.order;
   byId('set-date').value = set.date;
   await renderSets();
@@ -313,24 +310,25 @@ function applyBodyweight() {
 async function copySet(set) {
   const form = byId('set-form');
   const row = {
-    id: crypto.randomUUID(),
     date: set.date,
     exerciseId: set.exerciseId,
     weight: set.weight,
     reps: set.reps,
     memo: set.memo,
-    createdAt: Date.now(),
   };
   // 自重は体重の記録も引き継ぐ（無い行には足さない）
   if (set.bodyweight) {
     row.bodyweight = true;
     if (Number.isFinite(set.bodyweightKg)) row.bodyweightKg = set.bodyweightKg;
   }
+  let copied;
   try {
-    await put('workoutSet', row);
+    const saved = await put('workoutSet', row);
     // コピーはコピー元の直後にやったものとして並べる（同じ種目のグループを分けない）
-    const daySets = sortSets((await getAll('workoutSet')).filter((set) => set.date === row.date));
-    await persistSetOrder(insertAfter(daySets, set.id, row));
+    const daySets = sortSets((await getAll('workoutSet')).filter((item) => item.date === row.date));
+    const ordered = insertAfter(daySets, set.id, saved);
+    const rows = await persistSetOrder(ordered);
+    copied = rows[ordered.indexOf(saved)] ?? saved;
   } catch (error) {
     setStatus(`コピーに失敗しました: ${error.message}`, true);
     return;
@@ -338,13 +336,12 @@ async function copySet(set) {
   // 保存待ちの間に画面を離れていたら、消えた画面は触らない
   if (!form.isConnected) return;
   await renderSets();
-  byId('set-list').querySelector(`[data-id="${CSS.escape(row.id)}"]`)?.classList.add('is-saved');
+  byId('set-list').querySelector(`[data-id="${CSS.escape(copied.id)}"]`)?.classList.add('is-saved');
   setStatus(`${weightText(set)}${set.bodyweight ? '' : ' kg'} × ${set.reps} 回をコピーしました`);
 }
 
 function stopEditing() {
   editingId = null;
-  editingCreatedAt = undefined;
   editingOrder = undefined;
   byId('set-submit').textContent = '保存';
   byId('set-cancel').hidden = true;
@@ -367,7 +364,6 @@ function wireEvents() {
     const revision = formRevision;
     const id = editingId ?? crypto.randomUUID();
     const updated = editingId !== null;
-    const createdAt = editingCreatedAt;
     const order = editingOrder;
 
     if (!date || !exerciseId) {
@@ -397,13 +393,9 @@ function wireEvents() {
       row.bodyweight = true;
       if (bodyweightKg !== undefined) row.bodyweightKg = bodyweightKg;
     }
-    // 並び順は保存時刻。編集では元の時刻と手動の並びを引き継ぎ、無い古い行には足さない
-    if (!updated) row.createdAt = Date.now();
-    else {
-      if (createdAt !== undefined) row.createdAt = createdAt;
-      if (order !== undefined) row.order = order;
-    }
-    await put('workoutSet', row);
+    // 並びは order だけ。編集では元の位置を引き継ぎ、新しい行は末尾に足す
+    if (updated && order !== undefined) row.order = order;
+    const saved = await put('workoutSet', row);
     rememberSelection('record', { exerciseId });
     // 保存待ちの間にコピーされた入力を消さない
     if (revision === formRevision) {
@@ -413,7 +405,7 @@ function wireEvents() {
     }
     await renderSets();
     // 保存した行だけ、下から出す動きで示す
-    byId('set-list').querySelector(`[data-id="${CSS.escape(id)}"]`)?.classList.add('is-saved');
+    byId('set-list').querySelector(`[data-id="${CSS.escape(saved.id)}"]`)?.classList.add('is-saved');
     setStatus(updated ? '更新しました' : '記録しました');
     // 重量は残っているので、そのまま回数を入れられるようにする
     byId('set-reps').focus();
