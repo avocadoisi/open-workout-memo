@@ -1,5 +1,6 @@
 import { planMerge } from './merge.js';
-import { SALT_LENGTH, parseId, removeRow, toDays, toRows, upsertRow } from './day.js';
+import { parseId, randomSalt, removeRow, toDays, toRows, upsertRow } from './day.js';
+import { FILE_VERSION } from './migrations.js';
 
 const DB_NAME = 'open-workout-memo';
 const DB_VERSION = 2;
@@ -15,7 +16,6 @@ const EXPORT_KEYS = {
 
 let dbPromise;
 
-const randomSalt = () => crypto.randomUUID().replaceAll('-', '').slice(0, SALT_LENGTH);
 const result = (request) => new Promise((resolve, reject) => {
   request.onsuccess = () => resolve(request.result);
   request.onerror = () => reject(request.error);
@@ -200,12 +200,14 @@ export async function seedIfEmpty() {
 }
 
 // ファイルには行の形（schemaVersion 1）で出す。保存形を外に出さない
+// ファイルは保存形（日ごとのツリー）と同じ形で出す。取り込みは古い版も受ける
 export async function exportAll() {
+  const db = await openDB();
   return {
-    schemaVersion: 1,
+    schemaVersion: FILE_VERSION,
     exportedAt: new Date().toISOString(),
     exercises: await getAll('exercise'),
-    workoutSets: await getAll('workoutSet'),
+    workoutDays: await allDays(db),
     metricDefs: await getAll('metricDef'),
     metricLogs: await getAll('metricLog'),
   };

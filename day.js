@@ -10,6 +10,8 @@ import { orderKey } from './training.js';
 
 export const SALT_LENGTH = 6;
 
+export const randomSalt = () => crypto.randomUUID().replaceAll('-', '').slice(0, SALT_LENGTH);
+
 export const formatId = (date, salt, index) => `${date}~${salt}~${index}`;
 
 export function parseId(id) {
@@ -82,6 +84,32 @@ export function toDays(rows, nextSalt = () => '') {
     salt: list.map(saltOf).find(Boolean) ?? nextSalt(),
     blocks: blocksOf(list),
   }));
+}
+
+const isNumber = (value) => typeof value === 'number' && Number.isFinite(value);
+const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+// run は [重量, 回数] / [重量, 回数, セット数] / 末尾にメモ・自重のオブジェクト
+function isRun(run) {
+  if (!Array.isArray(run) || run.length < 2 || run.length > 4) return false;
+  const [weight, reps, third, fourth] = run;
+  if (!isNumber(weight) || !isNumber(reps)) return false;
+  if (third !== undefined && !(Number.isInteger(third) && third > 0) && !isObject(third)) return false;
+  if (fourth !== undefined && !isObject(fourth)) return false;
+  // 3つ目がオブジェクトなら、それはメモ・自重であってセット数ではない
+  return !(isObject(third) && fourth !== undefined);
+}
+
+// 保存形（workoutDay）として読めるか。範囲は見ない
+export function isStoredDay(day) {
+  return isObject(day)
+    && typeof day.date === 'string' && day.date.trim() !== ''
+    && typeof day.salt === 'string' && day.salt !== ''
+    && Array.isArray(day.blocks)
+    && day.blocks.every((block) => isObject(block)
+      && typeof block.e === 'string' && block.e.trim() !== ''
+      && Array.isArray(block.s) && block.s.length > 0
+      && block.s.every(isRun));
 }
 
 function decodeRun([weight, reps, third, fourth]) {

@@ -10,7 +10,7 @@ DB（IndexedDB）もデータファイル（エクスポート JSON）も、**�
 | `DB_VERSION` | `db.js` | IndexedDB のスキーマ版 |
 | `schemaVersion` | エクスポート / インポート JSON | データファイルの形式版 |
 
-2つは独立している。DB を v2 にしてもファイルが v1 のまま、は普通にある（むしろ内部形をファイルに出さない）。
+2つは独立している。DB を v2 にしてもファイルが v1 のまま、は普通にある（内部形をファイルに出さない選択もある）。いまは保存形とファイル形を同じ v2 にしてあるが、片方だけ上げてもよい。
 
 - ファイルの `schemaVersion` は、**利用者のバックアップ形式**の版。DB のストア構成とは一致しなくてよい
 - エクスポートは常に最新の `schemaVersion` で書く
@@ -19,7 +19,7 @@ DB（IndexedDB）もデータファイル（エクスポート JSON）も、**�
 ## 実行タイミング
 
 1. **起動時:** `openDB()` が `onupgradeneeded` で `oldVersion` から最新まで連鎖を実行する。`openDB()` が解決した時点で最新が保証される
-2. **インポート時:** ファイルの `schemaVersion` から最新まで、**同じ連鎖をデータに対して**実行してから、マージ / 全置換に渡す。クリップボードからの取り込みも同じ経路を通す
+2. **インポート時:** ファイルの `schemaVersion` から最新まで、**同じ連鎖をデータに対して**実行してから、マージ / 全置換に渡す。入口は `merge.js` の `parseImport` → `migrations.js` の `migrateFile` の1本で、クリップボードからの取り込みも同じ経路を通す
 
 この2つ以外の場所で古い形に触らない。
 
@@ -28,16 +28,17 @@ DB（IndexedDB）もデータファイル（エクスポート JSON）も、**�
 ステップは「1つ前の版 → 次の版」だけを扱う純粋関数にし、順番に積む。
 
 ```js
-// migrations.js（例）
+// migrations.js（実際の形）
+export const FILE_VERSION = 2;
 export const migrations = [
-  { to: 2, run: v1ToV2 },
-  { to: 3, run: v2ToV3 },
+  { to: 2, run: v1ToV2 },  // v1: 行の配列 → v2: 日ごとのツリー
 ];
 
-export function migrate(data, from, to) {
-  let current = data;
+export function migrateFile(data, { nextSalt = randomSalt } = {}) {
+  const from = data?.schemaVersion;
+  let file = data;
   for (const step of migrations) {
-    if (step.to > from && step.to <= to) current = step.run(current);
+    if (step.to > from && step.to <= FILE_VERSION) file = step.run(file, nextSalt);
   }
   return current;
 }
@@ -78,6 +79,6 @@ UI・集計・描画は最新のストア形だけを読む。版を見て分岐
 
 ## いまの状態
 
-- `DB_VERSION` は 2、ファイルの `schemaVersion` は 1。v1 → v2 のステップは `db.js` の `onupgradeneeded` にあり、旧 `workoutSet`（1行1セット）を `workoutDay`（1日1レコード）へ畳んでから旧ストアを消す
+- `DB_VERSION` は 2。v1 → v2 のステップは `db.js` の `onupgradeneeded` にあり、旧 `workoutSet`（1行1セット）を `workoutDay`（1日1レコード）へ畳んでから旧ストアを消す
 - v2 で未使用の索引（`exercise.archived`、`metricLog.date`、`metricLog.metricDefId`）も落とした
-- ファイルの形は変えていないので、`schemaVersion` は 1 のまま
+- ファイルの `schemaVersion` も 2。保存形と同じ `workoutDays`（日ごとのツリー・可変長の run）で書き、v1 の行形式のファイルは `migrations.js` の連鎖で v2 に上げてから取り込む。v1 のステップは新しい salt を振るので、id の無い外部ファイルでも取り込める

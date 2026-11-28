@@ -1,5 +1,7 @@
 // インポートのマージ規則。値を受け取って値だけを返す（保存は db.js が行う）
 
+import { toRows } from './day.js';
+import { migrateFile } from './migrations.js';
 import { stripBodyweightNote } from './training.js';
 
 // 表記ゆれ（前後の空白・全角半角・大文字小文字）を同じ名前として扱う
@@ -13,11 +15,10 @@ export function parseImport(text) {
   } catch {
     throw new Error('JSON として読めません');
   }
-  if (data?.schemaVersion !== 1) throw new Error('schemaVersion が 1 ではありません');
-  for (const key of ['exercises', 'workoutSets', 'metricDefs', 'metricLogs']) {
-    if (!Array.isArray(data[key])) throw new Error(`${key} が配列ではありません`);
-  }
-  return data;
+  // 古い版のファイルは連鎖で最新の形に上げる（docs/migration.md）
+  const file = migrateFile(data);
+  // 画面とマージは行で扱うので、日を開いて渡す
+  return { ...file, workoutSets: toRows(file.workoutDays) };
 }
 
 export const exerciseKey = (row) => normalizeName(row.name);
