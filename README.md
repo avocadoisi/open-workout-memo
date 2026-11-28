@@ -43,6 +43,8 @@ metricLog:  { id, date, metricDefId, value }
 // export/import: { schemaVersion: 1, exportedAt, exercises, workoutSets, metricDefs, metricLogs }
 ```
 
+スキーマ（`DB_VERSION`）とデータファイル（`schemaVersion`）の版を上げるときは、連鎖マイグレーションで最新まで上げる。手順と書き方は `docs/migration.md`。
+
 インポートはマージ（確認なし）と全置換（確認あり）の2つ。マージは id が同じ行を上書きし、id が違っても「日付・種目・重量・回数・メモ」が同じセットは既存とインポートの件数の多い方に揃える（同じファイルを何度入れても増えず、同日 80kg×5 の3セットは3セットのまま、インポートが4セットなら1セットだけ足す）。メモは体重の自動注記を外して比べる。種目は名前、指標は名前＋単位が同じなら手元の id に読み替えて同名を増やさない。マージ結果は「追加 / 更新 / 据え置き」の件数で出す。未知の `schemaVersion` はどちらも拒否。
 `createdAt` を持たない古い記録は 0 として扱う。古い順では読み込んだ順（`getAll` の順）で先頭に、新しい順ではその逆順で末尾に並ぶ。
 
